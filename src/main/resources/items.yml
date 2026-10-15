@@ -1,0 +1,26 @@
+# Luminaris Extraction Core - Items Configuration
+# Defines extraction loot items, rarities, values, and lore.
+items:
+  military_circuit:
+    material: "REPEATER"
+    display_name: "<gold>Military Grade Circuit</gold>"
+    tier: "RARE"
+    value: 750.0
+    lore:
+      - "<gray>High-frequency military electronic component.</gray>"
+      - "<dark_aqua>Origin: Extraction Sector Alpha</dark_aqua>"
+  energy_core:
+    material: "NETHER_STAR"
+    display_name: "<aqua>Stabilized Energy Core</aqua>"
+    tier: "LEGENDARY"
+    value: 3500.0
+    lore:
+      - "<gray>Pulsating energy core used in high-tech apparatus.</gray>"
+      - "<red>Extremely volatile in non-stabilized zones.</red>"
+  survival_ration:
+    material: "COOKED_BEEF"
+    display_name: "<green>Military MRE Ration</green>"
+    tier: "COMMON"
+    value: 50.0
+    lore:
+      - "<gray>Long shelf-life military food ration.</gray>"

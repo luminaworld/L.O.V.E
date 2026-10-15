@@ -1,0 +1,31 @@
+# Luminaris Extraction Core - Safe Cases Configuration
+# Secure container configurations that protect loot across extractions or on death.
+safe_cases:
+  alpha_pouch:
+    display_name: "<gold>Alpha Secure Pouch (2x2)</gold>"
+    title: "<gold>Alpha Secure Pouch (2x2)</gold>"
+    material: "BUNDLE"
+    custom_model_data: 1001
+    capacity: 4
+    keeps_on_death: true
+  beta_case:
+    display_name: "<aqua>Beta Secure Case (3x2)</aqua>"
+    title: "<aqua>Beta Secure Case (3x2)</aqua>"
+    material: "BUNDLE"
+    custom_model_data: 1002
+    capacity: 6
+    keeps_on_death: true
+  gamma_case:
+    display_name: "<light_purple>Gamma Reinforced Case (3x3)</light_purple>"
+    title: "<light_purple>Gamma Reinforced Case (3x3)</light_purple>"
+    material: "BUNDLE"
+    custom_model_data: 1003
+    capacity: 9
+    keeps_on_death: true
+  kappa_containment:
+    display_name: "<red>Kappa Vault Container (4x3)</red>"
+    title: "<red>Kappa Vault Container (4x3)</red>"
+    material: "ENDER_CHEST"
+    custom_model_data: 1004
+    capacity: 12
+    keeps_on_death: true

@@ -1,0 +1,23 @@
+# Luminaris Extraction Core - Categories Configuration
+# Categorization, visual grading, and payout multipliers.
+categories:
+  COMMON:
+    name: "Common Grade"
+    color: "#AAAAAA"
+    multiplier: 1.0
+  UNCOMMON:
+    name: "Uncommon Grade"
+    color: "#55FF55"
+    multiplier: 1.25
+  RARE:
+    name: "Rare Tech"
+    color: "#55FFFF"
+    multiplier: 1.75
+  EPIC:
+    name: "Epic Prototype"
+    color: "#AA00AA"
+    multiplier: 2.5
+  LEGENDARY:
+    name: "Legendary Relic"
+    color: "#FFAA00"
+    multiplier: 4.0
