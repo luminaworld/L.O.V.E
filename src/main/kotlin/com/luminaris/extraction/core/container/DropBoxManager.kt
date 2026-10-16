@@ -103,4 +103,11 @@ class DropBoxManager(private val plugin: LuminarisCorePlugin) {
         val prefix = "${worldName}:"
         matchContainerLoot.keys.removeIf { it.startsWith(prefix) }
     }
+
+    /**
+     * Clears all cached container inventories upon plugin disable.
+     */
+    fun shutdown() {
+        matchContainerLoot.clear()
+    }
 }

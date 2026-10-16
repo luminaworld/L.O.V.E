@@ -411,4 +411,21 @@ class SafeCaseManager(private val plugin: LuminarisCorePlugin) {
         }
         item.itemMeta = meta
     }
+
+    /**
+     * Cleans up safe case manager state upon plugin disable, restoring any pending
+     * safe container items to online players immediately to prevent data loss.
+     */
+    fun shutdown() {
+        for ((uuid, items) in pendingReturns) {
+            val player = runCatching { Bukkit.getPlayer(uuid) }.getOrNull()
+            if (player != null && player.isOnline) {
+                for (item in items) {
+                    player.inventory.addItem(item)
+                }
+            }
+        }
+        pendingReturns.clear()
+        definitions.clear()
+    }
 }

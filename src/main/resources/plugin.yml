@@ -1,0 +1,19 @@
+name: LuminarisCore
+version: '${version}'
+main: com.luminaris.extraction.LuminarisCorePlugin
+api-version: '1.21'
+folia-supported: true
+authors:
+  - LuminarisTeam
+description: Unified Vanilla Extraction Core Engine (L.O.V.E)
+
+permissions:
+  luminaris.admin:
+    description: Grants full administrative access to Luminaris Core
+    default: op
+  luminaris.editor:
+    description: Allows editing map templates and managing container markers
+    default: op
+  luminaris.extract:
+    description: Allows player to participate in extractions
+    default: true

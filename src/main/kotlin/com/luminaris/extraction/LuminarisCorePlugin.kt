@@ -17,11 +17,19 @@ import org.bukkit.plugin.java.JavaPlugin
 class LuminarisCorePlugin : JavaPlugin() {
 
     companion object {
+        private var _instance: LuminarisCorePlugin? = null
+
         /**
          * Singleton accessor to the active plugin instance.
          */
-        lateinit var instance: LuminarisCorePlugin
-            private set
+        val instance: LuminarisCorePlugin
+            get() = _instance ?: throw IllegalStateException("LuminarisCorePlugin is not loaded or has been disabled!")
+
+        /**
+         * Safe nullable accessor to the active plugin instance.
+         */
+        val instanceOrNull: LuminarisCorePlugin?
+            get() = _instance
     }
 
     private val miniMessage = MiniMessage.miniMessage()
@@ -93,11 +101,11 @@ class LuminarisCorePlugin : JavaPlugin() {
         private set
 
     override fun onLoad() {
-        instance = this
+        _instance = this
     }
 
     override fun onEnable() {
-        instance = this
+        _instance = this
         scheduler = FoliaScheduler(this)
 
         // Initialize and load custom YAML configs
@@ -106,7 +114,7 @@ class LuminarisCorePlugin : JavaPlugin() {
         // Initialize registries
         initializeRegistries()
 
-        // Register base command /ext
+        // Register base command /ext (cleans up any previous stale mappings first)
         registerExtCommand()
 
         // Output Cyberpunk / High-Tech MiniMessage banner
@@ -116,20 +124,49 @@ class LuminarisCorePlugin : JavaPlugin() {
     override fun onDisable() {
         renderShutdownBanner()
 
-        // Clean up match manager and all active instances
+        // 1. Close all active custom inventories (Editor GUI, Drop Box, Safe Case)
+        closeAllCustomInventories()
+
+        // 2. Clean up match manager, active instances, and ephemeral worlds
         if (::matchManager.isInitialized) {
-            matchManager.shutdown()
+            runCatching { matchManager.shutdown() }
         }
 
-        // Clean up extraction manager and active countdown tasks safely
+        // 3. Clean up extraction manager and active countdown tasks safely
         if (::extractionManager.isInitialized) {
-            extractionManager.shutdown()
+            runCatching { extractionManager.shutdown() }
         }
 
-        // Cancel all scheduled tasks safely
-        if (::scheduler.isInitialized) {
-            scheduler.cancelAll()
+        // 4. Return pending safe cases to online players and clear safe case state
+        if (::safeCaseManager.isInitialized) {
+            runCatching { safeCaseManager.shutdown() }
         }
+
+        // 5. Clean up corpse manager
+        if (::corpseManager.isInitialized) {
+            runCatching { corpseManager.clear() }
+        }
+
+        // 6. Clean up drop box container states
+        if (::dropBoxManager.isInitialized) {
+            runCatching { dropBoxManager.shutdown() }
+        }
+
+        // 7. Clean up registered commands from CommandMap to prevent PlugManX command conflicts
+        unregisterCommands()
+
+        // 8. Explicitly unregister all event listeners from HandlerList
+        runCatching { org.bukkit.event.HandlerList.unregisterAll(this as org.bukkit.plugin.Plugin) }
+
+        // 9. Cancel all scheduled tasks safely (Folia regional + async + Bukkit)
+        if (::scheduler.isInitialized) {
+            runCatching { scheduler.cancelAll() }
+        }
+
+        // 10. Reset static singletons
+        FoliaScheduler.reset()
+        TranslationManager.reset()
+        _instance = null
     }
 
     /**
@@ -224,9 +261,12 @@ class LuminarisCorePlugin : JavaPlugin() {
     }
 
     /**
-     * Registers the base /ext command using Paper's registerCommand API.
+     * Registers the base /ext command using Paper's registerCommand API,
+     * ensuring any existing conflicting command mappings are removed first.
      */
     private fun registerExtCommand() {
+        unregisterCommands()
+
         val extCommandExecutor = ExtCommand(this)
         registerCommand(
             "ext",
@@ -234,6 +274,73 @@ class LuminarisCorePlugin : JavaPlugin() {
             listOf("extraction", "love"),
             extCommandExecutor
         )
+    }
+
+    /**
+     * Closes all active custom GUI inventories for online players
+     * before unregistering listeners, guaranteeing that save hooks execute cleanly
+     * and players cannot manipulate or steal items while the plugin is being unloaded.
+     */
+    private fun closeAllCustomInventories() {
+        for (player in Bukkit.getOnlinePlayers()) {
+            runCatching {
+                val top = player.openInventory.topInventory
+                val holder = top.holder
+                if (holder is com.luminaris.extraction.editor.gui.EditorGuiHolder ||
+                    holder is com.luminaris.extraction.core.safe.SafeCaseHolder
+                ) {
+                    if (FoliaScheduler.isFolia) {
+                        player.scheduler.run(this, { _ -> player.closeInventory() }, null)
+                    } else {
+                        player.closeInventory()
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Cleans up registered /ext commands and aliases from Bukkit's SimpleCommandMap
+     * so that PlugManX or server reloads do not retain stale command instances.
+     */
+    private fun unregisterCommands() {
+        try {
+            val server = Bukkit.getServer()
+            val getCommandMapMethod = runCatching {
+                server.javaClass.getMethod("getCommandMap")
+            }.getOrNull()
+
+            val commandMap = if (getCommandMapMethod != null) {
+                getCommandMapMethod.invoke(server) as? org.bukkit.command.CommandMap
+            } else {
+                val field = server.javaClass.getDeclaredField("commandMap").apply { isAccessible = true }
+                field.get(server) as? org.bukkit.command.CommandMap
+            } ?: return
+
+            val knownCommandsField = runCatching {
+                commandMap.javaClass.getDeclaredField("knownCommands").apply { isAccessible = true }
+            }.getOrNull() ?: return
+
+            @Suppress("UNCHECKED_CAST")
+            val knownCommands = knownCommandsField.get(commandMap) as? MutableMap<String, org.bukkit.command.Command> ?: return
+
+            val pluginPrefix = name.lowercase()
+            val targetNames = setOf("ext", "extraction", "love")
+
+            val toRemove = knownCommands.filter { (key, cmd) ->
+                val lowerKey = key.lowercase()
+                targetNames.contains(lowerKey) ||
+                targetNames.any { lowerKey == "$pluginPrefix:$it" } ||
+                (cmd is org.bukkit.command.PluginIdentifiableCommand && cmd.plugin == this)
+            }
+
+            for ((key, cmd) in toRemove) {
+                runCatching { cmd.unregister(commandMap) }
+                knownCommands.remove(key)
+            }
+        } catch (_: Throwable) {
+            // Silently ignore reflection restrictions in test or custom environments
+        }
     }
 
     /**

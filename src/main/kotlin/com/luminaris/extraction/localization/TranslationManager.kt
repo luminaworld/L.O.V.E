@@ -36,6 +36,13 @@ class TranslationManager(private val plugin: Plugin? = null) {
                 _instance = value
             }
 
+        /**
+         * Clears the singleton instance upon plugin shutdown to prevent ClassLoader leaks.
+         */
+        fun reset() {
+            _instance = null
+        }
+
         fun get(key: String, vararg args: Pair<String, Any?>): String =
             instance.format(key, *args)
 

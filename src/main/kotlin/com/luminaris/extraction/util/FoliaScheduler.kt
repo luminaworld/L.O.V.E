@@ -39,6 +39,13 @@ class FoliaScheduler(private val plugin: Plugin = LuminarisCorePlugin.instance) 
             get() = defaultScheduler ?: synchronized(this) {
                 defaultScheduler ?: FoliaScheduler().also { defaultScheduler = it }
             }
+
+        /**
+         * Resets the default singleton scheduler reference on plugin disable.
+         */
+        fun reset() {
+            defaultScheduler = null
+        }
     }
 
     private val globalRegionScheduler: GlobalRegionScheduler
@@ -200,5 +207,6 @@ class FoliaScheduler(private val plugin: Plugin = LuminarisCorePlugin.instance) 
     fun cancelAll() {
         runCatching { globalRegionScheduler.cancelTasks(plugin) }
         runCatching { asyncScheduler.cancelTasks(plugin) }
+        runCatching { Bukkit.getScheduler().cancelTasks(plugin) }
     }
 }
