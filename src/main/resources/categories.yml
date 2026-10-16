@@ -4,74 +4,135 @@
 # =========================================================================
 #
 # คำอธิบายภาพรวม:
-# ไฟล์นี้ใช้กำหนดหมวดหมู่ของคอนเทนเนอร์ (หีบสมบัติ, ถังเสบียง) ในระบบการสกัดหลบหนี
-# คอนเทนเนอร์แต่ละหมวดหมู่จะทำหน้าที่เป็น Loot Table สำหรับกระจายไอเทมลงในแผนที่
-# โดยสามารถกำหนดระดับความสำคัญ, จำนวนรอบการสุ่มไอเทม, และตัวคูณมูลค่าการสกัดได้
+# ไฟล์นี้ใช้กำหนดรูปแบบของกล่องคอนเทนเนอร์ (หีบธรรมดา, แอร์ดรอป, ตู้เซฟ) ในระบบการสกัดหลบหนี
+# โดยกล่องดรอปแต่ละประเภทจะเป็นตัวกำหนดว่า:
+# 1. จะดรอปของระดับความหายากอะไร โอกาส (เปอร์เซ็นต์/น้ำหนัก) เท่าไหร่
+# 2. จำนวนกี่ชิ้นแบบละเอียด (min_rolls ถึง max_rolls)
 #
 # วิธีการตั้งค่าแต่ละพารามิเตอร์:
 # -------------------------------------------------------------------------
 # display_name:
-#   ชื่อที่แสดงผลของหมวดหมู่ รองรับ MiniMessage แบบสมบูรณ์
-#   (สามารถใส่แท็กสี, ตัวหนา, หรือการไล่เฉดสี เช่น <gradient:#00FFA3:#00B8FF>...</gradient>)
-#
-# name:
-#   ชื่อหมวดหมู่มาตรฐาน (รองรับ MiniMessage สำหรับแสดงในหน้าต่าง UI และรายการคำสั่ง)
-#
-# color:
-#   รหัสสีในรูปแบบ Hex (#RRGGBB) ใช้สำหรับไฮไลต์หรือจับคู่สีกับระบบมาร์กเกอร์และเรดาร์
-#
-# multiplier:
-#   ตัวคูณมูลค่าหรือคะแนนการสกัดของไอเทมที่ได้รับจากคอนเทนเนอร์หมวดนี้ (ทศนิยม เช่น 1.0, 1.5, 4.0)
+#   ชื่อที่แสดงผลของกล่อง รองรับ MiniMessage แบบสมบูรณ์
 #
 # min_rolls:
-#   จำนวนครั้งการสุ่มไอเทมขั้นต่ำที่จะถูกเติมลงในคอนเทนเนอร์เมื่อแมตช์เริ่มต้น
+#   จำนวนชิ้นไอเทมขั้นต่ำที่จะถูกสุ่มดรอปในกล่องนี้
 #
 # max_rolls:
-#   จำนวนครั้งการสุ่มไอเทมสูงสุดที่จะถูกเติมลงในคอนเทนเนอร์ (ต้องมากกว่าหรือเท่ากับ min_rolls)
+#   จำนวนชิ้นไอเทมสูงสุดที่จะถูกสุ่มดรอปในกล่องนี้
 #
-# คำสั่งที่มีประโยชน์ในเกม:
-#   - /ext chest get <รหัสหมวดหมู่> [chest|barrel] : รับบล็อกมาร์กเกอร์สำหรับไปวางในโลกเทมเพลต
-#   - /ext editor createcategory                   : เปิดหน้าต่าง GUI เพื่อสร้างหมวดหมู่ใหม่
-#   - /ext editor list                             : ตรวจสอบรายชื่อหมวดหมู่และไอเทมทั้งหมดในระบบ
+# rarity_chances:
+#   กำหนดเปอร์เซ็นต์/ค่าน้ำหนักโอกาสออกของแต่ละระดับความหายาก
+#   - COMMON
+#   - UNCOMMON
+#   - RARE
+#   - EPIC
+#   - LEGENDARY
+#
+# คำสั่งจัดการในเกม:
+#   - /ext editor : เปิดหน้าต่าง GUI จัดการกล่องดรอปและไอเทมทั้งหมดในคำสั่งเดียว
 # =========================================================================
 
 categories:
+  normal_crate:
+    display_name: "<gradient:#9E9E9E:#E0E0E0><bold>กล่องธรรมดา (Normal Crate)</bold></gradient>"
+    name: "<color:#AAAAAA>Normal Crate</color>"
+    color: "#AAAAAA"
+    min_rolls: 2
+    max_rolls: 4
+    rarity_chances:
+      COMMON: 70.0
+      UNCOMMON: 25.0
+      RARE: 5.0
+      EPIC: 0.0
+      LEGENDARY: 0.0
+
+  airdrop:
+    display_name: "<gradient:#00D2FF:#3A7BD5><bold>กล่องแอร์ดรอป (Supply Airdrop)</bold></gradient>"
+    name: "<color:#55FFFF>Supply Airdrop</color>"
+    color: "#00D2FF"
+    min_rolls: 3
+    max_rolls: 6
+    rarity_chances:
+      COMMON: 5.0
+      UNCOMMON: 20.0
+      RARE: 45.0
+      EPIC: 20.0
+      LEGENDARY: 10.0
+
+  safe_box:
+    display_name: "<gradient:#FFAA00:#FF5500><bold>กล่องตู้เซฟ (Armored Safe)</bold></gradient>"
+    name: "<color:#FFAA00>Armored Safe</color>"
+    color: "#FFAA00"
+    min_rolls: 1
+    max_rolls: 3
+    rarity_chances:
+      COMMON: 0.0
+      UNCOMMON: 5.0
+      RARE: 25.0
+      EPIC: 45.0
+      LEGENDARY: 25.0
+
   COMMON:
     display_name: "<gradient:#9E9E9E:#E0E0E0><bold>Common Grade</bold></gradient>"
     name: "<color:#AAAAAA>Common Grade</color>"
     color: "#AAAAAA"
-    multiplier: 1.0
     min_rolls: 2
     max_rolls: 4
+    rarity_chances:
+      COMMON: 70.0
+      UNCOMMON: 25.0
+      RARE: 5.0
+      EPIC: 0.0
+      LEGENDARY: 0.0
 
   UNCOMMON:
     display_name: "<gradient:#55FF55:#2E7D32><bold>Uncommon Grade</bold></gradient>"
     name: "<color:#55FF55>Uncommon Grade</color>"
     color: "#55FF55"
-    multiplier: 1.25
     min_rolls: 2
     max_rolls: 5
+    rarity_chances:
+      COMMON: 40.0
+      UNCOMMON: 40.0
+      RARE: 18.0
+      EPIC: 2.0
+      LEGENDARY: 0.0
 
   RARE:
     display_name: "<gradient:#00D2FF:#3A7BD5><bold>Rare Tech</bold></gradient>"
     name: "<color:#55FFFF>Rare Tech</color>"
     color: "#55FFFF"
-    multiplier: 1.75
     min_rolls: 3
     max_rolls: 5
+    rarity_chances:
+      COMMON: 15.0
+      UNCOMMON: 35.0
+      RARE: 35.0
+      EPIC: 15.0
+      LEGENDARY: 0.0
 
   EPIC:
     display_name: "<gradient:#AA00AA:#E040FB><bold>Epic Prototype</bold></gradient>"
     name: "<color:#AA00AA>Epic Prototype</color>"
     color: "#AA00AA"
-    multiplier: 2.5
     min_rolls: 3
     max_rolls: 6
+    rarity_chances:
+      COMMON: 5.0
+      UNCOMMON: 20.0
+      RARE: 40.0
+      EPIC: 25.0
+      LEGENDARY: 10.0
 
   LEGENDARY:
     display_name: "<gradient:#FFAA00:#FF5500><bold>Legendary Relic</bold></gradient>"
     name: "<color:#FFAA00>Legendary Relic</color>"
     color: "#FFAA00"
-    multiplier: 4.0
     min_rolls: 4
     max_rolls: 7
+    rarity_chances:
+      COMMON: 0.0
+      UNCOMMON: 5.0
+      RARE: 25.0
+      EPIC: 45.0
+      LEGENDARY: 25.0

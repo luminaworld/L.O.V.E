@@ -60,29 +60,24 @@ general:
 # ข้อความ ASCII Art และข้อมูลโมดูลที่แสดงบนคอนโซลขณะเซิร์ฟเวอร์เปิดหรือปิด
 # -------------------------------------------------------------------------
 banner:
-  platform:
-    folia: "<gradient:#FF0055:#FFAA00><bold>FOLIA</bold></gradient> <color:#AAAAAA>(แบ่งเธรดตามภูมิภาค Multi-Threaded)</color>"
-    paper: "<gradient:#00D2FF:#3A7BD5><bold>PAPER</bold></gradient> <color:#AAAAAA>(ตัวจัดการงานมาตรฐาน Universal Scheduler)</color>"
   startup: |
-    
-    <gradient:#00FFA3:#00B8FF><bold> __         ______     __   __     ______    </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold>/\ \       /\  __ \   /\ \ / /    /\  ___\   </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold>\ \ \____  \ \ \/\ \  \ \ \'/     \ \  __\   </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold> \ \_____\  \ \_____\  \ \__|      \ \_____\ </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold>  \/_____/   \/_____/   \/_/        \/_____/ </bold></gradient>
+  
+    <color:#555555>================================================================</color>
+    <gradient:#00FFA3:#00B8FF><bold>        __         ______     __   __     ______    </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>       /\ \       /\  __ \   /\ \ / /    /\  ___\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>       \ \ \____  \ \ \/\ \  \ \ \'/     \ \  __\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>        \ \_____\  \ \_____\  \ \__|      \ \_____\ </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>         \/_____/   \/_____/   \/_/        \/_____/ </bold></gradient>
     <color:#555555>================================================================</color>
     <gradient:#00FFA3:#00B8FF><bold> LUMINARIS OPERATION VANILLA EXTRACTION (L.O.V.E) </bold></gradient>
-    <color:#AAAAAA> เวอร์ชันแกนหลัก:    </color><color:#55FFFF>{version}</color>
-    <color:#AAAAAA> สภาพแวดล้อมรันไทม์: </color><color:#FFFF55>JVM {jvm}</color>
-    <color:#AAAAAA> แพลตฟอร์มเซิร์ฟเวอร์: </color>{platform}
-    <color:#AAAAAA> โมดูลที่โหลดแล้ว:    </color><color:#55FF55>Storage</color>, <color:#55FF55>ItemRegistry</color>, <color:#55FF55>ContainerRegistry</color>, <color:#55FF55>SafeContainerManager</color>, <color:#55FF55>TemplateStorage</color>, <color:#55FF55>ContainerMarker</color>, <color:#55FF55>NativeDialogUI</color>, <color:#55FF55>EditorCommand</color>, <color:#55FF55>InstanceWorldService</color>, <color:#55FF55>LootPopulator</color>, <color:#55FF55>SpawnAllocator</color>, <color:#55FF55>ExtractionMatrix</color>, <color:#55FF55>MatchEngine</color>, <color:#55FF55>CorpseManager</color>
-    <color:#AAAAAA> สถานะระบบ:          </color><color:#55FF55><bold>พร้อมทำงานและเปิดใช้งานแล้ว</bold></color>
+    <color:#AAAAAA> Core Engine Version: </color><color:#55FFFF>{version}</color>
+    <color:#AAAAAA> Status:              </color><color:#55FF55><bold>ACTIVE</bold></color>
     <color:#555555>================================================================</color>
   shutdown: |
     <color:#555555>================================================================</color>
-    <gradient:#FF416C:#8A2387><bold>[LuminarisCore] กำลังปิดการทำงานของ Extraction Engine (L.O.V.E)...</bold></gradient>
-    <color:#AAAAAA>กำลังยกเลิกงานที่ทำงานตามภูมิภาคและงานอะซิงโครนัสทั้งหมด...</color>
-    <color:#FF5555><bold>สถานะ: ออฟไลน์ (OFFLINE)</bold></color>
+    <gradient:#FF416C:#8A2387><bold>[LuminarisCore] Disabling Extraction Engine (L.O.V.E)...</bold></gradient>
+    <color:#AAAAAA>Cancelling active regional and asynchronous tasks...</color>
+    <color:#FF5555><bold>Status: OFFLINE</bold></color>
     <color:#555555>================================================================</color>
 
 # -------------------------------------------------------------------------
@@ -97,6 +92,8 @@ command:
     title: "<gradient:#00FFA3:#00B8FF><bold>สถานะระบบสกัด LUMINARIS EXTRACTION ENGINE</bold></gradient>"
     version: "<color:#AAAAAA>เวอร์ชัน:</color> <color:#FFFFFF>{version}</color>"
     threading: "<color:#AAAAAA>รูปแบบเธรด:</color> {platform}"
+    platform_folia: "<gradient:#FF0055:#FFAA00><bold>FOLIA</bold></gradient> <color:#AAAAAA>(แบ่งเธรดตามภูมิภาค Multi-Threaded)</color>"
+    platform_paper: "<gradient:#00D2FF:#3A7BD5><bold>PAPER</bold></gradient> <color:#AAAAAA>(ตัวจัดการงานมาตรฐาน Universal Scheduler)</color>"
     items: "<color:#AAAAAA>ไอเทมการสกัดที่เปิดใช้งาน:</color> <color:#FFFF55>{count}</color>"
     categories: "<color:#AAAAAA>หมวดหมู่คอนเทนเนอร์:</color> <color:#FFFF55>{count}</color>"
     cases: "<color:#AAAAAA>โปรไฟล์กระเป๋านิรภัย:</color> <color:#FFFF55>{count}</color>"
@@ -110,9 +107,7 @@ command:
     chest_list: "<color:#FFFF55>/ext chest list</color>                  <color:#AAAAAA>- ดูรายการมาร์กเกอร์คอนเทนเนอร์ในแผนที่เทมเพลต</color>"
     case_list: "<color:#FFFF55>/ext case list</color>                    <color:#AAAAAA>- แสดงรายการกระเป๋านิรภัยทั้งหมดที่ตั้งค่าไว้</color>"
     case_give: "<color:#FFFF55>/ext case give <ผู้เล่น> <รหัส></color>   <color:#AAAAAA>- มอบกระเป๋านิรภัยให้แก่ผู้เล่น</color>"
-    editor_createitem: "<color:#FFFF55>/ext editor createitem <หมวดหมู่></color> <color:#AAAAAA>- ลงทะเบียนไอเทมในมือผ่านหน้าต่าง Native Dialog UI</color>"
-    editor_createcategory: "<color:#FFFF55>/ext editor createcategory</color>       <color:#AAAAAA>- ตั้งค่าหมวดหมู่ไอเทมสุ่มผ่านหน้าต่าง Dialog UI</color>"
-    editor_list: "<color:#FFFF55>/ext editor list</color>                 <color:#AAAAAA>- แสดงรายการไอเทมและหมวดหมู่ทั้งหมดที่ลงทะเบียนไว้</color>"
+    editor: "<color:#FFFF55>/ext editor</color>                         <color:#AAAAAA>- เปิดหน้าต่าง GUI จัดการกล่องดรอปและไอเทมทั้งหมด</color>"
     status: "<color:#FFFF55>/ext status</color>                      <color:#AAAAAA>- ดูข้อมูลสถานะระบบหลักและรูปแบบเธรดการทำงาน</color>"
     reload: "<color:#FFFF55>/ext reload</color>                      <color:#AAAAAA>- โหลดไฟล์ไอเทม, หมวดหมู่, เทมเพลต และกระเป๋านิรภัยใหม่ทันที</color>"
     help: "<color:#FFFF55>/ext help</color>                        <color:#AAAAAA>- แสดงคู่มือการใช้งานคำสั่งทั้งหมด</color>"
@@ -148,7 +143,111 @@ command:
 # -------------------------------------------------------------------------
 editor:
   no_permission: "<color:#FF5555>❌ คุณไม่มีสิทธิ์เข้าถึงเครื่องมือแก้ไขระบบการสกัด</color>"
-  unknown_subcommand: "<color:#FF5555>ไม่พบคำสั่งย่อยของตัวแก้ไข: <color:#FFFF55>{subcommand}</color></color> <color:#FFFF55>ใช้ </color><color:#55FFFF>/{label} editor help</color><color:#FFFF55> เพื่อดูคู่มือ</color>"
+  unknown_subcommand: "<color:#FF5555>ไม่พบคำสั่งย่อยของตัวแก้ไข: <color:#FFFF55>{subcommand}</color></color> <color:#FFFF55>ใช้ </color><color:#55FFFF>/{label} editor</color><color:#FFFF55> เพื่อเปิดตัวแก้ไข</color>"
+  gui:
+    main_title: "<gradient:#00FFA3:#00B8FF><bold>เมนูแก้ไขระบบการสกัด (EXTRACTION EDITOR)</bold></gradient>"
+    btn_containers: "<gradient:#FFAA00:#FF5500><bold>รูปแบบกล่องดรอป (Box Types)</bold></gradient>"
+    containers_lore_1: "<color:#AAAAAA>จัดการรูปแบบกล่องดรอป (กล่องธรรมดา, แอร์ดรอป, ตู้เซฟ)</color>"
+    containers_lore_2: "<color:#AAAAAA>กำหนดจำนวนสุ่มไอเทมและเปอร์เซ็นต์โอกาสดรอปตามระดับความหายาก</color>"
+    containers_lore_total: "<color:#FFFF55>ลงทะเบียนแล้วทั้งหมด: </color><color:#55FFFF>{count}</color>"
+    containers_lore_action: "<color:#55FF55>▶ คลิกเพื่อเปิดเมนูจัดการกล่องดรอป</color>"
+    btn_items: "<gradient:#00FFA3:#00B8FF><bold>คลังไอเทมดรอป (Drop Items)</bold></gradient>"
+    items_lore_1: "<color:#AAAAAA>จัดการไอเทมทั้งหมดที่มีโอกาสดรอปจากกล่องในเกม</color>"
+    items_lore_2: "<color:#AAAAAA>เพิ่มไอเทมจากตัวผู้เล่น, กำหนดความหายาก, ราคา และกล่องที่ดรอป</color>"
+    items_lore_total: "<color:#FFFF55>ลงทะเบียนแล้วทั้งหมด: </color><color:#55FFFF>{count}</color>"
+    items_lore_action: "<color:#55FF55>▶ คลิกเพื่อเปิดเมนูจัดการคลังไอเทม</color>"
+    btn_reload: "<color:#FFFF55><bold>โหลดข้อมูลระบบใหม่</bold></color>"
+    reload_lore_1: "<color:#AAAAAA>โหลด categories.yml, items.yml และไฟล์ภาษาใหม่ทันที</color>"
+    reload_lore_action: "<color:#55FF55>▶ คลิกเพื่อโหลดการตั้งค่าใหม่</color>"
+    reload_success: "<color:#55FF55>✔ โหลดข้อมูลการตั้งค่าใหม่สำเร็จเรียบร้อย!</color>"
+    btn_close: "<color:#FF5555><bold>ปิดเมนู</bold></color>"
+    btn_back: "<color:#FFFF55><bold>◀ ย้อนกลับ</bold></color>"
+    btn_next_page: "<color:#55FFFF><bold>หน้าถัดไป ▶</bold></color>"
+    btn_prev_page: "<color:#55FFFF><bold>◀ หน้าก่อนหน้า</bold></color>"
+    page_info: "<color:#AAAAAA>หน้า </color><color:#FFFF55>{current}</color><color:#AAAAAA> / </color><color:#55FFFF>{total}</color>"
+    containers_title: "<gradient:#FFAA00:#FF5500><bold>จัดการรูปแบบกล่องดรอป</bold></gradient>"
+    btn_add_container: "<gradient:#00FFA3:#00B8FF><bold>+ สร้างรูปแบบกล่องใหม่</bold></gradient>"
+    container_add_lore_1: "<color:#AAAAAA>คลิกเพื่อสร้างรูปแบบกล่องดรอปใหม่ผ่านหน้าต่าง Dialog</color>"
+    container_add_lore_action: "<color:#55FF55>▶ คลิกเพื่อสร้างกล่องใหม่</color>"
+    container_card_id: "<color:#AAAAAA>รหัส: </color><color:#FFFF55>{id}</color>"
+    container_card_rolls: "<color:#AAAAAA>จำนวนสุ่มไอเทม: </color><color:#55FF55>{min} - {max} ชิ้น</color>"
+    container_card_linked: "<color:#AAAAAA>ไอเทมที่ผูกกับกล่องนี้: </color><color:#55FFFF>{count} รายการ</color>"
+    container_card_rarity_header: "<color:#FFAA00><bold>โอกาสดรอปตามระดับความหายาก:</bold></color>"
+    container_card_rarity_entry: "{tag}▪ {name}: </color><color:#FFFFFF>{pct}%</color> <color:#555555>(น้ำหนัก: {weight})</color>"
+    container_card_click_edit: "<color:#55FF55>คลิกซ้าย:</color> <color:#AAAAAA>แก้ไขการตั้งค่าและโอกาสดรอป (Dialog)</color>"
+    container_card_click_marker: "<color:#55FFFF>คลิกขวา:</color> <color:#AAAAAA>รับบล็อกมาร์กเกอร์จุดวาง</color>"
+    container_card_click_delete: "<color:#FF5555>Shift+คลิกขวา:</color> <color:#AAAAAA>ลบรูปแบบกล่องนี้</color>"
+    container_created: "<color:#55FF55>✔ สร้างรูปแบบกล่องใหม่สำเร็จ: <color:#FFFF55>{id}</color></color>"
+    container_deleted: "<color:#FF5555>🗑 ลบรูปแบบกล่องดรอปเรียบร้อย: <color:#FFFF55>{id}</color></color>"
+    container_edit_title: "<gradient:#FFAA00:#FF5500><bold>แก้ไขกล่องดรอป: {id}</bold></gradient>"
+    btn_marker_tool: "<color:#55FFFF><bold>รับบล็อกมาร์กเกอร์</bold></color>"
+    marker_tool_lore_1: "<color:#AAAAAA>คลิกเพื่อรับบล็อกมาร์กเกอร์สำหรับนำไปวางในแผนที่</color>"
+    marker_tool_lore_action: "<color:#55FF55>▶ คลิกเพื่อรับบล็อกเข้าตัว</color>"
+    marker_tool_given: "<color:#55FF55>✔ ได้รับบล็อกมาร์กเกอร์สำหรับกล่อง </color><color:#FFFF55>{id}</color>"
+    btn_delete_container: "<color:#FF5555><bold>ลบรูปแบบกล่องนี้</bold></color>"
+    delete_container_lore_1: "<color:#AAAAAA>กด Shift ค้างแล้วคลิกเพื่อลบกล่องนี้อย่างถาวร</color>"
+    delete_container_lore_action: "<color:#FF5555>⚠ Shift+คลิก เพื่อลบ</color>"
+    min_rolls_title: "<color:#FFFF55><bold>สุ่มดรอปขั้นต่ำ: </bold></color><color:#55FF55><bold>{count}</bold></color>"
+    min_rolls_lore_1: "<color:#AAAAAA>จำนวนไอเทมดรอปขั้นต่ำต่อหนึ่งกล่อง</color>"
+    max_rolls_title: "<color:#FFFF55><bold>สุ่มดรอปสูงสุด: </bold></color><color:#55FF55><bold>{count}</bold></color>"
+    max_rolls_lore_1: "<color:#AAAAAA>จำนวนไอเทมดรอปสูงสุดต่อหนึ่งกล่อง</color>"
+    click_plus_1: "<color:#55FF55>คลิกซ้าย:</color> <color:#FFFFFF>+1</color>"
+    click_minus_1: "<color:#FF5555>คลิกขวา:</color> <color:#FFFFFF>-1</color>"
+    click_plus_5: "<color:#FFFF55>Shift+คลิกซ้าย:</color> <color:#FFFFFF>+5</color>"
+    click_minus_5: "<color:#FFAA00>Shift+คลิกขวา:</color> <color:#FFFFFF>-5</color>"
+    rarity_rates_header: "<gradient:#00FFA3:#00B8FF><bold>อัตราและโอกาสดรอปตามระดับความหายาก</bold></gradient>"
+    rarity_rates_desc: "<color:#AAAAAA>ปรับน้ำหนักโอกาสและเปอร์เซ็นต์ความน่าจะเป็นในการดรอปของแต่ละระดับ</color>"
+    rarity_card_chance: "<color:#AAAAAA>โอกาสดรอปคำนวณได้: </color><color:#FFFF55><bold>{pct}%</bold></color>"
+    rarity_card_weight: "<color:#AAAAAA>น้ำหนักโอกาสสุ่มปัจจุบัน: </color><color:#FFFFFF>{weight}</color>"
+    rarity_card_items: "<color:#AAAAAA>ไอเทมที่ลงทะเบียนไว้: </color><color:#55FFFF>{count} ชิ้น</color>"
+    rarity_card_plus_5: "<color:#55FF55>คลิกซ้าย:</color> <color:#FFFFFF>+5 น้ำหนัก</color>"
+    rarity_card_minus_5: "<color:#FF5555>คลิกขวา:</color> <color:#FFFFFF>-5 น้ำหนัก</color>"
+    rarity_card_plus_20: "<color:#FFFF55>Shift+คลิกซ้าย:</color> <color:#FFFFFF>+20 น้ำหนัก</color>"
+    rarity_card_disable: "<color:#FFAA00>Shift+คลิกขวา:</color> <color:#FFFFFF>ตั้งเป็น 0 (ปิดใช้งาน)</color>"
+    btn_save: "<gradient:#00FFA3:#00B8FF><bold>✔ บันทึกและย้อนกลับ</bold></gradient>"
+    items_title: "<gradient:#00FFA3:#00B8FF><bold>คลังไอเทมดรอป ({count})</bold></gradient>"
+    btn_add_item: "<gradient:#00FFA3:#00B8FF><bold>+ เพิ่มไอเทมดรอปใหม่</bold></gradient>"
+    item_add_lore_1: "<color:#AAAAAA>คลิกที่นี่ แล้วคลิกเลือกไอเทมในตัวของคุณ</color>"
+    item_add_lore_2: "<color:#AAAAAA>เพื่อนำมาลงทะเบียนเป็นไอเทมดรอปผ่าน Dialog!</color>"
+    item_add_lore_action: "<color:#55FF55>▶ คลิกเพื่อเลือกไอเทมจากตัว</color>"
+    item_selector_title: "<gradient:#00FFA3:#00B8FF><bold>คลิกเลือกไอเทมในตัวของคุณด้านล่าง</bold></gradient>"
+    item_selector_hint: "<gradient:#00FFA3:#00B8FF><bold>▼ คลิกเลือกไอเทมในตัวด้านล่าง ▼</bold></gradient>"
+    item_selector_hint_1: "<color:#AAAAAA>คลิกไอเทมใดก็ได้ในตัวคุณด้านล่างเพื่อนำมาเพิ่ม!</color>"
+    item_selector_hint_2: "<color:#AAAAAA>หรือคลิกวางไอเทมที่ติดเคอร์เซอร์ลงในช่องนี้</color>"
+    item_selector_hint_3: "<color:#555555>ระบบจะบันทึก Lore, Components และ NBT ครบถ้วน 100%</color>"
+    item_card_id: "<color:#AAAAAA>รหัส: </color><color:#FFFF55>{id}</color>"
+    item_card_rarity: "<color:#AAAAAA>ระดับความหายาก: </color>{tag}{name}</color>"
+    item_card_price: "<color:#AAAAAA>ราคาขาย: </color><color:#FFAA00>${price}</color>"
+    item_card_containers: "<color:#AAAAAA>ดรอปในกล่อง: </color><color:#55FFFF>[{containers}]</color>"
+    item_card_click_edit: "<color:#55FF55>คลิกซ้าย:</color> <color:#AAAAAA>แก้ไขคุณสมบัติไอเทม (Dialog)</color>"
+    item_card_click_copy: "<color:#55FFFF>คลิกขวา:</color> <color:#AAAAAA>รับไอเทมตัวอย่างเข้าตัว</color>"
+    item_card_click_delete: "<color:#FF5555>Shift+คลิกขวา:</color> <color:#AAAAAA>ลบไอเทมนี้</color>"
+    item_deleted: "<color:#FF5555>🗑 ลบไอเทมเรียบร้อย: <color:#FFFF55>{id}</color></color>"
+    item_given: "<color:#55FF55>✔ ได้รับไอเทมตัวอย่างเข้าตัวเรียบร้อย</color>"
+    item_edit_title: "<gradient:#00FFA3:#00B8FF><bold>กำหนดค่าไอเทมดรอป</bold></gradient>"
+    item_saved: "<color:#55FF55>✔ บันทึกไอเทม <color:#FFFF55>{id}</color> เข้าสู่ระบบสำเร็จ!</color>"
+    all_containers: "<color:#55FFFF><bold>ทุกรูปแบบกล่อง (All Boxes)</bold></color>"
+    item_preview_selected_rarity: "<color:#AAAAAA>ระดับความหายากที่เลือก: </color>{tag}<bold>{name}</bold></color>"
+    item_preview_containers: "<color:#AAAAAA>ดรอปในกล่อง: </color><color:#55FFFF>[{containers}]</color>"
+    item_preview_price: "<color:#AAAAAA>ราคาขาย: </color><color:#FFAA00>${price}</color>"
+    rarity_status_selected: "<color:#55FF55><bold>✔ [เลือกอยู่]</bold></color>"
+    rarity_status_select: "<color:#AAAAAA>คลิกเพื่อเลือกระดับนี้</color>"
+    all_containers_allowed: "<color:#55FF55><bold>✔ ดรอปได้ในทุกกล่อง</bold></color>"
+    all_containers_click: "<color:#AAAAAA>คลิกเพื่ออนุญาตให้ดรอปได้ในทุกกล่อง</color>"
+    cat_status_allowed: "<color:#55FF55>✔ ดรอปได้</color>"
+    cat_status_not_allowed: "<color:#FF5555>✖ ไม่ดรอป</color>"
+    cat_card_id: "<color:#AAAAAA>รหัสกล่อง: </color><color:#FFFF55>{id}</color>"
+    cat_card_toggle: "<color:#AAAAAA>คลิกเพื่อสลับสถานะกล่องนี้</color>"
+    btn_adjust_price: "<color:#FFAA00><bold>ปรับราคาขาย</bold></color>"
+    price_card_current: "<color:#AAAAAA>ราคาขาย: </color><color:#FFAA00><bold>${price}</bold></color>"
+    click_plus_50: "<color:#55FF55>คลิกซ้าย:</color> <color:#FFFFFF>+$50</color>"
+    click_minus_50: "<color:#FF5555>คลิกขวา:</color> <color:#FFFFFF>-$50</color>"
+    click_plus_250: "<color:#FFFF55>Shift+คลิกซ้าย:</color> <color:#FFFFFF>+$250</color>"
+    click_minus_250: "<color:#FFAA00>Shift+คลิกขวา:</color> <color:#FFFFFF>-$250</color>"
+    save_item_lore_1: "<color:#AAAAAA>บันทึกไอเทมนี้เข้าสู่ฐานข้อมูลระบบการสกัด</color>"
+    save_item_lore_action: "<color:#55FF55>▶ คลิกเพื่อบันทึกและเสร็จสิ้น</color>"
+    btn_open_dialog: "<color:#55FFFF><bold>แก้ไขผ่านหน้าต่าง Dialog</bold></color>"
+    open_dialog_lore: "<color:#AAAAAA>คลิกเพื่อกำหนดรหัส, ชื่อ, Lore, ระดับความหายาก และราคาใน Dialog</color>"
   missing_category: |
     <color:#FF5555>❌ กรุณาระบุหมวดหมู่!</color>
     <color:#FFFF55>วิธีใช้: </color><color:#FFFFFF>/{label} editor createitem <หมวดหมู่></color>
@@ -184,50 +283,65 @@ editor:
 # -------------------------------------------------------------------------
 dialog:
   category:
-    title: "เครื่องมือแก้ไขหมวดหมู่คอนเทนเนอร์"
-    body: "<color:#AAAAAA>ตั้งค่าคุณสมบัติการสุ่มไอเทมและชื่อสำหรับหมวดหมู่นี้</color>"
-    input_id: "รหัสหมวดหมู่"
-    input_display_name: "ชื่อแสดงผลหมวดหมู่"
-    input_min_rolls: "จำนวนสุ่มขั้นต่ำ"
-    input_max_rolls: "จำนวนสุ่มสูงสุด"
+    title: "เครื่องมือแก้ไขหมวดหมู่กล่องดรอป"
+    body: "<color:#AAAAAA>ตั้งค่าคุณสมบัติการสุ่มไอเทม ชื่อแสดงผล และโอกาสดรอปสำหรับกล่องนี้</color>"
+    input_id: "รหัสเฉพาะของกล่อง (Container ID)"
+    input_display_name: "ชื่อแสดงผลกล่อง (รองรับสี/โค้ดสี)"
+    input_min_rolls: "จำนวนสุ่มไอเทมขั้นต่ำ (พิมพ์ตัวเลข)"
+    input_max_rolls: "จำนวนสุ่มไอเทมสูงสุด (พิมพ์ตัวเลข)"
+    input_weight_common: "โอกาสดรอป Common (%)"
+    input_weight_uncommon: "โอกาสดรอป Uncommon (%)"
+    input_weight_rare: "โอกาสดรอป Rare (%)"
+    input_weight_epic: "โอกาสดรอป Epic (%)"
+    input_weight_legendary: "โอกาสดรอป Legendary (%)"
+    input_pct_common: "โอกาสดรอป Common (%)"
+    input_pct_uncommon: "โอกาสดรอป Uncommon (%)"
+    input_pct_rare: "โอกาสดรอป Rare (%)"
+    input_pct_epic: "โอกาสดรอป Epic (%)"
+    input_pct_legendary: "โอกาสดรอป Legendary (%)"
     default_display: "<gradient:#FFAA00:#FF5555>กล่องเสบียงทางทหาร</gradient>"
-    btn_save: "✔ บันทึกหมวดหมู่"
-    tooltip_save: "สร้างและบันทึกหมวดหมู่คอนเทนเนอร์ลงระบบ"
+    btn_save: "✔ บันทึกการตั้งค่ากล่อง"
+    tooltip_save: "บันทึกและจัดเก็บข้อมูลกล่องดรอปลงระบบ"
     btn_cancel: "✖ ยกเลิก"
     tooltip_cancel: "ปิดหน้าต่างโดยไม่บันทึก"
-    error_empty_id: "<color:#FF5555>❌ รหัสหมวดหมู่ต้องไม่เว้นว่าง!</color>"
+    error_empty_id: "<color:#FF5555>❌ รหัสกล่องดรอปต้องไม่เว้นว่าง!</color>"
     success: |
       <color:#555555>----------------------------------------</color>
-      <gradient:#00FFA3:#00B8FF><bold>✔ สร้างหมวดหมู่สำเร็จแล้ว</bold></gradient>
+      <gradient:#00FFA3:#00B8FF><bold>✔ บันทึกกล่องดรอปสำเร็จแล้ว</bold></gradient>
       <color:#AAAAAA>รหัส:         </color><color:#FFFF55>{id}</color>
       <color:#AAAAAA>ชื่อแสดงผล:   </color><color:#FFFFFF>{display_name}</color>
-      <color:#AAAAAA>จำนวนสุ่มขั้นต่ำ: </color><color:#55FF55>{min_rolls}</color>
-      <color:#AAAAAA>จำนวนสุ่มสูงสุด: </color><color:#55FF55>{max_rolls}</color>
+      <color:#AAAAAA>สุ่มขั้นต่ำ:     </color><color:#55FF55>{min_rolls}</color>
+      <color:#AAAAAA>สุ่มสูงสุด:     </color><color:#55FF55>{max_rolls}</color>
+      <color:#AAAAAA>โอกาสดรอป (%): </color><color:#AAAAAA>C:{wc}% | U:{wu}% | R:{wr}% | E:{we}% | L:{wl}%</color>
       <color:#555555>----------------------------------------</color>
-    cancelled: "<color:#AAAAAA>ยกเลิกการสร้างหมวดหมู่แล้ว</color>"
+    cancelled: "<color:#AAAAAA>ยกเลิกการแก้ไขกล่องดรอปแล้ว</color>"
   item:
-    title: "เครื่องมือลงทะเบียนไอเทม"
-    body: "<color:#AAAAAA>กำลังตั้งค่าไอเทม: </color><color:#FFFF55>{material}</color><color:#AAAAAA> สำหรับหมวดหมู่: </color><color:#55FFFF>{category}</color>"
-    input_id: "รหัสเฉพาะของไอเทม"
-    input_display_name: "ชื่อแสดงผลแบบกำหนดเอง"
-    input_price: "ราคาขาย"
-    input_weight: "น้ำหนักโอกาสสุ่ม (Weight)"
-    btn_save: "✔ ลงทะเบียนไอเทม"
+    title: "เครื่องมือแก้ไขไอเทมดรอป"
+    body: "<color:#AAAAAA>กำลังตั้งค่าไอเทม: </color><color:#FFFF55>{material}</color><color:#AAAAAA> สำหรับกล่อง: </color><color:#55FFFF>{category}</color>"
+    input_id: "รหัสเฉพาะของไอเทม (Item ID)"
+    input_display_name: "ชื่อแสดงผลไอเทม (รองรับสี)"
+    input_lore: "คำอธิบายไอเทม (Lore บรรทัดใหม่หรือ \\n)"
+    input_rarity: "ระดับความหายาก (Rarity)"
+    input_price: "ราคาขาย ($ พิมพ์ตัวเลข)"
+    input_weight: "โอกาสดรอป (%) (Drop Chance)"
+    input_chance: "โอกาสดรอป (%) (Drop Chance)"
+    input_containers: "กล่องที่ดรอป (คั่นด้วยจุลภาค หรือเว้นว่าง = ทุกกล่อง)"
+    btn_save: "✔ บันทึกไอเทม"
     tooltip_save: "บันทึกไอเทมเข้าสู่ฐานข้อมูลการสกัด"
     btn_cancel: "✖ ยกเลิก"
     tooltip_cancel: "ปิดหน้าต่างโดยไม่บันทึก"
     error_empty_id: "<color:#FF5555>❌ รหัสไอเทมต้องไม่เว้นว่าง!</color>"
     success: |
       <color:#555555>----------------------------------------</color>
-      <gradient:#00FFA3:#00B8FF><bold>✔ ลงทะเบียนไอเทมสำเร็จแล้ว</bold></gradient>
+      <gradient:#00FFA3:#00B8FF><bold>✔ บันทึกไอเทมสำเร็จแล้ว</bold></gradient>
       <color:#AAAAAA>รหัส:         </color><color:#FFFF55>{id}</color>
       <color:#AAAAAA>ชื่อแสดงผล:   </color>{display_name}
-      <color:#AAAAAA>หมวดหมู่:     </color><color:#55FFFF>{category}</color>
+      <color:#AAAAAA>ดรอปในกล่อง:  </color><color:#55FFFF>{category}</color>
       <color:#AAAAAA>ราคาขาย:     </color><color:#FFAA00>${price}</color>
-      <color:#AAAAAA>น้ำหนักโอกาสสุ่ม: </color><color:#FFFF55>{weight}</color>
+      <color:#AAAAAA>โอกาสดรอป:   </color><color:#FFFF55>{weight}%</color>
       <color:#AAAAAA>ระดับความหายาก: </color>{rarity_tag}{rarity}</color>
       <color:#555555>----------------------------------------</color>
-    cancelled: "<color:#AAAAAA>ยกเลิกการลงทะเบียนไอเทมแล้ว</color>"
+    cancelled: "<color:#AAAAAA>ยกเลิกการตั้งค่าไอเทมแล้ว</color>"
 
 # -------------------------------------------------------------------------
 # ส่วนที่ 7: เครื่องมือมาร์กเกอร์คอนเทนเนอร์ (Tool)

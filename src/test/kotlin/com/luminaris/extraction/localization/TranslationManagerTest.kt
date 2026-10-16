@@ -1,5 +1,7 @@
 package com.luminaris.extraction.localization
 
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.InputStreamReader
@@ -173,6 +175,39 @@ class TranslationManagerTest {
         assertEquals("<#112233>Spigot", TranslationManager.legacyToMiniMessage("&x&1&1&2&2&3&3Spigot"))
         assertEquals("<bold><gold>Gold", TranslationManager.legacyToMiniMessage("&l&6Gold"))
         assertEquals("<gradient:#123456:#654321>Gradient</gradient>", TranslationManager.legacyToMiniMessage("<gradient:#123456:#654321>Gradient</gradient>"))
+    }
+
+    @Test
+    fun testEditorAndDialogTranslationKeys() {
+        TranslationManager.setLanguage("en")
+        assertEquals("Container Category Editor", TranslationManager.get("dialog.category.title"))
+        assertEquals("Container ID", TranslationManager.get("dialog.category.input_id"))
+        assertEquals("Drop Items Registry", PlainTextComponentSerializer.plainText().serialize(TranslationManager.render("editor.gui.btn_items")))
+
+        TranslationManager.setLanguage("th")
+        assertEquals("เครื่องมือแก้ไขหมวดหมู่กล่องดรอป", TranslationManager.get("dialog.category.title"))
+        assertEquals("รหัสเฉพาะของกล่อง (Container ID)", TranslationManager.get("dialog.category.input_id"))
+        assertEquals("รหัสเฉพาะของไอเทม (Item ID)", TranslationManager.get("dialog.item.input_id"))
+        assertEquals("คำอธิบายไอเทม (Lore บรรทัดใหม่หรือ \\n)", TranslationManager.get("dialog.item.input_lore"))
+        assertTrue(TranslationManager.get("editor.gui.btn_items").contains("คลังไอเทมดรอป"))
+
+        // Test serializeComponent
+        val testComp = TranslationManager.parseComponent("<color:#FFFF55>Test</color>")
+        val serialized = TranslationManager.serializeComponent(testComp)
+        assertTrue(serialized.contains("Test"))
+    }
+
+    @Test
+    fun testSendLinesDispatchesEachLineIndependently() {
+        val received = mutableListOf<Component>()
+        val mockAudience = object : Audience {
+            override fun sendMessage(message: Component) {
+                received.add(message)
+            }
+        }
+
+        TranslationManager.sendLines(mockAudience, "banner.shutdown")
+        assertTrue(received.size >= 3, "Expected multiple lines dispatched independently, but got ${received.size}")
     }
 
     @kotlin.test.AfterTest

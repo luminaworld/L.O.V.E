@@ -65,23 +65,17 @@ general:
 # ข้อความ ASCII Art และข้อมูลโมดูลที่แสดงบนคอนโซลขณะเซิร์ฟเวอร์เปิดหรือปิด
 # -------------------------------------------------------------------------
 banner:
-  platform:
-    folia: "<gradient:#FF0055:#FFAA00><bold>FOLIA</bold></gradient> <color:#AAAAAA>(Regionized Multi-Threaded)</color>"
-    paper: "<gradient:#00D2FF:#3A7BD5><bold>PAPER</bold></gradient> <color:#AAAAAA>(Universal Regional Scheduler)</color>"
   startup: |
-    
-    <gradient:#00FFA3:#00B8FF><bold> __         ______     __   __     ______    </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold>/\ \       /\  __ \   /\ \ / /    /\  ___\   </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold>\ \ \____  \ \ \/\ \  \ \ \'/     \ \  __\   </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold> \ \_____\  \ \_____\  \ \__|      \ \_____\ </bold></gradient>
-    <gradient:#00FFA3:#00B8FF><bold>  \/_____/   \/_____/   \/_/        \/_____/ </bold></gradient>
-    <color:#555555>================================================================</color>
     <gradient:#00FFA3:#00B8FF><bold> LUMINARIS OPERATION VANILLA EXTRACTION (L.O.V.E) </bold></gradient>
+    <color:#555555>================================================================</color>
+    <gradient:#00FFA3:#00B8FF><bold>        __         ______     __   __     ______    </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>       /\ \       /\  __ \   /\ \ / /    /\  ___\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>       \ \ \____  \ \ \/\ \  \ \ \'/     \ \  __\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>        \ \_____\  \ \_____\  \ \__|      \ \_____\ </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>         \/_____/   \/_____/   \/_/        \/_____/ </bold></gradient>
+    <color:#555555>================================================================</color>
     <color:#AAAAAA> Core Engine Version: </color><color:#55FFFF>{version}</color>
-    <color:#AAAAAA> Target Runtime:      </color><color:#FFFF55>JVM {jvm}</color>
-    <color:#AAAAAA> Engine Platform:    </color>{platform}
-    <color:#AAAAAA> Loaded Modules:      </color><color:#55FF55>Storage</color>, <color:#55FF55>ItemRegistry</color>, <color:#55FF55>ContainerRegistry</color>, <color:#55FF55>SafeContainerManager</color>, <color:#55FF55>TemplateStorage</color>, <color:#55FF55>ContainerMarker</color>, <color:#55FF55>NativeDialogUI</color>, <color:#55FF55>EditorCommand</color>, <color:#55FF55>InstanceWorldService</color>, <color:#55FF55>LootPopulator</color>, <color:#55FF55>SpawnAllocator</color>, <color:#55FF55>ExtractionMatrix</color>, <color:#55FF55>MatchEngine</color>, <color:#55FF55>CorpseManager</color>
-    <color:#AAAAAA> Status:              </color><color:#55FF55><bold>ACTIVE & READY</bold></color>
+    <color:#AAAAAA> Status:              </color><color:#55FF55><bold>ACTIVE</bold></color>
     <color:#555555>================================================================</color>
   shutdown: |
     <color:#555555>================================================================</color>
@@ -102,6 +96,8 @@ command:
     title: "<gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION ENGINE STATUS</bold></gradient>"
     version: "<color:#AAAAAA>Version:</color> <color:#FFFFFF>{version}</color>"
     threading: "<color:#AAAAAA>Threading Model:</color> {platform}"
+    platform_folia: "<gradient:#FF0055:#FFAA00><bold>FOLIA</bold></gradient> <color:#AAAAAA>(Regionized Multi-Threaded)</color>"
+    platform_paper: "<gradient:#00D2FF:#3A7BD5><bold>PAPER</bold></gradient> <color:#AAAAAA>(Universal Regional Scheduler)</color>"
     items: "<color:#AAAAAA>Active Extraction Items:</color> <color:#FFFF55>{count}</color>"
     categories: "<color:#AAAAAA>Container Categories:</color> <color:#FFFF55>{count}</color>"
     cases: "<color:#AAAAAA>Safe Container Profiles:</color> <color:#FFFF55>{count}</color>"
@@ -115,9 +111,7 @@ command:
     chest_list: "<color:#FFFF55>/ext chest list</color>                    <color:#AAAAAA>- View registered template container markers</color>"
     case_list: "<color:#FFFF55>/ext case list</color>                      <color:#AAAAAA>- List all configured Safe Containers</color>"
     case_give: "<color:#FFFF55>/ext case give <player> <id></color>       <color:#AAAAAA>- Give a Safe Container to a player</color>"
-    editor_createitem: "<color:#FFFF55>/ext editor createitem <cat></color>       <color:#AAAAAA>- Register held item via Native Dialog UI</color>"
-    editor_createcategory: "<color:#FFFF55>/ext editor createcategory</color>         <color:#AAAAAA>- Configure loot category via Dialog UI</color>"
-    editor_list: "<color:#FFFF55>/ext editor list</color>                   <color:#AAAAAA>- List registered items and categories</color>"
+    editor: "<color:#FFFF55>/ext editor</color>                          <color:#AAAAAA>- Open In-Game Extraction Editor GUI</color>"
     status: "<color:#FFFF55>/ext status</color>                        <color:#AAAAAA>- View active core engine telemetry & threading model</color>"
     reload: "<color:#FFFF55>/ext reload</color>                        <color:#AAAAAA>- Hot-reload items, categories, templates, safe cases</color>"
     help: "<color:#FFFF55>/ext help</color>                          <color:#AAAAAA>- Display extraction command manual</color>"
@@ -153,7 +147,111 @@ command:
 # -------------------------------------------------------------------------
 editor:
   no_permission: "<color:#FF5555>❌ You do not have permission to access the extraction editor.</color>"
-  unknown_subcommand: "<color:#FF5555>Unknown editor subcommand: <color:#FFFF55>{subcommand}</color>.</color> <color:#FFFF55>Use </color><color:#55FFFF>/{label} editor help</color><color:#FFFF55> for manual.</color>"
+  unknown_subcommand: "<color:#FF5555>Unknown editor subcommand: <color:#FFFF55>{subcommand}</color>.</color> <color:#FFFF55>Use </color><color:#55FFFF>/{label} editor</color><color:#FFFF55> to open the editor.</color>"
+  gui:
+    main_title: "<gradient:#00FFA3:#00B8FF><bold>EXTRACTION EDITOR HUB</bold></gradient>"
+    btn_containers: "<gradient:#FFAA00:#FF5500><bold>Box & Container Types</bold></gradient>"
+    containers_lore_1: "<color:#AAAAAA>Manage box types (Normal Crate, Airdrop, Safe)</color>"
+    containers_lore_2: "<color:#AAAAAA>Configure item drop counts & drop chance % per rarity</color>"
+    containers_lore_total: "<color:#FFFF55>Total Registered: </color><color:#55FFFF>{count}</color>"
+    containers_lore_action: "<color:#55FF55>▶ Click to open Container Manager</color>"
+    btn_items: "<gradient:#00FFA3:#00B8FF><bold>Drop Items Registry</bold></gradient>"
+    items_lore_1: "<color:#AAAAAA>Manage all items that drop from extraction containers.</color>"
+    items_lore_2: "<color:#AAAAAA>Add items from inventory, configure rarity & container tags.</color>"
+    items_lore_total: "<color:#FFFF55>Total Registered: </color><color:#55FFFF>{count}</color>"
+    items_lore_action: "<color:#55FF55>▶ Click to open Item Manager</color>"
+    btn_reload: "<color:#FFFF55><bold>Reload System</bold></color>"
+    reload_lore_1: "<color:#AAAAAA>Hot-reloads categories.yml, items.yml, and translations.</color>"
+    reload_lore_action: "<color:#55FF55>▶ Click to reload configurations</color>"
+    reload_success: "<color:#55FF55>✔ Configurations reloaded successfully!</color>"
+    btn_close: "<color:#FF5555><bold>Close Menu</bold></color>"
+    btn_back: "<color:#FFFF55><bold>◀ Back</bold></color>"
+    btn_next_page: "<color:#55FFFF><bold>Next Page ▶</bold></color>"
+    btn_prev_page: "<color:#55FFFF><bold>◀ Previous Page</bold></color>"
+    page_info: "<color:#AAAAAA>Page </color><color:#FFFF55>{current}</color><color:#AAAAAA> / </color><color:#55FFFF>{total}</color>"
+    containers_title: "<gradient:#FFAA00:#FF5500><bold>Container Types Manager</bold></gradient>"
+    btn_add_container: "<gradient:#00FFA3:#00B8FF><bold>+ Create New Container Type</bold></gradient>"
+    container_add_lore_1: "<color:#AAAAAA>Click to create a new container type.</color>"
+    container_add_lore_action: "<color:#55FF55>▶ Click to create</color>"
+    container_card_id: "<color:#AAAAAA>ID: </color><color:#FFFF55>{id}</color>"
+    container_card_rolls: "<color:#AAAAAA>Item Drop Rolls: </color><color:#55FF55>{min} - {max} items</color>"
+    container_card_linked: "<color:#AAAAAA>Linked Eligible Items: </color><color:#55FFFF>{count} items</color>"
+    container_card_rarity_header: "<color:#FFAA00><bold>Rarity Drop Chances:</bold></color>"
+    container_card_rarity_entry: "{tag}▪ {name}: </color><color:#FFFFFF>{pct}%</color> <color:#555555>(W: {weight})</color>"
+    container_card_click_edit: "<color:#55FF55>Left-Click:</color> <color:#AAAAAA>Edit Settings & Chances (Dialog)</color>"
+    container_card_click_marker: "<color:#55FFFF>Right-Click:</color> <color:#AAAAAA>Get Marker Block</color>"
+    container_card_click_delete: "<color:#FF5555>Shift-Right-Click:</color> <color:#AAAAAA>Delete Container Type</color>"
+    container_created: "<color:#55FF55>✔ Created container type: <color:#FFFF55>{id}</color></color>"
+    container_deleted: "<color:#FF5555>🗑 Deleted container type: <color:#FFFF55>{id}</color></color>"
+    container_edit_title: "<gradient:#FFAA00:#FF5500><bold>Edit Container: {id}</bold></gradient>"
+    btn_marker_tool: "<color:#55FFFF><bold>Get Marker Block</bold></color>"
+    marker_tool_lore_1: "<color:#AAAAAA>Click to receive container marker block for placing.</color>"
+    marker_tool_lore_action: "<color:#55FF55>▶ Click to get block in inventory</color>"
+    marker_tool_given: "<color:#55FF55>✔ Received container marker block for </color><color:#FFFF55>{id}</color>"
+    btn_delete_container: "<color:#FF5555><bold>Delete Container Type</bold></color>"
+    delete_container_lore_1: "<color:#AAAAAA>Shift-Click to permanently delete this container.</color>"
+    delete_container_lore_action: "<color:#FF5555>⚠ Shift-Click to Delete</color>"
+    min_rolls_title: "<color:#FFFF55><bold>Min Item Drops: </bold></color><color:#55FF55><bold>{count}</bold></color>"
+    min_rolls_lore_1: "<color:#AAAAAA>Minimum number of items rolled per container.</color>"
+    max_rolls_title: "<color:#FFFF55><bold>Max Item Drops: </bold></color><color:#55FF55><bold>{count}</bold></color>"
+    max_rolls_lore_1: "<color:#AAAAAA>Maximum number of items rolled per container.</color>"
+    click_plus_1: "<color:#55FF55>Left-Click:</color> <color:#FFFFFF>+1</color>"
+    click_minus_1: "<color:#FF5555>Right-Click:</color> <color:#FFFFFF>-1</color>"
+    click_plus_5: "<color:#FFFF55>Shift-Left-Click:</color> <color:#FFFFFF>+5</color>"
+    click_minus_5: "<color:#FFAA00>Shift-Right-Click:</color> <color:#FFFFFF>-5</color>"
+    rarity_rates_header: "<gradient:#00FFA3:#00B8FF><bold>Rarity Drop Chances & Rates</bold></gradient>"
+    rarity_rates_desc: "<color:#AAAAAA>Adjust relative weight and drop probability percentage for each rarity tier.</color>"
+    rarity_card_chance: "<color:#AAAAAA>Calculated Drop Chance: </color><color:#FFFF55><bold>{pct}%</bold></color>"
+    rarity_card_weight: "<color:#AAAAAA>Current Roll Weight: </color><color:#FFFFFF>{weight}</color>"
+    rarity_card_items: "<color:#AAAAAA>Registered Items: </color><color:#55FFFF>{count} items</color>"
+    rarity_card_plus_5: "<color:#55FF55>Left-Click:</color> <color:#FFFFFF>+5 Weight</color>"
+    rarity_card_minus_5: "<color:#FF5555>Right-Click:</color> <color:#FFFFFF>-5 Weight</color>"
+    rarity_card_plus_20: "<color:#FFFF55>Shift-Left-Click:</color> <color:#FFFFFF>+20 Weight</color>"
+    rarity_card_disable: "<color:#FFAA00>Shift-Right-Click:</color> <color:#FFFFFF>Set to 0 (Disable)</color>"
+    btn_save: "<gradient:#00FFA3:#00B8FF><bold>✔ Save & Return</bold></gradient>"
+    items_title: "<gradient:#00FFA3:#00B8FF><bold>Drop Items Registry ({count})</bold></gradient>"
+    btn_add_item: "<gradient:#00FFA3:#00B8FF><bold>+ Add New Drop Item</bold></gradient>"
+    item_add_lore_1: "<color:#AAAAAA>Click here, then click any item in your</color>"
+    item_add_lore_2: "<color:#AAAAAA>inventory to add it as a drop item!</color>"
+    item_add_lore_action: "<color:#55FF55>▶ Click to select item from inventory</color>"
+    item_selector_title: "<gradient:#00FFA3:#00B8FF><bold>Click Item in Inventory Below</bold></gradient>"
+    item_selector_hint: "<gradient:#00FFA3:#00B8FF><bold>▼ CLICK ITEM IN INVENTORY BELOW ▼</bold></gradient>"
+    item_selector_hint_1: "<color:#AAAAAA>Click ANY item in your inventory below to add it!</color>"
+    item_selector_hint_2: "<color:#AAAAAA>Or click an item on your cursor onto this slot.</color>"
+    item_selector_hint_3: "<color:#555555>100% of custom lore, components, and NBT will be saved.</color>"
+    item_card_id: "<color:#AAAAAA>ID: </color><color:#FFFF55>{id}</color>"
+    item_card_rarity: "<color:#AAAAAA>Rarity: </color>{tag}{name}</color>"
+    item_card_price: "<color:#AAAAAA>Sell Price: </color><color:#FFAA00>${price}</color>"
+    item_card_containers: "<color:#AAAAAA>Allowed In: </color><color:#55FFFF>[{containers}]</color>"
+    item_card_click_edit: "<color:#55FF55>Left-Click:</color> <color:#AAAAAA>Edit Item Properties (Dialog)</color>"
+    item_card_click_copy: "<color:#55FFFF>Right-Click:</color> <color:#AAAAAA>Get a copy to hand</color>"
+    item_card_click_delete: "<color:#FF5555>Shift-Right-Click:</color> <color:#AAAAAA>Delete this item</color>"
+    item_deleted: "<color:#FF5555>🗑 Removed item: <color:#FFFF55>{id}</color></color>"
+    item_given: "<color:#55FF55>✔ Gave copy of item to inventory.</color>"
+    item_edit_title: "<gradient:#00FFA3:#00B8FF><bold>Configure Drop Item</bold></gradient>"
+    item_saved: "<color:#55FF55>✔ Item <color:#FFFF55>{id}</color> successfully saved to registry!</color>"
+    all_containers: "<color:#55FFFF><bold>All Containers (All Boxes)</bold></color>"
+    item_preview_selected_rarity: "<color:#AAAAAA>Selected Rarity: </color>{tag}<bold>{name}</bold></color>"
+    item_preview_containers: "<color:#AAAAAA>Drops In Containers: </color><color:#55FFFF>[{containers}]</color>"
+    item_preview_price: "<color:#AAAAAA>Sell Price: </color><color:#FFAA00>${price}</color>"
+    rarity_status_selected: "<color:#55FF55><bold>✔ [SELECTED]</bold></color>"
+    rarity_status_select: "<color:#AAAAAA>Click to select this rarity</color>"
+    all_containers_allowed: "<color:#55FF55><bold>✔ ALLOWED IN ALL BOXES</bold></color>"
+    all_containers_click: "<color:#AAAAAA>Click to allow in ALL box types</color>"
+    cat_status_allowed: "<color:#55FF55>✔ ALLOWED</color>"
+    cat_status_not_allowed: "<color:#FF5555>✖ NOT ALLOWED</color>"
+    cat_card_id: "<color:#AAAAAA>Container ID: </color><color:#FFFF55>{id}</color>"
+    cat_card_toggle: "<color:#AAAAAA>Click to toggle this container</color>"
+    btn_adjust_price: "<color:#FFAA00><bold>Adjust Price</bold></color>"
+    price_card_current: "<color:#AAAAAA>Sell Price: </color><color:#FFAA00><bold>${price}</bold></color>"
+    click_plus_50: "<color:#55FF55>Left-Click:</color> <color:#FFFFFF>+$50</color>"
+    click_minus_50: "<color:#FF5555>Right-Click:</color> <color:#FFFFFF>-$50</color>"
+    click_plus_250: "<color:#FFFF55>Shift-Left-Click:</color> <color:#FFFFFF>+$250</color>"
+    click_minus_250: "<color:#FFAA00>Shift-Right-Click:</color> <color:#FFFFFF>-$250</color>"
+    save_item_lore_1: "<color:#AAAAAA>Save this item to the extraction engine registry.</color>"
+    save_item_lore_action: "<color:#55FF55>▶ Click to Save & Finish</color>"
+    btn_open_dialog: "<color:#55FFFF><bold>Edit in Dialog Window</bold></color>"
+    open_dialog_lore: "<color:#AAAAAA>Click to configure ID, name, lore, rarity, and price in Dialog</color>"
   missing_category: |
     <color:#FF5555>❌ Missing category argument!</color>
     <color:#FFFF55>Usage: </color><color:#FFFFFF>/{label} editor createitem <category></color>
@@ -190,11 +288,21 @@ editor:
 dialog:
   category:
     title: "Container Category Editor"
-    body: "<color:#AAAAAA>Configure loot roll properties and naming for this container category.</color>"
-    input_id: "Category ID"
-    input_display_name: "Category Display Name"
-    input_min_rolls: "Min Rolls"
-    input_max_rolls: "Max Rolls"
+    body: "<color:#AAAAAA>Configure loot roll properties, naming, and drop chances for this container category.</color>"
+    input_id: "Container ID"
+    input_display_name: "Display Name (MiniMessage/Colors)"
+    input_min_rolls: "Min Item Rolls (Enter number)"
+    input_max_rolls: "Max Item Rolls (Enter number)"
+    input_weight_common: "Common Drop Chance (%)"
+    input_weight_uncommon: "Uncommon Drop Chance (%)"
+    input_weight_rare: "Rare Drop Chance (%)"
+    input_weight_epic: "Epic Drop Chance (%)"
+    input_weight_legendary: "Legendary Drop Chance (%)"
+    input_pct_common: "Common Drop Chance (%)"
+    input_pct_uncommon: "Uncommon Drop Chance (%)"
+    input_pct_rare: "Rare Drop Chance (%)"
+    input_pct_epic: "Epic Drop Chance (%)"
+    input_pct_legendary: "Legendary Drop Chance (%)"
     default_display: "<gradient:#FFAA00:#FF5555>Military Supply Crate</gradient>"
     btn_save: "✔ Save Category"
     tooltip_save: "Create and persist container category"
@@ -203,36 +311,41 @@ dialog:
     error_empty_id: "<color:#FF5555>❌ Category ID cannot be empty!</color>"
     success: |
       <color:#555555>----------------------------------------</color>
-      <gradient:#00FFA3:#00B8FF><bold>✔ CATEGORY CREATED SUCCESSFULLY</bold></gradient>
+      <gradient:#00FFA3:#00B8FF><bold>✔ CATEGORY SAVED SUCCESSFULLY</bold></gradient>
       <color:#AAAAAA>ID:           </color><color:#FFFF55>{id}</color>
       <color:#AAAAAA>Display Name: </color><color:#FFFFFF>{display_name}</color>
       <color:#AAAAAA>Min Rolls:    </color><color:#55FF55>{min_rolls}</color>
       <color:#AAAAAA>Max Rolls:    </color><color:#55FF55>{max_rolls}</color>
+      <color:#AAAAAA>Chances (%):  </color><color:#AAAAAA>C:{wc}% | U:{wu}% | R:{wr}% | E:{we}% | L:{wl}%</color>
       <color:#555555>----------------------------------------</color>
-    cancelled: "<color:#AAAAAA>Category creation cancelled.</color>"
+    cancelled: "<color:#AAAAAA>Category configuration cancelled.</color>"
   item:
     title: "Item Registry Editor"
-    body: "<color:#AAAAAA>Configuring item: </color><color:#FFFF55>{material}</color><color:#AAAAAA> for category: </color><color:#55FFFF>{category}</color>"
+    body: "<color:#AAAAAA>Configuring item: </color><color:#FFFF55>{material}</color><color:#AAAAAA> for container: </color><color:#55FFFF>{category}</color>"
     input_id: "Unique Item ID"
     input_display_name: "Custom Display Name"
-    input_price: "Sell Price"
-    input_weight: "Drop Weight"
-    btn_save: "✔ Register Item"
+    input_lore: "Item Lore (newlines or \\n supported)"
+    input_rarity: "Rarity Tier"
+    input_price: "Sell Price ($ Enter number)"
+    input_weight: "Drop Chance (%)"
+    input_chance: "Drop Chance (%)"
+    input_containers: "Allowed Containers (comma-separated or empty for ALL)"
+    btn_save: "✔ Save Item"
     tooltip_save: "Save item to extraction registry"
     btn_cancel: "✖ Cancel"
     tooltip_cancel: "Close dialog without saving"
     error_empty_id: "<color:#FF5555>❌ Item ID cannot be empty!</color>"
     success: |
       <color:#555555>----------------------------------------</color>
-      <gradient:#00FFA3:#00B8FF><bold>✔ ITEM REGISTERED SUCCESSFULLY</bold></gradient>
+      <gradient:#00FFA3:#00B8FF><bold>✔ ITEM SAVED SUCCESSFULLY</bold></gradient>
       <color:#AAAAAA>ID:           </color><color:#FFFF55>{id}</color>
       <color:#AAAAAA>Display Name: </color>{display_name}
       <color:#AAAAAA>Category:     </color><color:#55FFFF>{category}</color>
       <color:#AAAAAA>Sell Price:   </color><color:#FFAA00>${price}</color>
-      <color:#AAAAAA>Drop Weight:  </color><color:#FFFF55>{weight}</color>
+      <color:#AAAAAA>Drop Chance:  </color><color:#FFFF55>{weight}%</color>
       <color:#AAAAAA>Rarity:       </color>{rarity_tag}{rarity}</color>
       <color:#555555>----------------------------------------</color>
-    cancelled: "<color:#AAAAAA>Item registration cancelled.</color>"
+    cancelled: "<color:#AAAAAA>Item configuration cancelled.</color>"
 
 # -------------------------------------------------------------------------
 # ส่วนที่ 7: เครื่องมือมาร์กเกอร์คอนเทนเนอร์ (Tool)

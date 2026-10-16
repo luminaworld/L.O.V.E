@@ -40,9 +40,9 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
 
             "status" -> {
                 val platformName = if (FoliaScheduler.isFolia) {
-                    TranslationManager.get("banner.platform.folia")
+                    TranslationManager.get("command.status.platform_folia")
                 } else {
-                    TranslationManager.get("banner.platform.paper")
+                    TranslationManager.get("command.status.platform_paper")
                 }
                 val itemsCount = plugin.itemRegistry.getAllItems().size
                 val categoriesCount = plugin.containerRegistry.getAllCategories().size
@@ -264,9 +264,7 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
         sb.append(TranslationManager.get("command.help.chest_list")).append("\n")
         sb.append(TranslationManager.get("command.help.case_list")).append("\n")
         sb.append(TranslationManager.get("command.help.case_give")).append("\n")
-        sb.append(TranslationManager.get("command.help.editor_createitem")).append("\n")
-        sb.append(TranslationManager.get("command.help.editor_createcategory")).append("\n")
-        sb.append(TranslationManager.get("command.help.editor_list")).append("\n")
+        sb.append(TranslationManager.get("command.help.editor")).append("\n")
         sb.append(TranslationManager.get("command.help.status")).append("\n")
         sb.append(TranslationManager.get("command.help.reload")).append("\n")
         sb.append(TranslationManager.get("command.help.help")).append("\n")

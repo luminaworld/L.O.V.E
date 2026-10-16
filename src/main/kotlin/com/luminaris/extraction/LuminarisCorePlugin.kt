@@ -56,6 +56,9 @@ class LuminarisCorePlugin : JavaPlugin() {
     lateinit var editorCommand: com.luminaris.extraction.editor.EditorCommand
         private set
 
+    lateinit var editorGuiListener: com.luminaris.extraction.editor.gui.EditorGuiListener
+        private set
+
     lateinit var templateStorage: com.luminaris.extraction.storage.TemplateStorage
         private set
 
@@ -166,6 +169,9 @@ class LuminarisCorePlugin : JavaPlugin() {
         containerMarkerListener = com.luminaris.extraction.editor.listeners.ContainerMarkerListener(this, templateStorage)
         server.pluginManager.registerEvents(containerMarkerListener, this)
 
+        editorGuiListener = com.luminaris.extraction.editor.gui.EditorGuiListener(this)
+        server.pluginManager.registerEvents(editorGuiListener, this)
+
         editorCommand = com.luminaris.extraction.editor.EditorCommand(this)
 
         instanceWorldService = com.luminaris.extraction.core.world.InstanceWorldService(this, scheduler)
@@ -226,31 +232,25 @@ class LuminarisCorePlugin : JavaPlugin() {
     }
 
     /**
-     * Prints the MiniMessage startup banner to the console.
+     * Prints the MiniMessage startup banner to the console line by line
+     * so each line displays with the standard server timestamp and log prefix.
      */
     private fun renderStartupBanner() {
-        val platformLabel = if (FoliaScheduler.isFolia) {
-            translationManager.getRaw("banner.platform.folia")
-        } else {
-            translationManager.getRaw("banner.platform.paper")
-        }
-
-        val jvmVersion = System.getProperty("java.version")
-        val banner = translationManager.render(
+        translationManager.sendLines(
+            Bukkit.getConsoleSender(),
             "banner.startup",
-            "version" to pluginMeta.version,
-            "jvm" to jvmVersion,
-            "platform" to platformLabel
+            "version" to pluginMeta.version
         )
-
-        Bukkit.getConsoleSender().sendMessage(banner)
     }
 
     /**
-     * Prints graceful shutdown notification to console.
+     * Prints graceful shutdown notification to console line by line
+     * so each line displays with the standard server timestamp and log prefix.
      */
     private fun renderShutdownBanner() {
-        val shutdownMessage = translationManager.render("banner.shutdown")
-        Bukkit.getConsoleSender().sendMessage(shutdownMessage)
+        translationManager.sendLines(
+            Bukkit.getConsoleSender(),
+            "banner.shutdown"
+        )
     }
 }

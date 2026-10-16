@@ -203,8 +203,8 @@ class LootPopulator(
             return true
         }
 
-        // Execute Cumulative Weight Selection
-        val rolledStacks = rollWeightedItems(candidateItems, rolls)
+        // Execute Cumulative Weight Selection respecting Container Category rarity drop chances
+        val rolledStacks = rollCategoryItems(category, candidateItems, rolls)
 
         // Distribute the rolled ItemStacks into randomized slot indices across the inventory
         val invSize = inventory.size
@@ -226,6 +226,71 @@ class LootPopulator(
 
         state.update(true, false)
         return true
+    }
+
+    /**
+     * Rolls item stacks for a container using the container category's configured rarity chances & item counts.
+     */
+    fun rollCategoryItems(
+        category: com.luminaris.extraction.core.container.ContainerCategory,
+        candidates: List<ExtractionItem>,
+        count: Int
+    ): List<ItemStack> {
+        val selectedItems = rollCategoryCandidateItems(category, candidates, count)
+        return selectedItems.map { runCatching { it.itemStack.clone() }.getOrDefault(it.itemStack) }
+    }
+
+    /**
+     * Selects candidate extraction items where the container category determines the probability
+     * of each rarity tier dropping, and candidate items within that rarity tier are chosen by item weight.
+     */
+    fun rollCategoryCandidateItems(
+        category: com.luminaris.extraction.core.container.ContainerCategory,
+        candidates: List<ExtractionItem>,
+        count: Int
+    ): List<ExtractionItem> {
+        if (count <= 0 || candidates.isEmpty()) return emptyList()
+
+        val activeRarities = category.rarityWeights.filter { it.value > 0.0 }
+        val totalRarityWeight = activeRarities.values.sum()
+
+        // Fallback to purely weighted item candidate rolling if no rarity weights are configured
+        if (totalRarityWeight <= 0.0 || activeRarities.isEmpty()) {
+            return rollWeightedCandidateItems(candidates, count)
+        }
+
+        val results = ArrayList<ExtractionItem>(count)
+        val random = ThreadLocalRandom.current()
+
+        for (i in 0 until count) {
+            // 1. Roll rarity tier based on container's configured rarity drop chances
+            val roll = random.nextDouble() * totalRarityWeight
+            var cumulative = 0.0
+            var rolledRarity = activeRarities.keys.last()
+
+            for ((rarity, weight) in activeRarities) {
+                cumulative += weight
+                if (roll < cumulative) {
+                    rolledRarity = rarity
+                    break
+                }
+            }
+
+            // 2. Select an item belonging to the rolled rarity tier
+            val matchingItems = candidates.filter { it.rarity == rolledRarity }
+            val chosen = if (matchingItems.isNotEmpty()) {
+                rollWeightedCandidateItems(matchingItems, 1).firstOrNull()
+            } else {
+                // Graceful fallback to any candidate if no items of that tier exist for this container
+                rollWeightedCandidateItems(candidates, 1).firstOrNull()
+            }
+
+            if (chosen != null) {
+                results.add(chosen)
+            }
+        }
+
+        return results
     }
 
     /**

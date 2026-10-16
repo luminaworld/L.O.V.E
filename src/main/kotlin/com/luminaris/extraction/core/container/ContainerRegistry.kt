@@ -100,11 +100,23 @@ class ContainerRegistry(private val plugin: Plugin) {
                     val minRolls = catSec.getInt("min_rolls", 1)
                     val maxRolls = catSec.getInt("max_rolls", maxOf(minRolls, 3))
 
+                    val rarityWeights = ContainerCategory.defaultRarityWeights(key)
+                    val raritySection = catSec.getConfigurationSection("rarity_chances")
+                        ?: catSec.getConfigurationSection("rarity_weights")
+                    if (raritySection != null) {
+                        for (rarity in com.luminaris.extraction.core.item.Rarity.entries) {
+                            if (raritySection.contains(rarity.name)) {
+                                rarityWeights[rarity] = raritySection.getDouble(rarity.name)
+                            }
+                        }
+                    }
+
                     val category = ContainerCategory(
                         id = key.lowercase(),
                         displayName = displayName,
                         minRolls = minRolls,
-                        maxRolls = maxRolls
+                        maxRolls = maxRolls,
+                        rarityWeights = rarityWeights
                     )
                     categories[category.id] = category
                 }
@@ -125,6 +137,10 @@ class ContainerRegistry(private val plugin: Plugin) {
                 catSec.set("display_name", miniMessage.serialize(category.displayName))
                 catSec.set("min_rolls", category.minRolls)
                 catSec.set("max_rolls", category.maxRolls)
+                val raritySec = catSec.createSection("rarity_chances")
+                for ((rarity, weight) in category.rarityWeights) {
+                    raritySec.set(rarity.name, weight)
+                }
             }
 
             yaml.save(file)

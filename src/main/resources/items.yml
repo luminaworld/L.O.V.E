@@ -45,10 +45,10 @@
 #   ใช้รูปแบบแท็กสีเดี่ยว <color:#HEX>ข้อความ</color> หรือ <gradient:#HEX1:#HEX2>ข้อความ</gradient>
 #
 # การลงทะเบียนไอเทมผ่านตัวแก้ไขในเกม (In-game Editor):
-#   - คุณสามารถสร้างไอเทมที่มี NBT, Enchantment, Lore หรือ CustomModelData ในเกม
-#     แล้วถือไอเทมไว้ในมือหลัก จากนั้นพิมพ์คำสั่ง:
-#     /ext editor createitem <รหัสหมวดหมู่>
-#     ระบบจะเปิดหน้าต่าง GUI ให้กรอกรหัสไอเทม, ราคา และน้ำหนัก แล้วบันทึกลงไฟล์นี้ทันที
+#   - คุณสามารถเพิ่มไอเทมใหม่ได้ง่ายๆ ผ่านคำสั่ง:
+#     /ext editor
+#     แล้วกดช่องเพิ่มในหน้า GUI และเลือกไอเทมที่มีในตัวมาเพิ่มได้เลย
+#     หลังเพิ่มเสร็จสามารถกำหนดระดับความหายาก และกล่องที่จะให้ดรอปได้ทันที
 # =========================================================================
 
 items:
@@ -63,6 +63,7 @@ items:
     allowed_containers:
       - "rare"
       - "epic"
+      - "airdrop"
     lore:
       - "<color:#AAAAAA>High-frequency military electronic component.</color>"
       - "<color:#00AAAA>Origin: Extraction Sector Alpha</color>"
@@ -79,6 +80,8 @@ items:
     allowed_containers:
       - "epic"
       - "legendary"
+      - "airdrop"
+      - "safe_box"
     lore:
       - "<color:#AAAAAA>Pulsating energy core used in high-tech apparatus.</color>"
       - "<color:#FF5555>Extremely volatile in non-stabilized zones.</color>"
@@ -95,6 +98,7 @@ items:
     allowed_containers:
       - "common"
       - "uncommon"
+      - "normal_crate"
     lore:
       - "<color:#AAAAAA>Long shelf-life military food ration.</color>"
       - "<color:#55FF55>Nutritional Value: High</color>"

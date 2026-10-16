@@ -45,6 +45,9 @@ class TranslationManager(private val plugin: Plugin? = null) {
         fun send(audience: Audience, key: String, vararg args: Pair<String, Any?>) =
             instance.send(audience, key, *args)
 
+        fun sendLines(audience: Audience, key: String, vararg args: Pair<String, Any?>) =
+            instance.sendLines(audience, key, *args)
+
         fun sendActionBar(audience: Audience, key: String, vararg args: Pair<String, Any?>) =
             instance.sendActionBar(audience, key, *args)
 
@@ -76,6 +79,12 @@ class TranslationManager(private val plugin: Plugin? = null) {
          */
         fun legacyToMiniMessage(input: String): String =
             instance.legacyToMiniMessage(input)
+
+        /**
+         * Serializes an Adventure [Component] into MiniMessage format.
+         */
+        fun serializeComponent(component: Component): String =
+            instance.miniMessage.serialize(component)
     }
 
     private val miniMessage = MiniMessage.miniMessage()
@@ -317,6 +326,17 @@ class TranslationManager(private val plugin: Plugin? = null) {
      */
     fun send(audience: Audience, key: String, vararg args: Pair<String, Any?>) {
         audience.sendMessage(render(key, *args))
+    }
+
+    /**
+     * Sends a localized message line-by-line to the target [Audience].
+     * Useful for console audiences so each line is prepended with the server log timestamp.
+     */
+    fun sendLines(audience: Audience, key: String, vararg args: Pair<String, Any?>) {
+        val formatted = format(key, *args)
+        for (line in formatted.trim('\r', '\n').lines()) {
+            audience.sendMessage(parseComponent(line))
+        }
     }
 
     /**

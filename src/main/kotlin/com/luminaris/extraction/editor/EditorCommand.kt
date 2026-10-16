@@ -1,10 +1,8 @@
 package com.luminaris.extraction.editor
 
 import com.luminaris.extraction.LuminarisCorePlugin
-import com.luminaris.extraction.editor.dialog.CategoryDialogBuilder
-import com.luminaris.extraction.editor.dialog.ItemDialogBuilder
+import com.luminaris.extraction.editor.gui.EditorMainMenuGui
 import com.luminaris.extraction.localization.TranslationManager
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -12,11 +10,10 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 
 /**
- * Command handler and tab completer for extraction editor operations (/ext editor ...).
+ * Command handler for extraction editor operations (/ext editor).
+ * Opens the comprehensive all-in-one In-Game Editor GUI.
  */
 class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, TabCompleter {
-
-    private val miniMessage = MiniMessage.miniMessage()
 
     override fun onCommand(
         sender: CommandSender,
@@ -28,145 +25,142 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
     }
 
     /**
-     * Executes the editor subcommand logic.
+     * Executes the editor command logic, supporting direct subcommands and the master editor GUI.
      *
      * @param sender Command issuer.
      * @param label Command alias invoked.
-     * @param args Subcommand arguments after 'editor'.
+     * @param args Command arguments.
      */
     fun execute(sender: CommandSender, label: String, args: Array<out String>): Boolean {
-        if (!sender.hasPermission("luminaris.admin")) {
+        if (!sender.hasPermission("luminaris.admin") && !sender.hasPermission("luminaris.editor")) {
             TranslationManager.send(sender, "editor.no_permission")
             return true
         }
 
         if (args.isEmpty()) {
-            sendEditorHelp(sender, label)
+            if (sender !is Player) {
+                TranslationManager.send(sender, "general.player_only")
+                return true
+            }
+            EditorMainMenuGui.open(sender, plugin)
             return true
         }
 
-        when (args[0].lowercase()) {
-            "createitem" -> handleCreateItem(sender, label, args)
-            "createcategory" -> handleCreateCategory(sender)
-            "list" -> handleList(sender)
-            "help" -> sendEditorHelp(sender, label)
+        val sub = args[0].lowercase()
+        when (sub) {
+            "items", "item" -> {
+                if (sender !is Player) {
+                    TranslationManager.send(sender, "general.player_only")
+                    return true
+                }
+                com.luminaris.extraction.editor.gui.ItemListGui(plugin).open(sender)
+            }
+            "containers", "container", "boxes" -> {
+                if (sender !is Player) {
+                    TranslationManager.send(sender, "general.player_only")
+                    return true
+                }
+                com.luminaris.extraction.editor.gui.ContainerListGui(plugin).open(sender)
+            }
+            "createitem", "additem" -> {
+                if (sender !is Player) {
+                    TranslationManager.send(sender, "general.player_only")
+                    return true
+                }
+                val category = if (args.size > 1) args[1].lowercase() else null
+                com.luminaris.extraction.editor.dialog.ItemDialogBuilder.open(
+                    player = sender,
+                    itemRegistry = plugin.itemRegistry,
+                    category = category,
+                    plugin = plugin
+                )
+            }
+            "createcategory", "addcategory", "createbox" -> {
+                if (sender !is Player) {
+                    TranslationManager.send(sender, "general.player_only")
+                    return true
+                }
+                com.luminaris.extraction.editor.dialog.CategoryDialogBuilder.open(
+                    player = sender,
+                    containerRegistry = plugin.containerRegistry,
+                    plugin = plugin
+                )
+            }
+            "reload" -> {
+                plugin.reloadAllConfigurations()
+                TranslationManager.send(sender, "editor.gui.reload_success")
+            }
+            "list" -> {
+                renderRegistryList(sender)
+            }
+            "help" -> {
+                TranslationManager.send(sender, "editor.help.title")
+                TranslationManager.send(sender, "editor.help.createitem", "label" to label)
+                TranslationManager.send(sender, "editor.help.createcategory", "label" to label)
+                TranslationManager.send(sender, "editor.help.list", "label" to label)
+            }
             else -> {
-                TranslationManager.send(sender, "editor.unknown_subcommand", "subcommand" to args[0], "label" to label)
+                TranslationManager.send(sender, "editor.unknown_subcommand", "subcommand" to sub, "label" to label)
             }
         }
-
         return true
     }
 
-    private fun handleCreateItem(sender: CommandSender, label: String, args: Array<out String>) {
-        if (sender !is Player) {
-            TranslationManager.send(sender, "general.player_only")
-            return
-        }
-
-        if (args.size < 2 || args[1].isBlank()) {
-            val availableCategories = plugin.containerRegistry.getAllCategories().map { it.id }
-            val catHint = if (availableCategories.isNotEmpty()) {
-                TranslationManager.get("editor.available_categories", "categories" to availableCategories.joinToString(", "))
-            } else {
-                TranslationManager.get("editor.no_categories_note", "label" to label)
-            }
-
-            TranslationManager.send(sender, "editor.missing_category", "label" to label, "hint" to catHint)
-            return
-        }
-
-        val categoryId = args[1].lowercase().trim()
-        val heldItem = sender.inventory.itemInMainHand
-        if (heldItem.isEmpty || heldItem.type.isAir) {
-            TranslationManager.send(sender, "editor.hand_empty")
-            return
-        }
-
-        if (!plugin.containerRegistry.hasCategory(categoryId)) {
-            TranslationManager.send(sender, "editor.category_unregistered_note", "category" to categoryId)
-        }
-
-        ItemDialogBuilder.open(sender, categoryId, plugin.itemRegistry)
-    }
-
-    private fun handleCreateCategory(sender: CommandSender) {
-        if (sender !is Player) {
-            TranslationManager.send(sender, "general.player_only")
-            return
-        }
-
-        CategoryDialogBuilder.open(sender, plugin.containerRegistry)
-    }
-
-    private fun handleList(sender: CommandSender) {
+    private fun renderRegistryList(sender: CommandSender) {
         val categories = plugin.containerRegistry.getAllCategories()
         val items = plugin.itemRegistry.getAllItems()
 
-        val sb = StringBuilder()
-        sb.append(TranslationManager.get("general.divider_editor")).append("\n")
-        sb.append(TranslationManager.get("editor.list.title")).append("\n")
-        sb.append(TranslationManager.get("editor.list.summary", "categories_count" to categories.size, "items_count" to items.size)).append("\n")
-        sb.append(TranslationManager.get("general.divider_editor_sub")).append("\n")
+        TranslationManager.send(sender, "editor.list.title")
+        TranslationManager.send(
+            sender,
+            "editor.list.summary",
+            "categories_count" to categories.size,
+            "items_count" to items.size
+        )
 
-        // 1. Categories Section
-        sb.append(TranslationManager.get("editor.list.categories_header")).append("\n")
+        TranslationManager.send(sender, "editor.list.categories_header")
         if (categories.isEmpty()) {
-            sb.append(TranslationManager.get("editor.list.categories_empty")).append("\n")
+            TranslationManager.send(sender, "editor.list.categories_empty")
         } else {
             for (cat in categories) {
-                val catItems = items.filter { it.allowedContainers.isEmpty() || it.allowedContainers.contains(cat.id) }.size
-                val serializedDisplay = miniMessage.serialize(cat.displayName)
-                sb.append(TranslationManager.get(
+                val linked = plugin.itemRegistry.getItemsForCategory(cat.id).size
+                TranslationManager.send(
+                    sender,
                     "editor.list.category_entry",
                     "id" to cat.id,
-                    "display_name" to serializedDisplay,
+                    "display_name" to TranslationManager.serializeComponent(cat.displayName),
                     "min_rolls" to cat.minRolls,
                     "max_rolls" to cat.maxRolls,
-                    "linked_items" to catItems
-                )).append("\n")
+                    "linked_items" to linked
+                )
             }
         }
 
-        sb.append(TranslationManager.get("general.divider_editor_sub")).append("\n")
-
-        // 2. Items Section
-        sb.append(TranslationManager.get("editor.list.items_header")).append("\n")
+        TranslationManager.send(sender, "editor.list.items_header")
         if (items.isEmpty()) {
-            sb.append(TranslationManager.get("editor.list.items_empty")).append("\n")
+            TranslationManager.send(sender, "editor.list.items_empty")
         } else {
             for (item in items) {
-                val rarityTag = item.rarity.miniMessageTag
+                val disp = if (item.itemStack.hasItemMeta() && item.itemStack.itemMeta.hasDisplayName()) {
+                    TranslationManager.serializeComponent(item.itemStack.itemMeta.displayName()!!)
+                } else {
+                    item.itemStack.type.name
+                }
                 val rarityName = TranslationManager.get("rarity.${item.rarity.name.lowercase()}")
-                val containersStr = if (item.allowedContainers.isEmpty()) TranslationManager.get("general.all") else item.allowedContainers.joinToString(",")
-                val displayStr = miniMessage.serialize(item.resolveDisplayName())
-                sb.append(TranslationManager.get(
+                val catText = if (item.allowedContainers.isEmpty()) TranslationManager.get("general.all") else item.allowedContainers.joinToString(", ")
+                TranslationManager.send(
+                    sender,
                     "editor.list.item_entry",
                     "id" to item.id,
-                    "rarity_tag" to rarityTag,
+                    "rarity_tag" to item.rarity.miniMessageTag,
                     "rarity" to rarityName,
-                    "display_name" to displayStr,
-                    "price" to item.price,
+                    "display_name" to disp,
+                    "price" to String.format("%.2f", item.price),
                     "weight" to item.weight,
-                    "containers" to containersStr
-                )).append("\n")
+                    "containers" to catText
+                )
             }
         }
-
-        sb.append(TranslationManager.get("general.divider_editor"))
-        sender.sendMessage(TranslationManager.parseComponent(sb.toString()))
-    }
-
-    private fun sendEditorHelp(sender: CommandSender, label: String) {
-        val help = buildString {
-            append(TranslationManager.get("general.divider")).append("\n")
-            append(TranslationManager.get("editor.help.title")).append("\n")
-            append(TranslationManager.get("editor.help.createitem", "label" to label)).append("\n")
-            append(TranslationManager.get("editor.help.createcategory", "label" to label)).append("\n")
-            append(TranslationManager.get("editor.help.list", "label" to label)).append("\n")
-            append(TranslationManager.get("general.divider"))
-        }
-        sender.sendMessage(TranslationManager.parseComponent(help))
     }
 
     override fun onTabComplete(
@@ -179,19 +173,15 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
     }
 
     /**
-     * Provides tab-completion options for the editor subcommand.
+     * Tab completion for /ext editor subcommands.
      */
     fun complete(sender: CommandSender, args: Array<out String>): List<String> {
-        if (!sender.hasPermission("luminaris.admin")) {
+        if (!sender.hasPermission("luminaris.admin") && !sender.hasPermission("luminaris.editor")) {
             return emptyList()
         }
 
-        if (args.isEmpty()) {
-            return listOf("createitem", "createcategory", "list", "help")
-        }
-
         if (args.size == 1) {
-            val subcommands = listOf("createitem", "createcategory", "list", "help")
+            val subcommands = listOf("items", "containers", "createitem", "createcategory", "list", "reload", "help")
             return subcommands.filter { it.startsWith(args[0], ignoreCase = true) }
         }
 
