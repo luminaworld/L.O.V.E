@@ -184,15 +184,9 @@ class ContainerListGui(
             }
             TranslationManager.send(player, "editor.gui.marker_tool_given", "id" to clickedCategory.id)
         } else {
-            // Left click: Open native Paper Dialog to edit settings, ID, rolls, and rarity weights
+            // Left click: Open intermediate GUI layer first providing options and preview
             GuiUtils.playClickSound(player)
-            player.closeInventory()
-            com.luminaris.extraction.editor.dialog.CategoryDialogBuilder.open(
-                player = player,
-                containerRegistry = plugin.containerRegistry,
-                existingCategory = clickedCategory,
-                plugin = plugin
-            )
+            ContainerEditGui(plugin, clickedCategory).open(player)
         }
     }
 

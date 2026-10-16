@@ -68,14 +68,11 @@ class ItemAddSelectorGui(
             val cursorItem = event.cursor
             if (!cursorItem.isEmpty && !cursorItem.type.isAir) {
                 GuiUtils.playSuccessSound(player)
-                player.closeInventory()
-                com.luminaris.extraction.editor.dialog.ItemDialogBuilder.open(
-                    player = player,
-                    itemRegistry = plugin.itemRegistry,
-                    itemStack = cursorItem.clone(),
-                    existingItem = null,
-                    plugin = plugin
-                )
+                ItemEditorGui(
+                    plugin = plugin,
+                    targetStack = cursorItem.clone(),
+                    existingItem = null
+                ).open(player)
                 return
             }
         }
@@ -84,14 +81,11 @@ class ItemAddSelectorGui(
         val clickedItem = event.currentItem
         if (clickedItem != null && !clickedItem.isEmpty && !clickedItem.type.isAir) {
             GuiUtils.playSuccessSound(player)
-            player.closeInventory()
-            com.luminaris.extraction.editor.dialog.ItemDialogBuilder.open(
-                player = player,
-                itemRegistry = plugin.itemRegistry,
-                itemStack = clickedItem.clone(),
-                existingItem = null,
-                plugin = plugin
-            )
+            ItemEditorGui(
+                plugin = plugin,
+                targetStack = clickedItem.clone(),
+                existingItem = null
+            ).open(player)
         }
     }
 

@@ -183,6 +183,10 @@ class TranslationManagerTest {
         assertEquals("Container Category Editor", TranslationManager.get("dialog.category.title"))
         assertEquals("Container ID", TranslationManager.get("dialog.category.input_id"))
         assertEquals("Drop Items Registry", PlainTextComponentSerializer.plainText().serialize(TranslationManager.render("editor.gui.btn_items")))
+        assertTrue(TranslationManager.get("editor.gui.btn_edit_name_id").contains("Edit Name & ID"))
+        assertTrue(TranslationManager.get("editor.gui.btn_select_containers").contains("Select Drop Boxes"))
+        assertTrue(TranslationManager.get("editor.gui.click_plus_1_pct").contains("+1%"))
+        assertTrue(TranslationManager.get("editor.gui.click_plus_5_pct").contains("+5%"))
 
         TranslationManager.setLanguage("th")
         assertEquals("เครื่องมือแก้ไขหมวดหมู่กล่องดรอป", TranslationManager.get("dialog.category.title"))
@@ -190,6 +194,10 @@ class TranslationManagerTest {
         assertEquals("รหัสเฉพาะของไอเทม (Item ID)", TranslationManager.get("dialog.item.input_id"))
         assertEquals("คำอธิบายไอเทม (Lore บรรทัดใหม่หรือ \\n)", TranslationManager.get("dialog.item.input_lore"))
         assertTrue(TranslationManager.get("editor.gui.btn_items").contains("คลังไอเทมดรอป"))
+        assertTrue(TranslationManager.get("editor.gui.btn_edit_name_id").contains("แก้ไขชื่อและรหัส"))
+        assertTrue(TranslationManager.get("editor.gui.btn_select_containers").contains("เลือกกล่องที่อนุญาตให้ดรอป"))
+        assertTrue(TranslationManager.get("editor.gui.click_plus_1_pct").contains("+1%"))
+        assertTrue(TranslationManager.get("editor.gui.click_plus_5_pct").contains("+5%"))
 
         // Test serializeComponent
         val testComp = TranslationManager.parseComponent("<color:#FFFF55>Test</color>")

@@ -172,16 +172,13 @@ class ItemListGui(
             }
             TranslationManager.send(player, "editor.gui.item_given")
         } else {
-            // Left click: Open native Paper Dialog to edit item properties (ID, name, lore, rarity, price, containers)
+            // Left click: Open intermediate GUI layer first providing options and preview
             GuiUtils.playClickSound(player)
-            player.closeInventory()
-            com.luminaris.extraction.editor.dialog.ItemDialogBuilder.open(
-                player = player,
-                itemRegistry = plugin.itemRegistry,
-                itemStack = clickedItem.itemStack.clone(),
-                existingItem = clickedItem,
-                plugin = plugin
-            )
+            ItemEditorGui(
+                plugin = plugin,
+                targetStack = clickedItem.itemStack.clone(),
+                existingItem = clickedItem
+            ).open(player)
         }
     }
 

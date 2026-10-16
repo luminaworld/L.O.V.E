@@ -71,8 +71,8 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
                 com.luminaris.extraction.editor.dialog.ItemDialogBuilder.open(
                     player = sender,
                     itemRegistry = plugin.itemRegistry,
-                    category = category,
-                    plugin = plugin
+                    plugin = plugin,
+                    currentAllowedContainers = if (category != null) setOf(category) else null
                 )
             }
             "createcategory", "addcategory", "createbox" -> {

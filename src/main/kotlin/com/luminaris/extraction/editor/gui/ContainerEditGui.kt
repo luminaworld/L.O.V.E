@@ -3,6 +3,7 @@ package com.luminaris.extraction.editor.gui
 import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.core.container.ContainerCategory
 import com.luminaris.extraction.core.item.Rarity
+import com.luminaris.extraction.editor.dialog.CategoryDialogBuilder
 import com.luminaris.extraction.editor.tool.ContainerMarkerTool
 import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.Component
@@ -14,8 +15,10 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 
 /**
- * Detailed configuration GUI for a specific [ContainerCategory].
- * Controls item roll quantities (min/max rolls) and drop chances/weights for each rarity tier.
+ * Intermediate GUI layer for a specific [ContainerCategory].
+ * Displays a comprehensive preview of the drop box and its associated data,
+ * allows configuring Name and ID via Dialog, adjusting roll quantities with +/-1 and +/-5,
+ * and managing drop percentages directly in the GUI with automatic 100% calculation.
  */
 class ContainerEditGui(
     private val plugin: LuminarisCorePlugin,
@@ -24,7 +27,7 @@ class ContainerEditGui(
 
     private lateinit var inventory: Inventory
 
-    // Slot mappings for each Rarity
+    // Slot mappings for each Rarity tier
     private val raritySlots = mapOf(
         29 to Rarity.COMMON,
         30 to Rarity.UNCOMMON,
@@ -52,7 +55,21 @@ class ContainerEditGui(
         )
         inventory.setItem(10, markerItem)
 
-        // Slot 12: Min Rolls
+        // Slot 11: Edit Name & ID via Dialog
+        val nameIdLore = listOf(
+            TranslationManager.render("editor.gui.edit_name_id_lore_1"),
+            Component.empty(),
+            TranslationManager.render("editor.gui.edit_name_id_lore_action")
+        )
+        val nameIdItem = GuiUtils.createItem(
+            Material.NAME_TAG,
+            TranslationManager.render("editor.gui.btn_edit_name_id"),
+            nameIdLore,
+            glowing = true
+        )
+        inventory.setItem(11, nameIdItem)
+
+        // Slot 12: Min Rolls Adjustment
         val minLore = listOf(
             TranslationManager.render("editor.gui.min_rolls_lore_1"),
             Component.empty(),
@@ -69,7 +86,39 @@ class ContainerEditGui(
         )
         inventory.setItem(12, minItem)
 
-        // Slot 14: Max Rolls
+        // Slot 13: Drop Box Preview & Associated Data
+        val previewLore = mutableListOf<Component>()
+        previewLore.add(TranslationManager.render("editor.gui.container_card_id", "id" to category.id))
+        previewLore.add(TranslationManager.render("editor.gui.container_card_rolls", "min" to category.minRolls, "max" to category.maxRolls))
+        val linkedItems = plugin.itemRegistry.getItemsForCategory(category.id).size
+        previewLore.add(TranslationManager.render("editor.gui.container_card_linked", "count" to linkedItems))
+        previewLore.add(Component.empty())
+        previewLore.add(TranslationManager.render("editor.gui.container_card_rarity_header"))
+
+        for (rarity in Rarity.entries) {
+            val pct = category.getRarityPercentage(rarity)
+            val rarityName = TranslationManager.get("rarity.${rarity.name.lowercase()}")
+            previewLore.add(TranslationManager.render(
+                "editor.gui.container_card_rarity_entry",
+                "tag" to rarity.miniMessageTag,
+                "name" to rarityName,
+                "pct" to String.format("%.1f", pct),
+                "weight" to String.format("%.1f", category.getRarityWeight(rarity))
+            ))
+        }
+
+        previewLore.add(Component.empty())
+        previewLore.add(TranslationManager.render("editor.gui.rarity_rates_total"))
+
+        val previewItem = GuiUtils.createItem(
+            resolveIconForCategory(category.id),
+            category.displayName,
+            previewLore,
+            glowing = true
+        )
+        inventory.setItem(13, previewItem)
+
+        // Slot 14: Max Rolls Adjustment
         val maxLore = listOf(
             TranslationManager.render("editor.gui.max_rolls_lore_1"),
             Component.empty(),
@@ -86,6 +135,19 @@ class ContainerEditGui(
         )
         inventory.setItem(14, maxItem)
 
+        // Slot 15: Auto-Balance / Reset Rates
+        val balanceLore = listOf(
+            TranslationManager.render("editor.gui.balance_rates_lore_1"),
+            Component.empty(),
+            TranslationManager.render("editor.gui.balance_rates_lore_reset")
+        )
+        val balanceItem = GuiUtils.createItem(
+            Material.NETHER_STAR,
+            TranslationManager.render("editor.gui.btn_balance_rates"),
+            balanceLore
+        )
+        inventory.setItem(15, balanceItem)
+
         // Slot 16: Delete Container Button
         val deleteLore = listOf(
             TranslationManager.render("editor.gui.delete_container_lore_1"),
@@ -99,21 +161,23 @@ class ContainerEditGui(
         )
         inventory.setItem(16, deleteItem)
 
-        // Header for Rarity Section
+        // Slot 22: Header for Rarity Section
         val rarityHeader = GuiUtils.createItem(
-            Material.NETHER_STAR,
+            Material.COMPARATOR,
             TranslationManager.render("editor.gui.rarity_rates_header"),
             listOf(
-                TranslationManager.render("editor.gui.rarity_rates_desc")
+                TranslationManager.render("editor.gui.rarity_rates_desc"),
+                TranslationManager.render("editor.gui.rarity_auto_calc_hint"),
+                Component.empty(),
+                TranslationManager.render("editor.gui.rarity_rates_total")
             )
         )
         inventory.setItem(22, rarityHeader)
 
-        // Slots 29..33: Rarity Tiers Drop Rates
+        // Slots 29..33: Rarity Tiers Drop Percentages (Managed via GUI with +/-1 and +/-5)
         for ((slot, rarity) in raritySlots) {
-            val weight = category.getRarityWeight(rarity)
             val pct = category.getRarityPercentage(rarity)
-            val eligibleItems = plugin.itemRegistry.getItemsForCategory(category.id).filter { it.rarity == rarity }.size
+            val eligibleItems = plugin.itemRegistry.getItemsForCategory(category.id).count { it.rarity == rarity }
 
             val iconMat = when (rarity) {
                 Rarity.COMMON -> Material.GRAY_CONCRETE
@@ -126,35 +190,30 @@ class ContainerEditGui(
             val rarityName = TranslationManager.get("rarity.${rarity.name.lowercase()}")
             val lore = listOf(
                 TranslationManager.render("editor.gui.rarity_card_chance", "pct" to String.format("%.1f", pct)),
-                TranslationManager.render("editor.gui.rarity_card_weight", "weight" to weight),
                 TranslationManager.render("editor.gui.rarity_card_items", "count" to eligibleItems),
                 Component.empty(),
-                TranslationManager.render("editor.gui.rarity_card_plus_5"),
-                TranslationManager.render("editor.gui.rarity_card_minus_5"),
-                TranslationManager.render("editor.gui.rarity_card_plus_20"),
-                TranslationManager.render("editor.gui.rarity_card_disable")
+                TranslationManager.render("editor.gui.click_plus_1_pct"),
+                TranslationManager.render("editor.gui.click_minus_1_pct"),
+                TranslationManager.render("editor.gui.click_plus_5_pct"),
+                TranslationManager.render("editor.gui.click_minus_5_pct"),
+                Component.empty(),
+                TranslationManager.render("editor.gui.rarity_auto_calc_hint")
             )
 
+            val amount = maxOf(1, Math.round(pct).toInt().coerceIn(1, 64))
             val rarityItem = GuiUtils.createItem(
                 iconMat,
                 TranslationManager.parseComponent("${rarity.miniMessageTag}<bold>$rarityName</bold></color>"),
                 lore,
-                glowing = weight > 0.0
+                glowing = pct > 0.0,
+                amount = amount
             )
             inventory.setItem(slot, rarityItem)
         }
 
-        // Bottom Controls
-        // Slot 45: Back
+        // Bottom Navigation Controls
+        // Slot 45: Back to Containers List
         inventory.setItem(45, GuiUtils.createItem(Material.ARROW, TranslationManager.render("editor.gui.btn_back")))
-
-        // Slot 49: Edit in Dialog Window
-        val dialogLore = listOf(
-            TranslationManager.render("editor.gui.open_dialog_lore"),
-            Component.empty(),
-            TranslationManager.render("editor.gui.btn_open_dialog")
-        )
-        inventory.setItem(49, GuiUtils.createItem(Material.WRITABLE_BOOK, TranslationManager.render("editor.gui.btn_open_dialog"), dialogLore, glowing = true))
 
         // Slot 53: Save & Return
         inventory.setItem(53, GuiUtils.createItem(Material.EMERALD_BLOCK, TranslationManager.render("editor.gui.btn_save"), glowing = true))
@@ -184,8 +243,20 @@ class ContainerEditGui(
                 TranslationManager.send(player, "editor.gui.marker_tool_given", "id" to category.id)
                 return
             }
+            11 -> {
+                // Open Category Dialog to edit Name and ID
+                GuiUtils.playClickSound(player)
+                player.closeInventory()
+                CategoryDialogBuilder.open(
+                    player = player,
+                    containerRegistry = plugin.containerRegistry,
+                    existingCategory = category,
+                    plugin = plugin
+                )
+                return
+            }
             12 -> {
-                // Adjust Min Rolls
+                // Adjust Min Rolls (+/-1, +/-5)
                 val delta = when (event.click) {
                     ClickType.LEFT -> 1
                     ClickType.RIGHT -> -1
@@ -202,7 +273,7 @@ class ContainerEditGui(
                 return
             }
             14 -> {
-                // Adjust Max Rolls
+                // Adjust Max Rolls (+/-1, +/-5)
                 val delta = when (event.click) {
                     ClickType.LEFT -> 1
                     ClickType.RIGHT -> -1
@@ -218,6 +289,14 @@ class ContainerEditGui(
                 }
                 return
             }
+            15 -> {
+                // Reset / Balance rates to defaults
+                GuiUtils.playSuccessSound(player)
+                category.resetRarityWeightsToDefault()
+                plugin.containerRegistry.save()
+                open(player)
+                return
+            }
             16 -> {
                 // Delete container
                 if (event.isShiftClick) {
@@ -230,18 +309,6 @@ class ContainerEditGui(
                 }
                 return
             }
-            49 -> {
-                // Open Category Dialog
-                GuiUtils.playClickSound(player)
-                player.closeInventory()
-                com.luminaris.extraction.editor.dialog.CategoryDialogBuilder.open(
-                    player = player,
-                    containerRegistry = plugin.containerRegistry,
-                    existingCategory = category,
-                    plugin = plugin
-                )
-                return
-            }
             45, 53 -> {
                 // Back or Save
                 GuiUtils.playSuccessSound(player)
@@ -251,20 +318,19 @@ class ContainerEditGui(
             }
         }
 
-        // Adjust Rarity Weights
+        // Adjust Rarity Drop Percentages with auto-balance to 100%
         val rarity = raritySlots[slot]
         if (rarity != null) {
-            val currentWeight = category.getRarityWeight(rarity)
-            val newWeight = when (event.click) {
-                ClickType.LEFT -> currentWeight + 5.0
-                ClickType.RIGHT -> (currentWeight - 5.0).coerceAtLeast(0.0)
-                ClickType.SHIFT_LEFT -> currentWeight + 20.0
-                ClickType.SHIFT_RIGHT -> 0.0
-                else -> currentWeight
+            val delta = when (event.click) {
+                ClickType.LEFT -> 1.0
+                ClickType.RIGHT -> -1.0
+                ClickType.SHIFT_LEFT -> 5.0
+                ClickType.SHIFT_RIGHT -> -5.0
+                else -> 0.0
             }
-            if (newWeight != currentWeight) {
+            if (delta != 0.0) {
                 GuiUtils.playClickSound(player)
-                category.setRarityWeight(rarity, newWeight)
+                category.adjustRarityPercentage(rarity, delta)
                 plugin.containerRegistry.save()
                 open(player)
             }
@@ -272,4 +338,19 @@ class ContainerEditGui(
     }
 
     override fun getInventory(): Inventory = inventory
+
+    private fun resolveIconForCategory(id: String): Material {
+        val lower = id.lowercase()
+        return when {
+            lower.contains("airdrop") -> Material.BEACON
+            lower.contains("safe") -> Material.ENDER_CHEST
+            lower.contains("barrel") -> Material.BARREL
+            lower.contains("military") -> Material.TRAPPED_CHEST
+            lower.contains("legendary") -> Material.GOLD_BLOCK
+            lower.contains("epic") -> Material.PURPLE_SHULKER_BOX
+            lower.contains("rare") -> Material.CYAN_SHULKER_BOX
+            lower.contains("uncommon") -> Material.LIME_SHULKER_BOX
+            else -> Material.CHEST
+        }
+    }
 }

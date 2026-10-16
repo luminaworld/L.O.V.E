@@ -4,7 +4,7 @@ import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.core.item.ExtractionItem
 import com.luminaris.extraction.core.item.ItemRegistry
 import com.luminaris.extraction.core.item.Rarity
-import com.luminaris.extraction.editor.gui.ItemListGui
+import com.luminaris.extraction.editor.gui.ItemEditorGui
 import com.luminaris.extraction.localization.TranslationManager
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.dialog.DialogResponseView
@@ -27,10 +27,9 @@ import java.time.Duration
 import java.util.Locale
 
 /**
- * Dialog builder for registering and editing extraction loot items
- * using the native Paper Dialog API.
- * Supports customizing item ID, display name, lore, rarity, price, drop chance (percentage), and drop containers
- * via text inputs instead of slider ranges.
+ * Dialog builder for registering and editing extraction loot items using the native Paper Dialog API.
+ * Contains fields for item ID, name, lore, rarity selector, and price.
+ * Drop chance is determined by drop boxes, and drop boxes are configured via GUI.
  */
 object ItemDialogBuilder {
 
@@ -47,22 +46,24 @@ object ItemDialogBuilder {
     }
 
     /**
-     * Constructs and displays the item registration/editor dialog to the player.
+     * Constructs and displays the item editor dialog to the player.
      *
      * @param player Target player configuring the item.
      * @param itemRegistry Registry service for extraction items.
-     * @param itemStack Target ItemStack being configured (defaults to player's held hand item).
+     * @param itemStack Target ItemStack being configured.
      * @param existingItem Optional existing extraction item definition being edited.
-     * @param category Optional initial container category.
      * @param plugin Optional plugin instance for scheduling GUI navigation.
+     * @param currentAllowedContainers Optional allowed containers set to preserve.
+     * @param onComplete Optional callback when the dialog successfully saves.
      */
     fun open(
         player: Player,
         itemRegistry: ItemRegistry,
         itemStack: ItemStack? = null,
         existingItem: ExtractionItem? = null,
-        category: String? = null,
-        plugin: LuminarisCorePlugin? = null
+        plugin: LuminarisCorePlugin? = null,
+        currentAllowedContainers: Set<String>? = null,
+        onComplete: ((ExtractionItem) -> Unit)? = null
     ) {
         val baseStack = existingItem?.itemStack ?: itemStack ?: player.inventory.itemInMainHand
         if (baseStack.isEmpty || baseStack.type.isAir) {
@@ -90,34 +91,31 @@ object ItemDialogBuilder {
             ""
         }
 
-        // 4. Initial Price, Rarity, Weight (Drop Chance %), Containers
+        // 4. Initial Price & Rarity
         val initialPrice = existingItem?.price ?: 100.0
         val initialRarity = existingItem?.rarity ?: Rarity.fromPrice(initialPrice)
-        val initialWeight = existingItem?.weight ?: 20.0
-        val initialContainers = when {
-            existingItem != null -> if (existingItem.allowedContainers.isEmpty()) "" else existingItem.allowedContainers.joinToString(", ")
-            !category.isNullOrBlank() -> category
-            else -> ""
-        }
 
-        // Build Dialog Inputs
+        // Build Dialog Inputs:
+        // 1. Item ID
         val itemIdInput = DialogInput.text("item_id", Component.text(TranslationManager.get("dialog.item.input_id")))
             .initial(initialId)
             .maxLength(64)
             .build()
 
+        // 2. Display Name
         val displayNameInput = DialogInput.text("display_name", Component.text(TranslationManager.get("dialog.item.input_display_name")))
             .initial(initialDisplayName)
             .maxLength(128)
             .build()
 
+        // 3. Lore
         val loreInput = DialogInput.text("lore", Component.text(TranslationManager.get("dialog.item.input_lore")))
             .initial(initialLore)
             .maxLength(512)
             .multiline(TextDialogInput.MultilineOptions.create(10, 4))
             .build()
 
-        // Rarity Selection Dropdown
+        // 4. Rarity Selection Dropdown
         val rarityOptions = Rarity.entries.map { r ->
             val localizedName = TranslationManager.get("rarity.${r.name.lowercase()}")
             SingleOptionDialogInput.OptionEntry.create(
@@ -132,25 +130,10 @@ object ItemDialogBuilder {
             rarityOptions
         ).build()
 
+        // 5. Price
         val priceInput = DialogInput.text("price", Component.text(TranslationManager.get("dialog.item.input_price")))
             .initial(formatNumber(initialPrice))
             .maxLength(16)
-            .build()
-
-        val chanceLabel = if (TranslationManager.instance.getRaw("dialog.item.input_chance") != "dialog.item.input_chance") {
-            TranslationManager.get("dialog.item.input_chance")
-        } else {
-            TranslationManager.get("dialog.item.input_weight")
-        }
-
-        val weightInput = DialogInput.text("weight", Component.text(chanceLabel))
-            .initial(formatNumber(initialWeight))
-            .maxLength(10)
-            .build()
-
-        val containersInput = DialogInput.text("containers", Component.text(TranslationManager.get("dialog.item.input_containers")))
-            .initial(initialContainers)
-            .maxLength(256)
             .build()
 
         // Build DialogBase
@@ -158,8 +141,7 @@ object ItemDialogBuilder {
         val descriptionBody = DialogBody.plainMessage(
             TranslationManager.render(
                 "dialog.item.body",
-                "material" to capturedStack.type.name,
-                "category" to (if (initialContainers.isBlank()) TranslationManager.get("general.all") else initialContainers)
+                "material" to capturedStack.type.name
             )
         )
 
@@ -171,9 +153,7 @@ object ItemDialogBuilder {
                     displayNameInput,
                     loreInput,
                     rarityInput,
-                    priceInput,
-                    weightInput,
-                    containersInput
+                    priceInput
                 )
             )
             .canCloseWithEscape(true)
@@ -207,12 +187,6 @@ object ItemDialogBuilder {
             val rawPrice = responseView.getText("price")?.replace("$", "")?.replace(",", "")?.trim()
             val price = rawPrice?.toDoubleOrNull()?.coerceAtLeast(0.0) ?: (existingItem?.price ?: 100.0)
 
-            val rawWeight = (responseView.getText("weight") ?: responseView.getText("chance"))
-                ?.replace("%", "")?.replace(",", "")?.trim()
-            val weight = rawWeight?.toDoubleOrNull()?.coerceAtLeast(0.01) ?: (existingItem?.weight ?: 20.0)
-
-            val rawContainers = responseView.getText("containers")?.trim()
-
             // Prepare final stack with updated display name and lore
             val finalStack = capturedStack.clone()
             finalStack.editMeta { meta ->
@@ -239,17 +213,11 @@ object ItemDialogBuilder {
                 Rarity.fromPrice(price)
             }
 
-            // Resolve allowed containers
-            val allowedContainers = if (!rawContainers.isNullOrBlank() &&
-                !rawContainers.equals("all", ignoreCase = true) &&
-                !rawContainers.equals("ทั้งหมด", ignoreCase = true)
-            ) {
-                rawContainers.split(",", ";", " ")
-                    .map { it.trim().lowercase() }
-                    .filter { it.isNotEmpty() }
-                    .toMutableSet()
-            } else {
-                mutableSetOf()
+            // Preserve allowed containers
+            val preservedAllowedContainers = when {
+                currentAllowedContainers != null -> currentAllowedContainers.toMutableSet()
+                existingItem != null -> existingItem.allowedContainers.toMutableSet()
+                else -> mutableSetOf()
             }
 
             // If ID renamed, unregister old ID
@@ -263,35 +231,30 @@ object ItemDialogBuilder {
                 itemStack = finalStack,
                 price = price,
                 rarity = rarity,
-                weight = weight,
-                allowedContainers = allowedContainers
+                weight = existingItem?.weight ?: 1.0,
+                allowedContainers = preservedAllowedContainers
             )
 
             itemRegistry.register(extractionItem, saveToDisk = true)
-
-            val containerLabel = if (allowedContainers.isEmpty()) {
-                TranslationManager.get("general.all")
-            } else {
-                allowedContainers.joinToString(", ")
-            }
 
             TranslationManager.send(
                 targetPlayer,
                 "dialog.item.success",
                 "id" to sanitizedId,
                 "display_name" to (customDisplayName ?: finalStack.type.name),
-                "category" to containerLabel,
                 "price" to formatNumber(price),
-                "weight" to formatNumber(weight),
                 "rarity_tag" to rarity.miniMessageTag,
                 "rarity" to TranslationManager.get("rarity.${rarity.name.lowercase()}")
             )
 
-            // Return to ItemListGui seamlessly
             val core = plugin ?: runCatching { LuminarisCorePlugin.instance }.getOrNull()
             if (core != null) {
                 core.scheduler.runAtEntity(targetPlayer) {
-                    ItemListGui(core).open(targetPlayer)
+                    if (onComplete != null) {
+                        onComplete(extractionItem)
+                    } else {
+                        ItemEditorGui(core, finalStack, extractionItem).open(targetPlayer)
+                    }
                 }
             }
         }, clickOptions)
@@ -307,7 +270,15 @@ object ItemDialogBuilder {
             val core = plugin ?: runCatching { LuminarisCorePlugin.instance }.getOrNull()
             if (core != null) {
                 core.scheduler.runAtEntity(p) {
-                    ItemListGui(core).open(p)
+                    ItemEditorGui(
+                        plugin = core,
+                        targetStack = capturedStack,
+                        existingItem = existingItem,
+                        initialRarity = initialRarity,
+                        initialPrice = initialPrice,
+                        initialAllowedContainers = currentAllowedContainers?.toMutableSet(),
+                        initialItemId = existingItem?.id
+                    ).open(p)
                 }
             }
         }, clickOptions)
@@ -328,4 +299,3 @@ object ItemDialogBuilder {
         player.showDialog(dialog)
     }
 }
-

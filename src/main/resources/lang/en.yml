@@ -177,8 +177,8 @@ editor:
     container_card_rolls: "<color:#AAAAAA>Item Drop Rolls: </color><color:#55FF55>{min} - {max} items</color>"
     container_card_linked: "<color:#AAAAAA>Linked Eligible Items: </color><color:#55FFFF>{count} items</color>"
     container_card_rarity_header: "<color:#FFAA00><bold>Rarity Drop Chances:</bold></color>"
-    container_card_rarity_entry: "{tag}▪ {name}: </color><color:#FFFFFF>{pct}%</color> <color:#555555>(W: {weight})</color>"
-    container_card_click_edit: "<color:#55FF55>Left-Click:</color> <color:#AAAAAA>Edit Settings & Chances (Dialog)</color>"
+    container_card_rarity_entry: "{tag}▪ {name}: </color><color:#FFFFFF>{pct}%</color>"
+    container_card_click_edit: "<color:#55FF55>Left-Click:</color> <color:#AAAAAA>Open Drop Box Editor (GUI)</color>"
     container_card_click_marker: "<color:#55FFFF>Right-Click:</color> <color:#AAAAAA>Get Marker Block</color>"
     container_card_click_delete: "<color:#FF5555>Shift-Right-Click:</color> <color:#AAAAAA>Delete Container Type</color>"
     container_created: "<color:#55FF55>✔ Created container type: <color:#FFFF55>{id}</color></color>"
@@ -188,6 +188,12 @@ editor:
     marker_tool_lore_1: "<color:#AAAAAA>Click to receive container marker block for placing.</color>"
     marker_tool_lore_action: "<color:#55FF55>▶ Click to get block in inventory</color>"
     marker_tool_given: "<color:#55FF55>✔ Received container marker block for </color><color:#FFFF55>{id}</color>"
+    btn_edit_name_id: "<gradient:#00FFA3:#00B8FF><bold>Edit Name & ID (Dialog)</bold></gradient>"
+    edit_name_id_lore_1: "<color:#AAAAAA>Configure container ID and display name via Dialog window.</color>"
+    edit_name_id_lore_action: "<color:#55FF55>▶ Click to open Name & ID Dialog</color>"
+    btn_balance_rates: "<color:#55FFFF><bold>Auto-Balanced Rates</bold></color>"
+    balance_rates_lore_1: "<color:#AAAAAA>All rarity percentages automatically adjust to equal 100.0%.</color>"
+    balance_rates_lore_reset: "<color:#FFAA00>Click to reset to default category percentages</color>"
     btn_delete_container: "<color:#FF5555><bold>Delete Container Type</bold></color>"
     delete_container_lore_1: "<color:#AAAAAA>Shift-Click to permanently delete this container.</color>"
     delete_container_lore_action: "<color:#FF5555>⚠ Shift-Click to Delete</color>"
@@ -199,8 +205,14 @@ editor:
     click_minus_1: "<color:#FF5555>Right-Click:</color> <color:#FFFFFF>-1</color>"
     click_plus_5: "<color:#FFFF55>Shift-Left-Click:</color> <color:#FFFFFF>+5</color>"
     click_minus_5: "<color:#FFAA00>Shift-Right-Click:</color> <color:#FFFFFF>-5</color>"
+    click_plus_1_pct: "<color:#55FF55>Left-Click:</color> <color:#FFFFFF>+1%</color>"
+    click_minus_1_pct: "<color:#FF5555>Right-Click:</color> <color:#FFFFFF>-1%</color>"
+    click_plus_5_pct: "<color:#FFFF55>Shift-Left-Click:</color> <color:#FFFFFF>+5%</color>"
+    click_minus_5_pct: "<color:#FFAA00>Shift-Right-Click:</color> <color:#FFFFFF>-5%</color>"
     rarity_rates_header: "<gradient:#00FFA3:#00B8FF><bold>Rarity Drop Chances & Rates</bold></gradient>"
     rarity_rates_desc: "<color:#AAAAAA>Adjust relative weight and drop probability percentage for each rarity tier.</color>"
+    rarity_rates_total: "<color:#FFFF55>Total Percentage: </color><color:#55FF55><bold>100.0% (Balanced)</bold></color>"
+    rarity_auto_calc_hint: "<color:#AAAAAA>Percentages automatically sum to 100%.</color>"
     rarity_card_chance: "<color:#AAAAAA>Calculated Drop Chance: </color><color:#FFFF55><bold>{pct}%</bold></color>"
     rarity_card_weight: "<color:#AAAAAA>Current Roll Weight: </color><color:#FFFFFF>{weight}</color>"
     rarity_card_items: "<color:#AAAAAA>Registered Items: </color><color:#55FFFF>{count} items</color>"
@@ -223,13 +235,36 @@ editor:
     item_card_rarity: "<color:#AAAAAA>Rarity: </color>{tag}{name}</color>"
     item_card_price: "<color:#AAAAAA>Sell Price: </color><color:#FFAA00>${price}</color>"
     item_card_containers: "<color:#AAAAAA>Allowed In: </color><color:#55FFFF>[{containers}]</color>"
-    item_card_click_edit: "<color:#55FF55>Left-Click:</color> <color:#AAAAAA>Edit Item Properties (Dialog)</color>"
+    item_card_click_edit: "<color:#55FF55>Left-Click:</color> <color:#AAAAAA>Open Item Editor (GUI)</color>"
     item_card_click_copy: "<color:#55FFFF>Right-Click:</color> <color:#AAAAAA>Get a copy to hand</color>"
     item_card_click_delete: "<color:#FF5555>Shift-Right-Click:</color> <color:#AAAAAA>Delete this item</color>"
     item_deleted: "<color:#FF5555>🗑 Removed item: <color:#FFFF55>{id}</color></color>"
     item_given: "<color:#55FF55>✔ Gave copy of item to inventory.</color>"
     item_edit_title: "<gradient:#00FFA3:#00B8FF><bold>Configure Drop Item</bold></gradient>"
     item_saved: "<color:#55FF55>✔ Item <color:#FFFF55>{id}</color> successfully saved to registry!</color>"
+    btn_item_dialog: "<gradient:#00FFA3:#00B8FF><bold>Edit Details (Dialog)</bold></gradient>"
+    item_dialog_lore_1: "<color:#AAAAAA>Configure Item ID, display name, lore, rarity, and price.</color>"
+    item_dialog_lore_action: "<color:#55FF55>▶ Click to open Item Dialog</color>"
+    btn_select_containers: "<gradient:#FFAA00:#FF5500><bold>Select Drop Boxes</bold></gradient>"
+    select_containers_lore_1: "<color:#AAAAAA>Choose which drop box types this item can appear in.</color>"
+    select_containers_lore_status: "<color:#FFFF55>Eligible Boxes: </color><color:#55FFFF>{status}</color>"
+    select_containers_lore_action: "<color:#55FF55>▶ Click to open Drop Box Selection Menu</color>"
+    item_containers_title: "<gradient:#FFAA00:#FF5500><bold>Select Drop Boxes ({current}/{total})</bold></gradient>"
+    containers_select_header: "<gradient:#00FFA3:#00B8FF><bold>Drop Box Type Selection</bold></gradient>"
+    containers_select_header_desc: "<color:#AAAAAA>Click any drop box card to toggle whether this item can drop in it.</color>"
+    containers_select_header_count: "<color:#FFFF55>Eligible Boxes: </color><color:#55FF55>{count} / {total}</color>"
+    btn_select_all: "<color:#55FF55><bold>✔ Select All Boxes</bold></color>"
+    btn_select_all_lore: "<color:#AAAAAA>Allow this item in every registered drop box type.</color>"
+    btn_deselect_all: "<color:#FF5555><bold>✖ Deselect All</bold></color>"
+    btn_deselect_all_lore: "<color:#AAAAAA>Clear specific drop box selections.</color>"
+    all_containers_allowed_title: "<color:#55FF55><bold>Allowed in ALL Drop Boxes</bold></color>"
+    all_containers_allowed_desc: "<color:#AAAAAA>Item can appear in any registered drop box category.</color>"
+    all_containers_restricted_title: "<color:#FFAA00><bold>Restricted Drop Boxes</bold></color>"
+    all_containers_restricted_desc: "<color:#AAAAAA>Item only drops in specifically selected drop boxes below.</color>"
+    all_containers_toggle_action: "<color:#55FFFF>▶ Click to toggle ALL vs Specific boxes</color>"
+    container_select_entry_status_allowed: "<color:#55FF55>✔ ALLOWED TO DROP</color>"
+    container_select_entry_status_denied: "<color:#FF5555>✖ NOT ALLOWED</color>"
+    container_select_entry_toggle: "<color:#AAAAAA>Click to toggle</color>"
     all_containers: "<color:#55FFFF><bold>All Containers (All Boxes)</bold></color>"
     item_preview_selected_rarity: "<color:#AAAAAA>Selected Rarity: </color>{tag}<bold>{name}</bold></color>"
     item_preview_containers: "<color:#AAAAAA>Drops In Containers: </color><color:#55FFFF>[{containers}]</color>"
@@ -268,7 +303,7 @@ editor:
     category_entry: "  <color:#FFFF55>•</color> <color:#55FFFF><bold>{id}</bold></color> <color:#AAAAAA>-</color> {display_name} <color:#AAAAAA>(Rolls: </color><color:#55FF55>{min_rolls}-{max_rolls}</color><color:#AAAAAA> | Linked Items: </color><color:#FFFF55>{linked_items}</color><color:#AAAAAA>)</color>"
     items_header: "<color:#FFAA00><bold>[EXTRACTION ITEMS]</bold></color>"
     items_empty: "<color:#AAAAAA>  <i>No extraction items registered yet.</i></color>"
-    item_entry: "  <color:#FFFF55>•</color> <color:#FFFF55>{id}</color> [{rarity_tag}{rarity}</color>] {display_name} <color:#AAAAAA>-</color> <color:#FFAA00>${price}</color> <color:#AAAAAA>| W: </color><color:#FFFFFF>{weight}</color> <color:#AAAAAA>| In: </color><color:#55FFFF>[{containers}]</color>"
+    item_entry: "  <color:#FFFF55>•</color> <color:#FFFF55>{id}</color> [{rarity_tag}{rarity}</color>] {display_name} <color:#AAAAAA>-</color> <color:#FFAA00>${price}</color> <color:#AAAAAA>| In: </color><color:#55FFFF>[{containers}]</color>"
   help:
     title: "<gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION IN-GAME EDITOR</bold></gradient>"
     createitem: |
@@ -288,48 +323,30 @@ editor:
 dialog:
   category:
     title: "Container Category Editor"
-    body: "<color:#AAAAAA>Configure loot roll properties, naming, and drop chances for this container category.</color>"
+    body: "<color:#AAAAAA>Configure identification and display title for this drop box.</color>"
     input_id: "Container ID"
     input_display_name: "Display Name (MiniMessage/Colors)"
-    input_min_rolls: "Min Item Rolls (Enter number)"
-    input_max_rolls: "Max Item Rolls (Enter number)"
-    input_weight_common: "Common Drop Chance (%)"
-    input_weight_uncommon: "Uncommon Drop Chance (%)"
-    input_weight_rare: "Rare Drop Chance (%)"
-    input_weight_epic: "Epic Drop Chance (%)"
-    input_weight_legendary: "Legendary Drop Chance (%)"
-    input_pct_common: "Common Drop Chance (%)"
-    input_pct_uncommon: "Uncommon Drop Chance (%)"
-    input_pct_rare: "Rare Drop Chance (%)"
-    input_pct_epic: "Epic Drop Chance (%)"
-    input_pct_legendary: "Legendary Drop Chance (%)"
     default_display: "<gradient:#FFAA00:#FF5555>Military Supply Crate</gradient>"
-    btn_save: "✔ Save Category"
-    tooltip_save: "Create and persist container category"
+    btn_save: "✔ Save Drop Box"
+    tooltip_save: "Create and persist drop box identification"
     btn_cancel: "✖ Cancel"
     tooltip_cancel: "Close dialog without saving"
     error_empty_id: "<color:#FF5555>❌ Category ID cannot be empty!</color>"
     success: |
       <color:#555555>----------------------------------------</color>
-      <gradient:#00FFA3:#00B8FF><bold>✔ CATEGORY SAVED SUCCESSFULLY</bold></gradient>
+      <gradient:#00FFA3:#00B8FF><bold>✔ DROP BOX SAVED</bold></gradient>
       <color:#AAAAAA>ID:           </color><color:#FFFF55>{id}</color>
       <color:#AAAAAA>Display Name: </color><color:#FFFFFF>{display_name}</color>
-      <color:#AAAAAA>Min Rolls:    </color><color:#55FF55>{min_rolls}</color>
-      <color:#AAAAAA>Max Rolls:    </color><color:#55FF55>{max_rolls}</color>
-      <color:#AAAAAA>Chances (%):  </color><color:#AAAAAA>C:{wc}% | U:{wu}% | R:{wr}% | E:{we}% | L:{wl}%</color>
       <color:#555555>----------------------------------------</color>
-    cancelled: "<color:#AAAAAA>Category configuration cancelled.</color>"
+    cancelled: "<color:#AAAAAA>Drop box configuration cancelled.</color>"
   item:
-    title: "Item Registry Editor"
-    body: "<color:#AAAAAA>Configuring item: </color><color:#FFFF55>{material}</color><color:#AAAAAA> for container: </color><color:#55FFFF>{category}</color>"
+    title: "Item Details Editor"
+    body: "<color:#AAAAAA>Configuring item: </color><color:#FFFF55>{material}</color>"
     input_id: "Unique Item ID"
     input_display_name: "Custom Display Name"
     input_lore: "Item Lore (newlines or \\n supported)"
     input_rarity: "Rarity Tier"
     input_price: "Sell Price ($ Enter number)"
-    input_weight: "Drop Chance (%)"
-    input_chance: "Drop Chance (%)"
-    input_containers: "Allowed Containers (comma-separated or empty for ALL)"
     btn_save: "✔ Save Item"
     tooltip_save: "Save item to extraction registry"
     btn_cancel: "✖ Cancel"
@@ -337,12 +354,10 @@ dialog:
     error_empty_id: "<color:#FF5555>❌ Item ID cannot be empty!</color>"
     success: |
       <color:#555555>----------------------------------------</color>
-      <gradient:#00FFA3:#00B8FF><bold>✔ ITEM SAVED SUCCESSFULLY</bold></gradient>
+      <gradient:#00FFA3:#00B8FF><bold>✔ ITEM DETAILS SAVED</bold></gradient>
       <color:#AAAAAA>ID:           </color><color:#FFFF55>{id}</color>
       <color:#AAAAAA>Display Name: </color>{display_name}
-      <color:#AAAAAA>Category:     </color><color:#55FFFF>{category}</color>
       <color:#AAAAAA>Sell Price:   </color><color:#FFAA00>${price}</color>
-      <color:#AAAAAA>Drop Chance:  </color><color:#FFFF55>{weight}%</color>
       <color:#AAAAAA>Rarity:       </color>{rarity_tag}{rarity}</color>
       <color:#555555>----------------------------------------</color>
     cancelled: "<color:#AAAAAA>Item configuration cancelled.</color>"

@@ -1,9 +1,9 @@
 package com.luminaris.extraction.editor.gui
 
 import com.luminaris.extraction.LuminarisCorePlugin
-import com.luminaris.extraction.core.container.ContainerCategory
 import com.luminaris.extraction.core.item.ExtractionItem
 import com.luminaris.extraction.core.item.Rarity
+import com.luminaris.extraction.editor.dialog.ItemDialogBuilder
 import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -16,70 +16,155 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 
 /**
- * Item Property Editor GUI.
- * Allows the administrator to configure an item's [Rarity] tier,
- * which container types the item can drop in, and sell price before saving.
+ * Intermediate GUI layer for an [ExtractionItem].
+ * Displays a comprehensive preview of the item and its associated data,
+ * allows configuring details (ID, name, lore, rarity, price) via Dialog,
+ * selecting allowed drop box types via a nested paginated GUI,
+ * and performing quick in-GUI adjustments to rarity and sell price.
  */
 class ItemEditorGui(
     private val plugin: LuminarisCorePlugin,
     private val targetStack: ItemStack,
-    private val existingItem: ExtractionItem? = null
+    private val existingItem: ExtractionItem? = null,
+    initialRarity: Rarity? = null,
+    initialPrice: Double? = null,
+    initialAllowedContainers: MutableSet<String>? = null,
+    initialItemId: String? = null
 ) : EditorGuiHolder {
 
     private lateinit var inventory: Inventory
-    private var currentRarity: Rarity = existingItem?.rarity ?: Rarity.fromPrice(existingItem?.price ?: 100.0)
-    private var currentPrice: Double = existingItem?.price ?: when (currentRarity) {
+
+    private var currentRarity: Rarity = initialRarity ?: existingItem?.rarity ?: Rarity.fromPrice(existingItem?.price ?: 100.0)
+    private var currentPrice: Double = initialPrice ?: existingItem?.price ?: when (currentRarity) {
         Rarity.COMMON -> 50.0
         Rarity.UNCOMMON -> 150.0
         Rarity.RARE -> 500.0
         Rarity.EPIC -> 1500.0
         Rarity.LEGENDARY -> 4000.0
     }
-    private val allowedContainers: MutableSet<String> = existingItem?.allowedContainers?.toMutableSet() ?: mutableSetOf()
+    private val allowedContainers: MutableSet<String> = initialAllowedContainers ?: existingItem?.allowedContainers?.toMutableSet() ?: mutableSetOf()
+    private val currentItemId: String = initialItemId ?: existingItem?.id ?: run {
+        val baseName = targetStack.type.name.lowercase()
+        val hash = UUID.randomUUID().toString().substring(0, 5)
+        "${baseName}_$hash"
+    }
 
     private val raritySlots = mapOf(
-        20 to Rarity.COMMON,
-        21 to Rarity.UNCOMMON,
-        22 to Rarity.RARE,
-        23 to Rarity.EPIC,
-        24 to Rarity.LEGENDARY
+        29 to Rarity.COMMON,
+        30 to Rarity.UNCOMMON,
+        31 to Rarity.RARE,
+        32 to Rarity.EPIC,
+        33 to Rarity.LEGENDARY
     )
 
-    private val containerSlots = listOf(28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 41, 42, 43)
-    private val slotToCategoryMap = mutableMapOf<Int, ContainerCategory>()
-
     fun open(player: Player) {
-        slotToCategoryMap.clear()
         val title = TranslationManager.render("editor.gui.item_edit_title")
         inventory = Bukkit.createInventory(this, 54, title)
 
         GuiUtils.fill54Border(inventory, Material.GRAY_STAINED_GLASS_PANE)
 
-        // Slot 13: Item Preview
+        // Slot 10: Give Copy of Item
+        val copyLore = listOf(
+            TranslationManager.render("editor.gui.item_card_click_copy")
+        )
+        val copyItem = GuiUtils.createItem(
+            Material.CHEST_MINECART,
+            TranslationManager.render("editor.gui.item_card_click_copy"),
+            copyLore
+        )
+        inventory.setItem(10, copyItem)
+
+        // Slot 11: Edit Properties via Dialog Window
+        val dialogLore = listOf(
+            TranslationManager.render("editor.gui.item_dialog_lore_1"),
+            Component.empty(),
+            TranslationManager.render("editor.gui.item_dialog_lore_action")
+        )
+        val dialogItem = GuiUtils.createItem(
+            Material.WRITABLE_BOOK,
+            TranslationManager.render("editor.gui.btn_item_dialog"),
+            dialogLore,
+            glowing = true
+        )
+        inventory.setItem(11, dialogItem)
+
+        // Slot 13: Item Preview & Associated Data
         val previewStack = targetStack.clone()
         previewStack.editMeta { meta ->
             val lore = meta.lore()?.toMutableList() ?: mutableListOf()
             lore.add(Component.empty())
             lore.add(TranslationManager.parseComponent("<color:#555555>----------------------------------------</color>"))
+            lore.add(TranslationManager.render("editor.gui.item_card_id", "id" to currentItemId))
             val rarityLocalized = TranslationManager.get("rarity.${currentRarity.name.lowercase()}")
             lore.add(TranslationManager.render(
                 "editor.gui.item_preview_selected_rarity",
                 "tag" to currentRarity.miniMessageTag,
                 "name" to rarityLocalized
             ))
-            val catText = if (allowedContainers.isEmpty()) {
+            lore.add(TranslationManager.render("editor.gui.item_preview_price", "price" to String.format("%.2f", currentPrice)))
+
+            val isAll = allowedContainers.isEmpty() && !allowedContainers.contains("__none__")
+            val catText = if (isAll) {
                 TranslationManager.get("general.all")
+            } else if (allowedContainers.contains("__none__")) {
+                "0"
             } else {
                 allowedContainers.joinToString(", ")
             }
             lore.add(TranslationManager.render("editor.gui.item_preview_containers", "containers" to catText))
-            lore.add(TranslationManager.render("editor.gui.item_preview_price", "price" to String.format("%.2f", currentPrice)))
             lore.add(TranslationManager.parseComponent("<color:#555555>----------------------------------------</color>"))
             meta.lore(lore)
         }
         inventory.setItem(13, previewStack)
 
-        // Slots 20..24: Rarity Selector
+        // Slot 15: Select Drop Boxes via Nested GUI
+        val isAll = allowedContainers.isEmpty() && !allowedContainers.contains("__none__")
+        val statusText = if (isAll) {
+            TranslationManager.get("editor.gui.all_containers_allowed_title")
+        } else if (allowedContainers.contains("__none__")) {
+            "0"
+        } else {
+            "${allowedContainers.size}"
+        }
+        val selectBoxesLore = listOf(
+            TranslationManager.render("editor.gui.select_containers_lore_1"),
+            Component.empty(),
+            TranslationManager.render("editor.gui.select_containers_lore_status", "status" to statusText),
+            Component.empty(),
+            TranslationManager.render("editor.gui.select_containers_lore_action")
+        )
+        val selectBoxesItem = GuiUtils.createItem(
+            Material.CHEST,
+            TranslationManager.render("editor.gui.btn_select_containers"),
+            selectBoxesLore,
+            glowing = true
+        )
+        inventory.setItem(15, selectBoxesItem)
+
+        // Slot 16: Delete Item Button
+        if (existingItem != null) {
+            val deleteLore = listOf(
+                TranslationManager.render("editor.gui.item_card_click_delete")
+            )
+            val deleteItem = GuiUtils.createItem(
+                Material.LAVA_BUCKET,
+                TranslationManager.render("editor.gui.item_card_click_delete"),
+                deleteLore
+            )
+            inventory.setItem(16, deleteItem)
+        }
+
+        // Slot 22: Section Header for Rarity & Price Quick Controls
+        val headerItem = GuiUtils.createItem(
+            Material.COMPARATOR,
+            TranslationManager.render("editor.gui.rarity_rates_header"),
+            listOf(
+                TranslationManager.render("editor.gui.rarity_status_select")
+            )
+        )
+        inventory.setItem(22, headerItem)
+
+        // Slots 29..33: Rarity Selection Buttons
         for ((slot, rarity) in raritySlots) {
             val isSelected = (rarity == currentRarity)
             val iconMat = when (rarity) {
@@ -106,50 +191,7 @@ class ItemEditorGui(
             inventory.setItem(slot, rarityItem)
         }
 
-        // Slot 28: Toggle ALL Containers
-        val isAll = allowedContainers.isEmpty()
-        val allContainersItem = GuiUtils.createItem(
-            if (isAll) Material.LIME_STAINED_GLASS_PANE else Material.GRAY_STAINED_GLASS_PANE,
-            TranslationManager.render("editor.gui.all_containers"),
-            listOf(
-                if (isAll) {
-                    TranslationManager.render("editor.gui.all_containers_allowed")
-                } else {
-                    TranslationManager.render("editor.gui.all_containers_click")
-                }
-            ),
-            glowing = isAll
-        )
-        inventory.setItem(28, allContainersItem)
-
-        // Slots 29+: Individual Container Categories Selector
-        val categories = plugin.containerRegistry.getAllCategories()
-        var slotIdx = 0
-        for (category in categories) {
-            if (slotIdx >= containerSlots.size - 1) break
-            val slot = containerSlots[slotIdx + 1]
-            slotToCategoryMap[slot] = category
-
-            val isAllowed = allowedContainers.contains(category.id.lowercase())
-            val statusColor = if (isAllowed) TranslationManager.render("editor.gui.cat_status_allowed") else TranslationManager.render("editor.gui.cat_status_not_allowed")
-            val glassMat = if (isAllowed) Material.LIME_CONCRETE else Material.RED_CONCRETE
-
-            val catItem = GuiUtils.createItem(
-                glassMat,
-                category.displayName,
-                listOf(
-                    TranslationManager.render("editor.gui.cat_card_id", "id" to category.id),
-                    statusColor,
-                    Component.empty(),
-                    TranslationManager.render("editor.gui.cat_card_toggle")
-                ),
-                glowing = isAllowed
-            )
-            inventory.setItem(slot, catItem)
-            slotIdx++
-        }
-
-        // Slot 40: Price Adjustment
+        // Slot 34: Price Adjustment Button
         val priceLore = listOf(
             TranslationManager.render("editor.gui.price_card_current", "price" to String.format("%.2f", currentPrice)),
             Component.empty(),
@@ -163,18 +205,10 @@ class ItemEditorGui(
             TranslationManager.render("editor.gui.btn_adjust_price"),
             priceLore
         )
-        inventory.setItem(40, priceItem)
+        inventory.setItem(34, priceItem)
 
-        // Slot 45: Cancel
-        inventory.setItem(45, GuiUtils.createItem(Material.BARRIER, TranslationManager.render("editor.gui.btn_close")))
-
-        // Slot 49: Edit in Dialog Window
-        val dialogLore = listOf(
-            TranslationManager.render("editor.gui.open_dialog_lore"),
-            Component.empty(),
-            TranslationManager.render("editor.gui.btn_open_dialog")
-        )
-        inventory.setItem(49, GuiUtils.createItem(Material.WRITABLE_BOOK, TranslationManager.render("editor.gui.btn_open_dialog"), dialogLore, glowing = true))
+        // Slot 45: Back / Cancel
+        inventory.setItem(45, GuiUtils.createItem(Material.ARROW, TranslationManager.render("editor.gui.btn_back")))
 
         // Slot 53: Confirm & Save Item
         val saveLore = listOf(
@@ -200,13 +234,59 @@ class ItemEditorGui(
 
         val slot = event.slot
         when (slot) {
-            45 -> {
-                // Cancel
-                GuiUtils.playClickSound(player)
-                ItemListGui(plugin).open(player)
+            10 -> {
+                // Give copy of item
+                GuiUtils.playSuccessSound(player)
+                val leftover = player.inventory.addItem(targetStack.clone())
+                for (drop in leftover.values) {
+                    player.world.dropItemNaturally(player.location, drop)
+                }
+                TranslationManager.send(player, "editor.gui.item_given")
                 return
             }
-            40 -> {
+            11 -> {
+                // Open Item Dialog to edit ID, name, lore, rarity, price
+                GuiUtils.playClickSound(player)
+                player.closeInventory()
+                ItemDialogBuilder.open(
+                    player = player,
+                    itemRegistry = plugin.itemRegistry,
+                    itemStack = targetStack,
+                    existingItem = existingItem,
+                    plugin = plugin,
+                    currentAllowedContainers = if (allowedContainers.contains("__none__")) emptySet() else allowedContainers
+                ) { savedItem ->
+                    ItemEditorGui(plugin, savedItem.itemStack, savedItem).open(player)
+                }
+                return
+            }
+            15 -> {
+                // Open Nested GUI to select drop box types
+                GuiUtils.playClickSound(player)
+                ItemContainerSelectGui(
+                    plugin = plugin,
+                    targetStack = targetStack,
+                    existingItem = existingItem,
+                    currentRarity = currentRarity,
+                    currentPrice = currentPrice,
+                    allowedContainers = allowedContainers,
+                    currentItemId = currentItemId
+                ).open(player, 0)
+                return
+            }
+            16 -> {
+                // Delete item
+                if (existingItem != null && event.isShiftClick) {
+                    GuiUtils.playDeleteSound(player)
+                    plugin.itemRegistry.unregister(existingItem.id, saveToDisk = true)
+                    TranslationManager.send(player, "editor.gui.item_deleted", "id" to existingItem.id)
+                    ItemListGui(plugin).open(player)
+                } else if (existingItem != null) {
+                    GuiUtils.playErrorSound(player)
+                }
+                return
+            }
+            34 -> {
                 // Adjust Price
                 val delta = when (event.click) {
                     ClickType.LEFT -> 50.0
@@ -222,54 +302,33 @@ class ItemEditorGui(
                 }
                 return
             }
-            28 -> {
-                // Toggle ALL Containers
+            45 -> {
+                // Back to ItemListGui
                 GuiUtils.playClickSound(player)
-                if (allowedContainers.isEmpty()) {
-                    // Turn on specific categories instead of all
-                    val allCats = plugin.containerRegistry.getAllCategories().map { it.id.lowercase() }
-                    allowedContainers.addAll(allCats)
-                } else {
-                    // Clear to mean ALL containers
-                    allowedContainers.clear()
-                }
-                open(player)
-                return
-            }
-            49 -> {
-                // Open Item Dialog
-                GuiUtils.playClickSound(player)
-                player.closeInventory()
-                com.luminaris.extraction.editor.dialog.ItemDialogBuilder.open(
-                    player = player,
-                    itemRegistry = plugin.itemRegistry,
-                    itemStack = targetStack,
-                    existingItem = existingItem,
-                    plugin = plugin
-                )
+                ItemListGui(plugin).open(player)
                 return
             }
             53 -> {
                 // Save item to registry
                 GuiUtils.playSuccessSound(player)
 
-                val itemId = existingItem?.id ?: run {
-                    val baseName = targetStack.type.name.lowercase()
-                    val hash = UUID.randomUUID().toString().substring(0, 5)
-                    "${baseName}_$hash"
+                val finalAllowed = if (allowedContainers.contains("__none__")) {
+                    mutableSetOf()
+                } else {
+                    allowedContainers.toMutableSet()
                 }
 
                 val finalItem = ExtractionItem(
-                    id = itemId,
+                    id = currentItemId,
                     itemStack = targetStack.clone(),
                     price = currentPrice,
                     rarity = currentRarity,
-                    weight = 20.0,
-                    allowedContainers = allowedContainers.toMutableSet()
+                    weight = existingItem?.weight ?: 1.0,
+                    allowedContainers = finalAllowed
                 )
 
                 plugin.itemRegistry.register(finalItem, saveToDisk = true)
-                TranslationManager.send(player, "editor.gui.item_saved", "id" to itemId)
+                TranslationManager.send(player, "editor.gui.item_saved", "id" to currentItemId)
                 ItemListGui(plugin).open(player)
                 return
             }
@@ -280,7 +339,6 @@ class ItemEditorGui(
         if (selectedRarity != null) {
             GuiUtils.playClickSound(player)
             currentRarity = selectedRarity
-            // If price wasn't modified from default, update price based on rarity
             if (existingItem == null) {
                 currentPrice = when (currentRarity) {
                     Rarity.COMMON -> 50.0
@@ -291,21 +349,6 @@ class ItemEditorGui(
                 }
             }
             open(player)
-            return
-        }
-
-        // Container Category Toggle
-        val clickedCategory = slotToCategoryMap[slot]
-        if (clickedCategory != null) {
-            GuiUtils.playClickSound(player)
-            val catId = clickedCategory.id.lowercase()
-            if (allowedContainers.contains(catId)) {
-                allowedContainers.remove(catId)
-            } else {
-                allowedContainers.add(catId)
-            }
-            open(player)
-            return
         }
     }
 

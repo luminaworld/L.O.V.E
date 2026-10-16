@@ -163,6 +163,42 @@ class ExtractionEditorTest {
         val commonPct = category.getRarityPercentage(Rarity.COMMON)
         assertEquals(0.0, commonPct, 0.001)
     }
+
+    @Test
+    fun testAdjustRarityPercentageAutoBalancesToExact100() {
+        val category = ContainerCategory(
+            id = "test_balance",
+            displayName = Component.text("Test Balance"),
+            minRolls = 1,
+            maxRolls = 3
+        )
+        // Default normal_crate: COMMON 70, UNCOMMON 25, RARE 5, EPIC 0, LEGENDARY 0
+        assertEquals(100.0, Rarity.entries.sumOf { category.getRarityPercentage(it) }, 0.001)
+
+        // Adjust EPIC by +5%
+        category.adjustRarityPercentage(Rarity.EPIC, 5.0)
+        assertEquals(5.0, category.getRarityPercentage(Rarity.EPIC), 0.1)
+        assertEquals(100.0, Rarity.entries.sumOf { category.getRarityPercentage(it) }, 0.001)
+
+        // Adjust EPIC by +1%
+        category.adjustRarityPercentage(Rarity.EPIC, 1.0)
+        assertEquals(6.0, category.getRarityPercentage(Rarity.EPIC), 0.1)
+        assertEquals(100.0, Rarity.entries.sumOf { category.getRarityPercentage(it) }, 0.001)
+
+        // Adjust COMMON by -5%
+        category.adjustRarityPercentage(Rarity.COMMON, -5.0)
+        assertEquals(100.0, Rarity.entries.sumOf { category.getRarityPercentage(it) }, 0.001)
+
+        // Adjust RARE by -1%
+        category.adjustRarityPercentage(Rarity.RARE, -1.0)
+        assertEquals(100.0, Rarity.entries.sumOf { category.getRarityPercentage(it) }, 0.001)
+
+        // Repeated adjustments of +1
+        for (i in 1..20) {
+            category.adjustRarityPercentage(Rarity.LEGENDARY, 1.0)
+            assertEquals(100.0, Rarity.entries.sumOf { category.getRarityPercentage(it) }, 0.001)
+        }
+    }
 }
 
 
