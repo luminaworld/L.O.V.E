@@ -1,6 +1,7 @@
 package com.luminaris.extraction.core.safe
 
 import com.luminaris.extraction.LuminarisCorePlugin
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.util.ItemStackSerializer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -105,7 +106,7 @@ class SafeCaseManager(private val plugin: LuminarisCorePlugin) {
                 val rawDisplay = caseSec.getString("display_name")
                     ?: caseSec.getString("title")
                     ?: "<gold>$key</gold>"
-                val displayName = miniMessage.deserialize(rawDisplay)
+                val displayName = TranslationManager.parseComponent(rawDisplay)
 
                 val matName = caseSec.getString("material", "BUNDLE")!!
                 val material = Material.matchMaterial(matName) ?: Material.BUNDLE
@@ -202,11 +203,11 @@ class SafeCaseManager(private val plugin: LuminarisCorePlugin) {
     fun createLockedSlotItem(): ItemStack {
         val item = ItemStack(Material.GRAY_STAINED_GLASS_PANE)
         item.editMeta { meta ->
-            meta.displayName(miniMessage.deserialize("<dark_gray>▪ <gray>Locked Container Slot</gray></dark_gray>"))
+            meta.displayName(TranslationManager.render("safe_case.locked_slot_name"))
             meta.lore(
                 listOf(
-                    miniMessage.deserialize("<dark_gray>Slot exceeds this container's capacity.</dark_gray>"),
-                    miniMessage.deserialize("<dark_gray>Upgrade to a larger Safe Case to unlock.</dark_gray>")
+                    TranslationManager.render("safe_case.locked_slot_lore_1"),
+                    TranslationManager.render("safe_case.locked_slot_lore_2")
                 )
             )
             meta.persistentDataContainer.set(KEY_LOCKED_SLOT, PersistentDataType.BOOLEAN, true)
@@ -227,15 +228,15 @@ class SafeCaseManager(private val plugin: LuminarisCorePlugin) {
             }
 
             val loreLines = listOf(
-                miniMessage.deserialize("<dark_gray>▪ <gray>Capacity: <yellow>${def.capacity} slots</yellow></gray></dark_gray>"),
-                miniMessage.deserialize("<dark_gray>▪ <aqua>L.O.V.E Secure Container</aqua></dark_gray>"),
+                TranslationManager.render("safe_case.lore_capacity", "capacity" to def.capacity),
+                TranslationManager.render("safe_case.lore_secure"),
                 if (def.keepsOnDeath) {
-                    miniMessage.deserialize("<dark_gray>▪ <green>Kept on extraction & death</green></dark_gray>")
+                    TranslationManager.render("safe_case.lore_keeps_on_death")
                 } else {
-                    miniMessage.deserialize("<dark_gray>▪ <red>Lost on death</red></dark_gray>")
+                    TranslationManager.render("safe_case.lore_lost_on_death")
                 },
-                miniMessage.deserialize("<dark_gray>------------------------</dark_gray>"),
-                miniMessage.deserialize("<yellow>Right-click to access storage</yellow>")
+                TranslationManager.render("safe_case.lore_divider"),
+                TranslationManager.render("safe_case.lore_instruction")
             )
             meta.lore(loreLines)
 
@@ -288,7 +289,7 @@ class SafeCaseManager(private val plugin: LuminarisCorePlugin) {
             // Determine capacity & matching chest GUI size
             val capacity = pdc.get(KEY_SAFE_CAPACITY, PersistentDataType.INTEGER) ?: 9
             val chestSize = getMatchingChestSize(capacity)
-            val title = meta.displayName() ?: Component.text("Safe Container")
+            val title = meta.displayName() ?: TranslationManager.render("safe_case.default_title")
 
             // Instantiate custom InventoryHolder
             val holder = SafeCaseHolder(safeUuid = safeUuid, sourceItem = safeItem, capacity = capacity)

@@ -1,0 +1,431 @@
+# =========================================================================
+# Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+# ไฟล์ภาษาและการแปล: ภาษาอังกฤษ (English Localization: en.yml)
+# =========================================================================
+#
+# คำอธิบายภาพรวม:
+# ไฟล์นี้เป็นชุดภาษาอังกฤษมาตรฐาน (English Language Pack) สำหรับระบบ LuminarisCore
+# หากเซิร์ฟเวอร์เปิดใช้งานภาษาอื่น แล้วไม่พบคีย์ข้อความบางรายการในไฟล์ภาษานั้น
+# ระบบจะดึงข้อความจากไฟล์นี้ไปแสดงเป็นภาษาสำรอง (Fallback) โดยอัตโนมัติ
+#
+# คำแนะนำการแก้ไขและการจัดรูปแบบข้อความ:
+# 1. ข้อความทั้งหมดใช้มาตรฐาน Adventure MiniMessage:
+#    - ข้อความสีเดี่ยว: ใช้รูปแบบ <color:#HEX>Text</color> (เช่น <color:#F3CFFD>Example</color>)
+#    - ข้อความไล่เฉดสี: ใช้รูปแบบ <gradient:#HEX1:#HEX2>Text</gradient> (เช่น <gradient:#00FFA3:#00B8FF>Example</gradient>)
+#    - รูปแบบตัวอักษร: <bold> หรือ <b>, <italic> หรือ <i>, <underlined> หรือ <u>
+# 2. ตัวแปรในข้อความจะอยู่ในรูปแบบปีกกา เช่น {player}, {count}, {template}, {time}
+#    ห้ามแก้ไขหรือลบชื่อตัวแปรภายในเครื่องหมาย { } เนื่องจากระบบจะนำค่าจริงมาแทนที่
+# =========================================================================
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 1: คำนำหน้าชื่อระบบ (Prefixes)
+# ใช้แสดงหน้าข้อความในแชทและคอนโซลเพื่อระบุโมดูลย่อยที่ส่งข้อความ
+# -------------------------------------------------------------------------
+prefix:
+  # คำนำหน้าระบบแกนหลัก LuminarisCore
+  core: "<gradient:#00FFA3:#00B8FF><bold>[LuminarisCore]</bold></gradient>"
+  # คำนำหน้าสำหรับเครื่องมือมาร์กเกอร์จุดวางคอนเทนเนอร์
+  marker: "<gradient:#00FFA3:#00B8FF><bold>✔ [L.O.V.E Marker]</bold></gradient>"
+  # คำนำหน้าระบบการจัดการแมตช์ (ข้อความทั่วไป)
+  match: "<gradient:#00FFA3:#00B8FF><bold>[LuminarisMatch]</bold></gradient>"
+  # คำนำหน้าระบบการจัดการแมตช์ (ข้อความเตือน)
+  match_warn: "<gradient:#FFAA00:#FF5500><bold>[LuminarisMatch]</bold></gradient>"
+  # คำนำหน้าระบบการจัดการแมตช์ (ข้อผิดพลาด)
+  match_error: "<gradient:#FF0055:#FF5555><bold>[LuminarisMatch]</bold></gradient>"
+  # คำนำหน้าระบบจัดการโลกจำลอง InstanceWorld (ข้อความทั่วไป)
+  world: "<gradient:#00FFA3:#00B8FF><bold>[LuminarisWorld]</bold></gradient>"
+  # คำนำหน้าระบบจัดการโลกจำลอง (ข้อความเตือน)
+  world_warn: "<gradient:#FFAA00:#FF5500><bold>[LuminarisWorld]</bold></gradient>"
+  # คำนำหน้าระบบจัดการโลกจำลอง (ข้อผิดพลาด)
+  world_error: "<gradient:#FF0055:#FF5555><bold>[LuminarisWorld]</bold></gradient>"
+  # คำนำหน้าระบบสุ่มไอเทมลงกล่อง LootPopulator (ข้อความทั่วไป)
+  loot: "<gradient:#00FFA3:#00B8FF><bold>[LootPopulator]</bold></gradient>"
+  # คำนำหน้าระบบสุ่มไอเทม (ข้อความเตือน)
+  loot_warn: "<gradient:#FFAA00:#FF5500><bold>[LootPopulator]</bold></gradient>"
+  # คำนำหน้าระบบสุ่มไอเทม (ข้อผิดพลาด)
+  loot_error: "<gradient:#FF0055:#FF5555><bold>[LootPopulator]</bold></gradient>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 2: ข้อความทั่วไป (General Messages)
+# ข้อความพื้นฐานที่ใช้ร่วมกันในหลายส่วน เช่น การแจ้งเตือนสิทธิ์, เส้นคั่น
+# -------------------------------------------------------------------------
+general:
+  divider: "<color:#555555>----------------------------------------</color>"
+  divider_long: "<color:#555555>================================================================</color>"
+  divider_long_sub: "<color:#555555>----------------------------------------------------------------</color>"
+  divider_editor: "<color:#555555>==================================================</color>"
+  divider_editor_sub: "<color:#555555>--------------------------------------------------</color>"
+  no_permission: "<color:#FF5555>You do not have permission to execute this command.</color>"
+  player_only: "<color:#FF5555>❌ This command can only be executed by in-game players.</color>"
+  player_not_found: "<color:#FF5555>Player not found: <color:#FFFF55>{player}</color></color>"
+  all: "<color:#AAAAAA>ALL</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 3: แบนเนอร์เริ่มต้นและปิดระบบ (Banner)
+# ข้อความ ASCII Art และข้อมูลโมดูลที่แสดงบนคอนโซลขณะเซิร์ฟเวอร์เปิดหรือปิด
+# -------------------------------------------------------------------------
+banner:
+  platform:
+    folia: "<gradient:#FF0055:#FFAA00><bold>FOLIA</bold></gradient> <color:#AAAAAA>(Regionized Multi-Threaded)</color>"
+    paper: "<gradient:#00D2FF:#3A7BD5><bold>PAPER</bold></gradient> <color:#AAAAAA>(Universal Regional Scheduler)</color>"
+  startup: |
+    
+    <gradient:#00FFA3:#00B8FF><bold> __         ______     __   __     ______    </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>/\ \       /\  __ \   /\ \ / /    /\  ___\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>\ \ \____  \ \ \/\ \  \ \ \'/     \ \  __\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold> \ \_____\  \ \_____\  \ \__|      \ \_____\ </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>  \/_____/   \/_____/   \/_/        \/_____/ </bold></gradient>
+    <color:#555555>================================================================</color>
+    <gradient:#00FFA3:#00B8FF><bold> LUMINARIS OPERATION VANILLA EXTRACTION (L.O.V.E) </bold></gradient>
+    <color:#AAAAAA> Core Engine Version: </color><color:#55FFFF>{version}</color>
+    <color:#AAAAAA> Target Runtime:      </color><color:#FFFF55>JVM {jvm}</color>
+    <color:#AAAAAA> Engine Platform:    </color>{platform}
+    <color:#AAAAAA> Loaded Modules:      </color><color:#55FF55>Storage</color>, <color:#55FF55>ItemRegistry</color>, <color:#55FF55>ContainerRegistry</color>, <color:#55FF55>SafeContainerManager</color>, <color:#55FF55>TemplateStorage</color>, <color:#55FF55>ContainerMarker</color>, <color:#55FF55>NativeDialogUI</color>, <color:#55FF55>EditorCommand</color>, <color:#55FF55>InstanceWorldService</color>, <color:#55FF55>LootPopulator</color>, <color:#55FF55>SpawnAllocator</color>, <color:#55FF55>ExtractionMatrix</color>, <color:#55FF55>MatchEngine</color>, <color:#55FF55>CorpseManager</color>
+    <color:#AAAAAA> Status:              </color><color:#55FF55><bold>ACTIVE & READY</bold></color>
+    <color:#555555>================================================================</color>
+  shutdown: |
+    <color:#555555>================================================================</color>
+    <gradient:#FF416C:#8A2387><bold>[LuminarisCore] Disabling Extraction Engine (L.O.V.E)...</bold></gradient>
+    <color:#AAAAAA>Cancelling active regional and asynchronous tasks...</color>
+    <color:#FF5555><bold>Status: OFFLINE</bold></color>
+    <color:#555555>================================================================</color>
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 4: คำสั่งทั่วไปของระบบ (/ext)
+# ข้อความตอบกลับสำหรับคำสั่ง reload, status, help, case, และ chest
+# -------------------------------------------------------------------------
+command:
+  reload:
+    success: "<color:#55FF55>✔ [LuminarisCore] All extraction configurations and registries reloaded successfully!</color>"
+  unknown_subcommand: "<color:#FF5555>Unknown subcommand: <color:#FFFF55>{subcommand}</color>. Use </color><color:#FFFF55>/{label} help</color><color:#FF5555> for available commands.</color>"
+  status:
+    title: "<gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION ENGINE STATUS</bold></gradient>"
+    version: "<color:#AAAAAA>Version:</color> <color:#FFFFFF>{version}</color>"
+    threading: "<color:#AAAAAA>Threading Model:</color> {platform}"
+    items: "<color:#AAAAAA>Active Extraction Items:</color> <color:#FFFF55>{count}</color>"
+    categories: "<color:#AAAAAA>Container Categories:</color> <color:#FFFF55>{count}</color>"
+    cases: "<color:#AAAAAA>Safe Container Profiles:</color> <color:#FFFF55>{count}</color>"
+    instances: "<color:#AAAAAA>Active Match Instances:</color> <color:#FFFF55>{count}</color>"
+  help:
+    title: "<gradient:#00FFA3:#00B8FF><bold>LUMINARIS (L.O.V.E) EXTRACTION COMMANDS</bold></gradient>"
+    match_start: "<color:#FFFF55>/ext match start <map> [players]</color>   <color:#AAAAAA>- Initialize and start an extraction raid</color>"
+    match_stop: "<color:#FFFF55>/ext match stop <matchId></color>         <color:#AAAAAA>- Terminate an active match instance</color>"
+    match_list: "<color:#FFFF55>/ext match list</color>                    <color:#AAAAAA>- View active extraction matches</color>"
+    chest_get: "<color:#FFFF55>/ext chest get <cat> [type]</color>         <color:#AAAAAA>- Dispense Container Marker (chest/barrel)</color>"
+    chest_list: "<color:#FFFF55>/ext chest list</color>                    <color:#AAAAAA>- View registered template container markers</color>"
+    case_list: "<color:#FFFF55>/ext case list</color>                      <color:#AAAAAA>- List all configured Safe Containers</color>"
+    case_give: "<color:#FFFF55>/ext case give <player> <id></color>       <color:#AAAAAA>- Give a Safe Container to a player</color>"
+    editor_createitem: "<color:#FFFF55>/ext editor createitem <cat></color>       <color:#AAAAAA>- Register held item via Native Dialog UI</color>"
+    editor_createcategory: "<color:#FFFF55>/ext editor createcategory</color>         <color:#AAAAAA>- Configure loot category via Dialog UI</color>"
+    editor_list: "<color:#FFFF55>/ext editor list</color>                   <color:#AAAAAA>- List registered items and categories</color>"
+    status: "<color:#FFFF55>/ext status</color>                        <color:#AAAAAA>- View active core engine telemetry & threading model</color>"
+    reload: "<color:#FFFF55>/ext reload</color>                        <color:#AAAAAA>- Hot-reload items, categories, templates, safe cases</color>"
+    help: "<color:#FFFF55>/ext help</color>                          <color:#AAAAAA>- Display extraction command manual</color>"
+  case:
+    usage: "<color:#FF5555>Usage: </color><color:#FFFF55>/{label} case <give|list></color>"
+    give_usage: "<color:#FF5555>Usage: </color><color:#FFFF55>/{label} case give <player> <caseId></color>"
+    empty_list: "<color:#AAAAAA>No safe container definitions registered.</color>"
+    list_header: "<gradient:#00FFA3:#00B8FF><bold>--- Registered Safe Containers ({count}) ---</bold></gradient>"
+    list_entry: "<color:#555555>▪ </color><color:#FFFF55>{id}</color> <color:#AAAAAA>-</color> {display_name} <color:#AAAAAA>(Cap: </color><color:#55FFFF>{capacity}</color><color:#AAAAAA>, Mat: </color><color:#55FF55>{material}</color><color:#AAAAAA>)</color>"
+    unknown_id: "<color:#FF5555>Unknown safe container ID: <color:#FFFF55>{id}</color>. Use </color><color:#FFFF55>/{label} case list</color>"
+    give_success_sender: "<color:#55FF55>✔ Successfully granted Safe Container </color><color:#FFFF55>{id}</color><color:#55FF55> to </color><color:#55FFFF>{player}</color><color:#55FF55>!</color>"
+    give_success_target: "<color:#55FF55>You received a secure safe container: </color>"
+    unknown_action: "<color:#FF5555>Unknown case action: <color:#FFFF55>{action}</color>. Usage: </color><color:#FFFF55>/{label} case <give|list></color>"
+  chest:
+    usage: "<color:#FF5555>Usage: </color><color:#FFFF55>/{label} chest <get|list></color>"
+    missing_category: |
+      <color:#FF5555>Missing category ID!</color>
+      <color:#FFFF55>Usage: </color><color:#FFFFFF>/{label} chest get <category_id> [chest|barrel]</color>
+      {hint}
+    available_categories: "<color:#AAAAAA>Available categories: </color><color:#55FFFF>{categories}</color>"
+    no_categories: "<color:#FFFF55>No categories registered. Create one with /ext editor createcategory</color>"
+    category_notice: "<color:#FFFF55>⚠ Notice: Category </color><color:#55FFFF>{category}</color><color:#FFFF55> is not currently in ContainerRegistry, but marker will still be created.</color>"
+    give_success: "<color:#55FF55>✔ Granted Container Marker tool for category </color><color:#FFFF55>{category}</color> <color:#AAAAAA>({material})</color><color:#55FF55> to </color><color:#55FFFF>{player}</color><color:#55FF55>!</color>"
+    list_header: "<gradient:#00FFA3:#00B8FF><bold>REGISTERED TEMPLATE CONTAINERS</bold></gradient>"
+    list_empty: "<color:#AAAAAA>No template maps registered or loaded.</color>"
+    list_template_entry: "<color:#555555>▪ </color><color:#FFFF55>{template}</color> <color:#AAAAAA>({display_name}): </color><color:#55FFFF>{count} containers</color>"
+    list_container_entry: "   <color:#555555>• </color><color:#AAAAAA>ID: </color><color:#FFFFFF>{id}</color> <color:#AAAAAA>| Cat: </color><color:#FFFF55>{category}</color> <color:#AAAAAA>| Pos: </color><color:#55FFFF>({x}, {y}, {z})</color>"
+    unknown_action: "<color:#FF5555>Unknown chest action: <color:#FFFF55>{action}</color>. Usage: </color><color:#FFFF55>/{label} chest <get|list></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 5: ตัวแก้ไขในเกม (/ext editor)
+# คำสั่งสำหรับแอดมินในการสร้างไอเทม, สร้างหมวดหมู่, และดูรายการในระบบ
+# -------------------------------------------------------------------------
+editor:
+  no_permission: "<color:#FF5555>❌ You do not have permission to access the extraction editor.</color>"
+  unknown_subcommand: "<color:#FF5555>Unknown editor subcommand: <color:#FFFF55>{subcommand}</color>.</color> <color:#FFFF55>Use </color><color:#55FFFF>/{label} editor help</color><color:#FFFF55> for manual.</color>"
+  missing_category: |
+    <color:#FF5555>❌ Missing category argument!</color>
+    <color:#FFFF55>Usage: </color><color:#FFFFFF>/{label} editor createitem <category></color>
+    {hint}
+  available_categories: "<color:#AAAAAA>Available categories: </color><color:#55FFFF>{categories}</color>"
+  no_categories_note: "<color:#FFFF55>Note: No categories registered yet. Create one with </color><color:#55FFFF>/{label} editor createcategory</color>"
+  hand_empty: "<color:#FF5555>❌ Your main hand is empty! Please hold the item you want to register in your main hand.</color>"
+  category_unregistered_note: "<color:#FFFF55>⚠ Note: Category </color><color:#55FFFF>{category}</color><color:#FFFF55> is not in ContainerRegistry yet. Registering anyway...</color>"
+  list:
+    title: "<gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION REGISTRY OVERVIEW</bold></gradient>"
+    summary: "<color:#AAAAAA>Total Categories: </color><color:#FFFF55>{categories_count}</color><color:#AAAAAA> | Total Items: </color><color:#FFFF55>{items_count}</color>"
+    categories_header: "<color:#FFAA00><bold>[CONTAINER CATEGORIES]</bold></color>"
+    categories_empty: "<color:#AAAAAA>  <i>No container categories registered yet.</i></color>"
+    category_entry: "  <color:#FFFF55>•</color> <color:#55FFFF><bold>{id}</bold></color> <color:#AAAAAA>-</color> {display_name} <color:#AAAAAA>(Rolls: </color><color:#55FF55>{min_rolls}-{max_rolls}</color><color:#AAAAAA> | Linked Items: </color><color:#FFFF55>{linked_items}</color><color:#AAAAAA>)</color>"
+    items_header: "<color:#FFAA00><bold>[EXTRACTION ITEMS]</bold></color>"
+    items_empty: "<color:#AAAAAA>  <i>No extraction items registered yet.</i></color>"
+    item_entry: "  <color:#FFFF55>•</color> <color:#FFFF55>{id}</color> [{rarity_tag}{rarity}</color>] {display_name} <color:#AAAAAA>-</color> <color:#FFAA00>${price}</color> <color:#AAAAAA>| W: </color><color:#FFFFFF>{weight}</color> <color:#AAAAAA>| In: </color><color:#55FFFF>[{containers}]</color>"
+  help:
+    title: "<gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION IN-GAME EDITOR</bold></gradient>"
+    createitem: |
+      <color:#FFFF55>/{label} editor createitem <category></color>
+      <color:#AAAAAA>  └ Register item in your main hand into a category via Dialog UI</color>
+    createcategory: |
+      <color:#FFFF55>/{label} editor createcategory</color>
+      <color:#AAAAAA>  └ Open category configuration Dialog (rolls, title, ID)</color>
+    list: |
+      <color:#FFFF55>/{label} editor list</color>
+      <color:#AAAAAA>  └ View comprehensive report of all registered items & categories</color>
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 6: หน้าต่างโต้ตอบในเกม (Native Dialog UI)
+# ข้อความในหน้าต่าง GUI แบบ Native ที่ใช้กำหนดค่าไอเทมและหมวดหมู่
+# -------------------------------------------------------------------------
+dialog:
+  category:
+    title: "Container Category Editor"
+    body: "<color:#AAAAAA>Configure loot roll properties and naming for this container category.</color>"
+    input_id: "Category ID"
+    input_display_name: "Category Display Name"
+    input_min_rolls: "Min Rolls"
+    input_max_rolls: "Max Rolls"
+    default_display: "<gradient:#FFAA00:#FF5555>Military Supply Crate</gradient>"
+    btn_save: "✔ Save Category"
+    tooltip_save: "Create and persist container category"
+    btn_cancel: "✖ Cancel"
+    tooltip_cancel: "Close dialog without saving"
+    error_empty_id: "<color:#FF5555>❌ Category ID cannot be empty!</color>"
+    success: |
+      <color:#555555>----------------------------------------</color>
+      <gradient:#00FFA3:#00B8FF><bold>✔ CATEGORY CREATED SUCCESSFULLY</bold></gradient>
+      <color:#AAAAAA>ID:           </color><color:#FFFF55>{id}</color>
+      <color:#AAAAAA>Display Name: </color><color:#FFFFFF>{display_name}</color>
+      <color:#AAAAAA>Min Rolls:    </color><color:#55FF55>{min_rolls}</color>
+      <color:#AAAAAA>Max Rolls:    </color><color:#55FF55>{max_rolls}</color>
+      <color:#555555>----------------------------------------</color>
+    cancelled: "<color:#AAAAAA>Category creation cancelled.</color>"
+  item:
+    title: "Item Registry Editor"
+    body: "<color:#AAAAAA>Configuring item: </color><color:#FFFF55>{material}</color><color:#AAAAAA> for category: </color><color:#55FFFF>{category}</color>"
+    input_id: "Unique Item ID"
+    input_display_name: "Custom Display Name"
+    input_price: "Sell Price"
+    input_weight: "Drop Weight"
+    btn_save: "✔ Register Item"
+    tooltip_save: "Save item to extraction registry"
+    btn_cancel: "✖ Cancel"
+    tooltip_cancel: "Close dialog without saving"
+    error_empty_id: "<color:#FF5555>❌ Item ID cannot be empty!</color>"
+    success: |
+      <color:#555555>----------------------------------------</color>
+      <gradient:#00FFA3:#00B8FF><bold>✔ ITEM REGISTERED SUCCESSFULLY</bold></gradient>
+      <color:#AAAAAA>ID:           </color><color:#FFFF55>{id}</color>
+      <color:#AAAAAA>Display Name: </color>{display_name}
+      <color:#AAAAAA>Category:     </color><color:#55FFFF>{category}</color>
+      <color:#AAAAAA>Sell Price:   </color><color:#FFAA00>${price}</color>
+      <color:#AAAAAA>Drop Weight:  </color><color:#FFFF55>{weight}</color>
+      <color:#AAAAAA>Rarity:       </color>{rarity_tag}{rarity}</color>
+      <color:#555555>----------------------------------------</color>
+    cancelled: "<color:#AAAAAA>Item registration cancelled.</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 7: เครื่องมือมาร์กเกอร์คอนเทนเนอร์ (Tool)
+# ชื่อและคำอธิบายใต้ไอเทม (Lore) ของบล็อกมาร์กเกอร์ที่แจกจ่ายให้แอดมิน
+# -------------------------------------------------------------------------
+tool:
+  marker:
+    display_name: "<gradient:#00FFA3:#00B8FF><bold>Container Marker</bold></gradient> <color:#AAAAAA>(</color><color:#FFFF55>{label}</color><color:#AAAAAA>)</color>"
+    lore_category: "<color:#AAAAAA>Category: <color:#FFFF55>{category}</color></color>"
+    lore_place: "<color:#555555>▪ Place in a template world to register.</color>"
+    lore_break: "<color:#555555>▪ Break with editor permission to remove.</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 8: ตัวตรวจจับเหตุการณ์มาร์กเกอร์ (Listener)
+# ข้อความแจ้งเตือนเมื่อวางหรือทุบบล็อกมาร์กเกอร์ในโลกเทมเพลต
+# -------------------------------------------------------------------------
+listener:
+  marker:
+    only_template_world: "<color:#FF5555>❌ Container markers can only be placed inside template worlds!</color>"
+    template_hint: "<color:#AAAAAA>Hint: Target world name must have prefix </color><color:#FFFF55>template_</color><color:#AAAAAA> or be an initialized template.</color>"
+    actionbar_placed: "<color:#55FF55>Registered container: <color:#FFFF55>{category}</color> at <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    chat_placed: "<gradient:#00FFA3:#00B8FF><bold>✔ [L.O.V.E Marker]</bold></gradient> <color:#55FF55>Registered container <color:#FFFF55>{category}</color> at <color:#55FFFF>({x}, {y}, {z})</color> in template <color:#FFFF55>{template}</color></color>"
+    no_permission_break: "<color:#FF5555>❌ You do not have permission to break registered extraction containers!</color>"
+    actionbar_denied: "<color:#FF5555>Permission denied: Registered container marker</color>"
+    chat_removed: "<color:#FF5555>✖ Removed registered container <color:#FFFF55>{category}</color> at <color:#55FFFF>{x}, {y}, {z}</color> from template <color:#FFFF55>{template}</color>.</color>"
+    actionbar_removed: "<color:#FF5555>Removed container: <color:#FFFF55>{category}</color> at <color:#55FFFF>{x}, {y}, {z}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 9: ระบบจุดสกัดหลบหนี (Extraction Matrix)
+# ข้อความขณะผู้เล่นยืนในจุดอพยพ (Evacuation Zone), นับถอยหลัง, และเงื่อนไขต่างๆ
+# -------------------------------------------------------------------------
+extraction:
+  cancelled_outside: "<color:#FF5555><bold>EXTRACTION CANCELLED</bold> - You moved outside the evacuation zone!</color>"
+  countdown_actionbar: "<color:#55FF55>Extracting in <color:#FFFF55>{remaining}</color>s... Stay in the zone!</color>"
+  interrupted_damage: "<color:#FF5555><bold>EXTRACTION INTERRUPTED</bold> - You took damage!</color>"
+  success_actionbar: "<color:#55FF55><bold>EXTRACTION SUCCESSFUL!</bold> Evacuation complete.</color>"
+  log_teleport_error: "<color:#FF5555>Failed to teleport extracted player <color:#FFFF55>{player}</color>: <color:#FFFFFF>{error}</color></color>"
+  reason_inactive: "<color:#FF5555>Evacuation zone is inactive. Opens in <color:#FFFF55>{remaining}s</color>.</color>"
+  reason_expired: "<color:#FF5555>Evacuation zone has expired and is now closed.</color>"
+  reason_restricted: "<color:#FF5555>Evacuation zone is restricted to squad(s): <color:#FFFF55>{squads}</color>.</color>"
+  reason_requires_item: "<color:#FF5555>Evacuation requires: <color:#FFFF55>{item}</color>.</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 10: การจัดการแมตช์การสกัด (Match Engine)
+# การเริ่มแมตช์, บอสบาร์เวลา, ข้อความเตือน MIA, และรายงานสรุปผล Debrief
+# -------------------------------------------------------------------------
+match:
+  log_deployment_initiating: "<color:#AAAAAA>Initiating match deployment </color><color:#FFFF55>{match_id}</color> <color:#AAAAAA>for template </color><color:#55FFFF>{template}</color> <color:#AAAAAA>with </color><color:#FFFFFF>{count}</color> <color:#AAAAAA>player(s)...</color>"
+  log_populated_containers: "<color:#55FF55>✔ Populated </color><color:#FFFF55>{count}</color><color:#55FF55> container(s) for match </color><color:#FFFF55>{match_id}</color><color:#55FF55>.</color>"
+  log_teleport_error: "<color:#FF5555>Teleport error for <color:#FFFF55>{player}</color> to match <color:#55FFFF>{match_id}</color>: <color:#FFFFFF>{error}</color></color>"
+  player_deployed: "<gradient:#00FFA3:#00B8FF><bold>[INFILTRATION CONFIRMED]</bold></gradient> <color:#AAAAAA>Deployed to </color><color:#55FFFF>{template}</color><color:#AAAAAA>. Raid timer active!</color>"
+  log_populate_error: "<color:#FF5555>Failed to populate loot containers for match <color:#FFFF55>{match_id}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_create_world_error: "<color:#FF5555>Failed to create world instance for match <color:#FFFF55>{match_id}</color>: <color:#FFFFFF>{error}</color></color>"
+  command_start_usage: "<color:#FF5555>Usage: </color><color:#FFFF55>/{label} match start <template_id> [players...]</color>"
+  command_available_templates: "<color:#AAAAAA>Available templates: </color><color:#55FFFF>{templates}</color>"
+  command_console_requires_players: "<color:#FF5555>You must specify at least one target player when running from console.</color>"
+  command_no_valid_players: "<color:#FF5555>No valid online players found to deploy into match.</color>"
+  command_initializing: "<color:#FFFF55>⏳ Initializing match instance for template </color><color:#55FFFF>{template}</color><color:#FFFF55> with </color><color:#FFFFFF>{count}</color><color:#FFFF55> operative(s)...</color>"
+  command_launched: "<color:#55FF55>✔ Match </color><color:#FFFF55>{match_id}</color><color:#55FF55> launched successfully in world </color><color:#55FFFF>{world}</color><color:#55FF55>!</color>"
+  command_launch_failed: "<color:#FF5555>✕ Failed to launch match: <color:#FFFFFF>{error}</color></color>"
+  command_stop_usage: "<color:#FF5555>Usage: </color><color:#FFFF55>/{label} match stop <match_id></color>"
+  command_stopped: "<color:#55FF55>✔ Match </color><color:#FFFF55>{match_id}</color><color:#55FF55> has been decommissioned.</color>"
+  command_not_found: "<color:#FF5555>No active match found with ID: <color:#FFFF55>{match_id}</color></color>"
+  command_list_empty: "<color:#AAAAAA>No extraction matches currently active.</color>"
+  command_list_header: "<gradient:#00FFA3:#00B8FF><bold>ACTIVE EXTRACTION MATCHES ({count})</bold></gradient>"
+  command_list_entry: "<color:#555555>▪ </color><color:#FFFF55>{match_id}</color> <color:#AAAAAA>|</color> <color:#55FFFF>{template}</color> <color:#AAAAAA>|</color> <color:#FFFFFF>{world}</color> <color:#AAAAAA>|</color> <color:#55FF55>{players} players</color> <color:#AAAAAA>| Time Left: </color><color:#FF5555>{time_left}</color>"
+  command_status_header: "<gradient:#00FFA3:#00B8FF><bold>MATCH STATUS: {match_id}</bold></gradient>"
+  command_status_template: "<color:#AAAAAA>Template:</color> <color:#55FFFF>{template}</color>"
+  command_status_world: "<color:#AAAAAA>World:</color> <color:#FFFFFF>{world}</color>"
+  command_status_time: "<color:#AAAAAA>Elapsed / Total:</color> <color:#FFFF55>{elapsed}s / {duration}s</color> (<color:#FF5555>{time_left} remaining</color>)"
+  command_status_operatives: "<color:#AAAAAA>Operatives ({count}):</color>"
+  command_status_player: "  <color:#555555>• </color><color:#FFFFFF>{player}</color> <color:#AAAAAA>-</color> <color:#FFFF55>{state}</color>"
+  command_status_count: "<color:#AAAAAA>Active match instances: </color><color:#FFFF55>{count}</color>"
+  command_help_title: "<gradient:#00FFA3:#00B8FF><bold>EXTRACTION MATCH COMMANDS</bold></gradient>"
+  command_help_start: "<color:#FFFF55>/{label} match start <template_id> [players...]</color> <color:#AAAAAA>- Deploy an extraction match</color>"
+  command_help_stop: "<color:#FFFF55>/{label} match stop <match_id></color>               <color:#AAAAAA>- Force terminate an active match</color>"
+  command_help_list: "<color:#FFFF55>/{label} match list</color>                           <color:#AAAAAA>- List active extraction matches</color>"
+  command_help_status: "<color:#FFFF55>/{label} match status [match_id]</color>              <color:#AAAAAA>- View match status and roster</color>"
+  bossbar_title: "<color:#FF5555>RAID TIME: </color><color:#FFFF55>{time}</color>"
+  log_started: "<color:#55FF55>✔ Match </color><color:#FFFF55>{match_id}</color><color:#55FF55> started in world </color><color:#55FFFF>{world}</color><color:#55FF55> for </color><color:#FFFF55>{duration}s</color><color:#55FF55> with </color><color:#FFFFFF>{count}</color><color:#55FF55> operative(s).</color>"
+  log_early_teardown: "<color:#FFFF55>All operatives have extracted or fallen in match {match_id}. Commencing early teardown...</color>"
+  log_timeout: "<color:#FF5555><bold>[MATCH TIMEOUT]</bold> Raid duration elapsed for match <color:#FFFF55>{match_id}</color>. Processing MIA operatives...</color>"
+  player_mia: "<color:#AA0000><bold>[M.I.A]</bold></color> <color:#FF5555>Extraction window has expired! You failed to evacuate the operational area in time.</color>"
+  log_world_deletion_error: "<color:#FF5555>Instance world deletion error for <color:#FFFF55>{world}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_world_purged: "<color:#55FF55>✔ Decommissioning of world instance </color><color:#FFFF55>{world}</color><color:#55FF55> complete.</color>"
+  debrief:
+    title: "<gradient:#00FFA3:#00B8FF><bold>       LUMINARIS OPERATION EXTRACTION - MATCH DEBRIEF       </bold></gradient>"
+    match_id: "<color:#AAAAAA> Match ID:        </color><color:#FFFF55>{match_id}</color>"
+    template: "<color:#AAAAAA> Template / Map:  </color><color:#55FFFF>{template}</color> <color:#555555>({template_id})</color>"
+    world: "<color:#AAAAAA> World Instance:  </color><color:#FFFFFF>{world}</color>"
+    elapsed: "<color:#AAAAAA> Total Elapsed:   </color><color:#FFFF55>{elapsed}</color> <color:#AAAAAA>/ {duration} ({seconds}s)</color>"
+    operatives: "<color:#AAAAAA> Total Operatives:</color><color:#FFFFFF> {count}</color> <color:#AAAAAA>(</color><color:#55FF55>{survived} Survived</color><color:#AAAAAA>, </color><color:#FF5555>{kia} KIA</color><color:#AAAAAA>, </color><color:#AA0000>{mia} MIA</color><color:#AAAAAA>)</color>"
+    outcomes_header: "<color:#AAAAAA> Operative Outcomes:</color>"
+    no_operatives: "  <color:#555555>▪ </color><color:#AAAAAA>No participating operatives recorded.</color>"
+    outcome_entry: "  <color:#555555>▪ </color><color:#FFFFFF>{player}</color> <color:#AAAAAA>➜</color> {state}"
+    state_extracted: "<color:#55FF55><bold>EXTRACTED</bold></color>"
+    state_kia: "<color:#FF5555><bold>KILLED IN ACTION</bold></color>"
+    state_mia: "<color:#AA0000><bold>M.I.A (Timed Out)</bold></color>"
+    state_extracting: "<color:#FFFF55><bold>EXTRACTING</bold></color>"
+    state_in_raid: "<color:#AAAAAA><bold>IN RAID</bold></color>"
+    purged: "<color:#AAAAAA> Decommissioning: </color><color:#55FF55><bold>INSTANCE WORLD PURGED</bold></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 11: ระบบกล่องศพผู้เล่น (Corpse Box)
+# กล่องที่ถูกสร้างขึ้น ณ จุดที่ผู้เล่นเสียชีวิตเพื่อเก็บรักษาไอเทมไว้
+# -------------------------------------------------------------------------
+corpse:
+  chest_title: "<color:#FF5555><bold>Corpse:</bold> <color:#FFFF55>{player}</color></color>"
+  overflow_title: "<color:#FF5555><bold>Corpse Cache (Overflow):</bold> <color:#FFFF55>{player}</color></color>"
+  log_spawn_error: "<color:#FF5555>Failed to spawn corpse crate for <color:#FFFF55>{player}</color> at <color:#55FFFF>{location}</color>: <color:#FFFFFF>{error}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 12: การเสียชีวิตและการส่งคืนไอเทม (Death & Restoration)
+# -------------------------------------------------------------------------
+death:
+  player_kia: "<color:#FF5555><bold>[K.I.A]</bold> You were eliminated! Your items were secured into a Corpse Crate at your death site.</color>"
+  safe_cases_restored: "<color:#55FF55>✔ <bold>[SECURE SAFE CONTAINER RESTORED]</bold> All protected items and pouches have been returned to your inventory!</color>"
+  extracted_success: "<color:#55FF55><bold>[EXTRACTION SUCCESS]</bold> Evacuation confirmed. Tactical status: SURVIVED.</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 13: เมนูกระเป๋านิรภัย (Safe Case Container)
+# ข้อความในหน้าต่าง GUI กระเป๋านิรภัย, ช่องล็อค, และการป้องกันนำกระเป๋าซ้อนกัน
+# -------------------------------------------------------------------------
+safe_case:
+  locked_slot_name: "<color:#555555>▪ <color:#AAAAAA>Locked Container Slot</color></color>"
+  locked_slot_lore_1: "<color:#555555>Slot exceeds this container's capacity.</color>"
+  locked_slot_lore_2: "<color:#555555>Upgrade to a larger Safe Case to unlock.</color>"
+  lore_capacity: "<color:#555555>▪ <color:#AAAAAA>Capacity: <color:#FFFF55>{capacity} slots</color></color></color>"
+  lore_secure: "<color:#555555>▪ <color:#55FFFF>L.O.V.E Secure Container</color></color>"
+  lore_keeps_on_death: "<color:#555555>▪ <color:#55FF55>Kept on extraction & death</color></color>"
+  lore_lost_on_death: "<color:#555555>▪ <color:#FF5555>Lost on death</color></color>"
+  lore_divider: "<color:#555555>------------------------</color>"
+  lore_instruction: "<color:#FFFF55>Right-click to access storage</color>"
+  default_title: "<color:#FFAA00>Safe Container</color>"
+  error_nesting_cursor: "<color:#FF5555>✕ You cannot place a Safe Container inside another Safe Container!</color>"
+  error_nesting_shift: "<color:#FF5555>✕ You cannot store a Safe Container inside another Safe Container!</color>"
+  error_hotbar_swap: "<color:#FF5555>✕ Hotbar swapping a Safe Container into storage is prohibited!</color>"
+  error_nesting_drag: "<color:#FF5555>✕ You cannot drag a Safe Container into another Safe Container!</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 14: ระบบสุ่มไอเทมลงคอนเทนเนอร์ (Loot Populator)
+# บันทึกคอนโซลแสดงสถานะการโหลดชังก์และการสุ่มเติมไอเทม
+# -------------------------------------------------------------------------
+loot:
+  log_no_containers: "<color:#AAAAAA>No containers registered for template </color><color:#FFFF55>{template}</color> <color:#AAAAAA>in world {world}.</color>"
+  log_initiating: "<color:#AAAAAA>Initiating regional loot population for </color><color:#FFFF55>{count}</color> <color:#AAAAAA>containers in world </color><color:#55FFFF>{world}</color><color:#AAAAAA>...</color>"
+  log_chunk_error: "<color:#FF5555>Failed to asynchronously load chunk <color:#55FFFF>({x}, {z})</color> for container <color:#FFFF55>{id}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_success: "<color:#55FF55>✔ Successfully populated </color><color:#FFFF55>{successful}/{total}</color> <color:#55FF55>containers across regions in world </color><color:#55FFFF>{world}</color> <color:#AAAAAA>(template: {template})</color>"
+  log_container_error: "<color:#FF5555>Failed to populate container <color:#FFFF55>{id}</color> at <color:#55FFFF>({x}, {y}, {z})</color>:</color> <color:#FFFFFF>{error}</color>"
+  log_not_container_block: "<color:#FFFF55>Block at ({x}, {y}, {z}) in {world} is {material}, expected Container (Chest, Barrel). Container '{id}' skipped.</color>"
+  log_category_not_found: "<color:#FFFF55>Category '{category}' for container '{id}' not found in ContainerRegistry. Leaving container empty.</color>"
+  log_no_items_in_category: "<color:#FFFF55>No loot items registered with weight > 0 for category '{category}' (container: '{id}'). Left empty.</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 15: ระบบจัดการโลกจำลองชั่วคราว (Instance World Service)
+# บันทึกคอนโซลการคัดลอกเทมเพลต, เมานต์โลก, และปลดระวางเมื่อจบเกม
+# -------------------------------------------------------------------------
+world:
+  log_preparing: "<color:#AAAAAA>Preparing ephemeral instance world </color><color:#FFFF55>{instance}</color> <color:#AAAAAA>from template </color><color:#55FFFF>{template}</color><color:#AAAAAA>...</color>"
+  log_template_not_found: "<color:#FF5555>Template world folder not found for '<color:#FFFF55>{template}</color>'!</color>"
+  log_world_creator_null: "<color:#FF5555>Failed to load world instance '<color:#FFFF55>{instance}</color>'!</color>"
+  log_mounted: "<color:#55FF55>✔ Successfully mounted ephemeral instance </color><color:#FFFF55>{instance}</color> <color:#AAAAAA>(World: {world})</color>"
+  log_load_error: "<color:#FF5555>Unexpected error while loading instance world <color:#FFFF55>{instance}</color> on Global Region: <color:#FFFFFF>{error}</color></color>"
+  log_copy_error: "<color:#FF5555>Failed to asynchronously copy world template '<color:#FFFF55>{template}</color>':</color> <color:#FFFFFF>{error}</color>"
+  log_decommissioning: "<color:#AAAAAA>Initiating decommissioning for instance world </color><color:#FFFF55>{world}</color><color:#AAAAAA>...</color>"
+  log_unloading: "<color:#AAAAAA>Unloading world </color><color:#FFFF55>{world}</color> <color:#AAAAAA>(doSave = false)...</color>"
+  log_unload_false: "<color:#FFFF55>Bukkit.unloadWorld returned false for '{world}'. Proceeding with disk cleanup...</color>"
+  log_unload_error: "<color:#FF5555>Failed during Global Region unload of world <color:#FFFF55>{world}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_evacuation_error: "<color:#FF5555>Player <color:#FFFF55>{player}</color> evacuation error: <color:#FFFFFF>{error}</color></color>"
+  log_folder_deleted: "<color:#55FF55>✔ Successfully deleted instance world folder: </color><color:#FFFF55>{folder}</color>"
+  log_folder_deleted_attempt: "<color:#55FF55>✔ Successfully deleted instance world folder: </color><color:#FFFF55>{folder}</color> <color:#AAAAAA>(attempt {attempt})</color>"
+  log_delete_retry_warning: "<color:#FF5555>Could not completely delete folder <color:#FFFF55>{folder}</color> after {retries} attempts. Scheduling for deleteOnExit.</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 16: ระบบจัดเก็บข้อมูลเทมเพลต (Template Storage)
+# -------------------------------------------------------------------------
+storage:
+  log_template_load_error: "<color:#FF5555>Failed to load template data from <color:#FFFF55>{path}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_template_save_error: "<color:#FF5555>Failed to asynchronously save map_data.yml for <color:#FFFF55>{template}</color>: <color:#FFFFFF>{error}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 17: ระบบแปลงข้อมูลไอเทม (ItemStack Serializer)
+# -------------------------------------------------------------------------
+serializer:
+  log_serialize_error: "<color:#FF5555>Failed to serialize ItemStack array to Base64: <color:#FFFFFF>{error}</color></color>"
+  log_deserialize_error: "<color:#FF5555>Failed to deserialize ItemStack array from Base64: <color:#FFFFFF>{error}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 18: ระดับความหายากของไอเทม (Item Rarity)
+# -------------------------------------------------------------------------
+rarity:
+  common: "COMMON"
+  uncommon: "UNCOMMON"
+  rare: "RARE"
+  epic: "EPIC"
+  legendary: "LEGENDARY"

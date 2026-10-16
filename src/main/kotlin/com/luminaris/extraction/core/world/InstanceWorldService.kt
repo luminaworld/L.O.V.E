@@ -1,6 +1,7 @@
 package com.luminaris.extraction.core.world
 
 import com.luminaris.extraction.LuminarisCorePlugin
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.util.FoliaScheduler
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
@@ -95,7 +96,7 @@ class InstanceWorldService(
         val future = CompletableFuture<World>()
         val instanceWorldName = "instances/match_$matchId"
 
-        logInfo("<gray>Preparing ephemeral instance world </gray><yellow>$instanceWorldName</yellow> <gray>from template </gray><aqua>$templateId</aqua><gray>...</gray>")
+        logInfo("world.log_preparing", "instance" to instanceWorldName, "template" to templateId)
 
         // Perform disk operations strictly on the async scheduler
         activeScheduler.runAsync {
@@ -105,7 +106,7 @@ class InstanceWorldService(
                     val notFound = FileNotFoundException(
                         "Template world directory '$templateId' does not exist (searched: ${sourceDir.absolutePath})"
                     )
-                    logError("<red>Template world folder not found for '$templateId'!</red>", notFound)
+                    logError("world.log_template_not_found", notFound, "template" to templateId)
                     future.completeExceptionally(notFound)
                     return@runAsync
                 }
@@ -131,7 +132,7 @@ class InstanceWorldService(
 
                         if (world == null) {
                             val error = IllegalStateException("Bukkit WorldCreator returned null for $instanceWorldName")
-                            logError("<red>Failed to load world instance '$instanceWorldName'!</red>", error)
+                            logError("world.log_world_creator_null", error, "instance" to instanceWorldName)
                             future.completeExceptionally(error)
                             return@runGlobal
                         }
@@ -147,15 +148,15 @@ class InstanceWorldService(
 
                         activeInstances.add(instanceWorldName)
 
-                        logInfo("<green>✔ Successfully mounted ephemeral instance </green><yellow>$instanceWorldName</yellow> <gray>(World: ${world.name})</gray>")
+                        logInfo("world.log_mounted", "instance" to instanceWorldName, "world" to world.name)
                         future.complete(world)
                     } catch (t: Throwable) {
-                        logError("<red>Unexpected error while loading instance world $instanceWorldName on Global Region:</red> ${t.message}", t)
+                        logError("world.log_load_error", t, "instance" to instanceWorldName, "error" to (t.message ?: "unknown"))
                         future.completeExceptionally(t)
                     }
                 }
             } catch (t: Throwable) {
-                logError("<red>Failed to asynchronously copy world template '$templateId':</red> ${t.message}", t)
+                logError("world.log_copy_error", t, "template" to templateId, "error" to (t.message ?: "unknown"))
                 future.completeExceptionally(t)
             }
         }
@@ -180,7 +181,7 @@ class InstanceWorldService(
         val worldFolder = world.worldFolder
         val targetLobby = getEffectiveLobbyLocation(excludeWorld = world)
 
-        logInfo("<gray>Initiating decommissioning for instance world </gray><yellow>$worldName</yellow><gray>...</gray>")
+        logInfo("world.log_decommissioning", "world" to worldName)
 
         // Step 1: Evacuate all players currently inside this world via their EntitySchedulers
         val players = world.players.toList()
@@ -191,10 +192,10 @@ class InstanceWorldService(
             // Step 2: Unload world on Folia Global Region Scheduler
             activeScheduler.runGlobal {
                 try {
-                    logInfo("<gray>Unloading world </gray><yellow>$worldName</yellow> <gray>(doSave = false)...</gray>")
+                    logInfo("world.log_unloading", "world" to worldName)
                     val unloaded = Bukkit.unloadWorld(world, false)
                     if (!unloaded) {
-                        logWarning("<yellow>Bukkit.unloadWorld returned false for '$worldName'. Proceeding with disk cleanup...</yellow>")
+                        logWarning("world.log_unload_false", "world" to worldName)
                     }
                     activeInstances.remove(worldName)
 
@@ -203,7 +204,7 @@ class InstanceWorldService(
                         deleteWorldFolderWithRetry(worldFolder, future)
                     }
                 } catch (t: Throwable) {
-                    logError("<red>Failed during Global Region unload of world $worldName:</red> ${t.message}", t)
+                    logError("world.log_unload_error", t, "world" to worldName, "error" to (t.message ?: "unknown"))
                     future.completeExceptionally(t)
                 }
             }
@@ -240,7 +241,7 @@ class InstanceWorldService(
             runnable = {
                 player.teleportAsync(lobby).whenComplete { _, ex ->
                     if (ex != null) {
-                        logWarning("Player ${player.name} evacuation error: ${ex.message}")
+                        logWarning("world.log_evacuation_error", "player" to player.name, "error" to (ex.message ?: "unknown"))
                     }
                     playerFuture.complete(null)
                 }
@@ -347,7 +348,7 @@ class InstanceWorldService(
             attempt++
             try {
                 if (!folder.exists()) {
-                    logInfo("<green>✔ Successfully deleted instance world folder: </green><yellow>${folder.name}</yellow>")
+                    logInfo("world.log_folder_deleted", "folder" to folder.name)
                     future.complete(null)
                     return
                 }
@@ -355,7 +356,7 @@ class InstanceWorldService(
                 deleteDirectoryRecursively(folder.toPath())
 
                 if (!folder.exists()) {
-                    logInfo("<green>✔ Successfully deleted instance world folder: </green><yellow>${folder.name}</yellow> <gray>(attempt $attempt)</gray>")
+                    logInfo("world.log_folder_deleted_attempt", "folder" to folder.name, "attempt" to attempt)
                     future.complete(null)
                     return
                 }
@@ -381,7 +382,7 @@ class InstanceWorldService(
         if (!folder.exists()) {
             future.complete(null)
         } else {
-            logWarning("<red>Could not completely delete folder ${folder.path} after $maxRetries attempts. Scheduling for deleteOnExit.</red>")
+            logWarning("world.log_delete_retry_warning", "folder" to folder.path, "retries" to maxRetries)
             folder.deleteOnExit()
             future.completeExceptionally(
                 lastError ?: IOException("Failed to delete instance folder '${folder.path}' after $maxRetries attempts.")
@@ -460,18 +461,15 @@ class InstanceWorldService(
         return CompletableFuture.allOf(*futures.toTypedArray())
     }
 
-    private fun logInfo(message: String) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#00FFA3:#00B8FF><bold>[LuminarisWorld]</bold></gradient> $message"))
+    private fun logInfo(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logInfo(key, *placeholders)
     }
 
-    private fun logWarning(message: String) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#FFAA00:#FF5500><bold>[LuminarisWorld]</bold></gradient> $message"))
+    private fun logWarning(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logWarning(key, *placeholders)
     }
 
-    private fun logError(message: String, throwable: Throwable? = null) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#FF0055:#FF5555><bold>[LuminarisWorld]</bold></gradient> $message"))
-        if (throwable != null) {
-            runCatching { activePlugin.logger.log(java.util.logging.Level.SEVERE, "[LuminarisWorld] $message", throwable) }
-        }
+    private fun logError(key: String, throwable: Throwable? = null, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logError(key, throwable, *placeholders)
     }
 }

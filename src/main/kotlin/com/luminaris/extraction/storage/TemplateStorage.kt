@@ -4,6 +4,7 @@ import com.luminaris.extraction.core.container.PlacedContainer
 import com.luminaris.extraction.core.template.ExtractionZoneData
 import com.luminaris.extraction.core.template.SpawnPoint
 import com.luminaris.extraction.core.template.TemplateMapData
+import com.luminaris.extraction.localization.TranslationManager
 import org.bukkit.World
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
@@ -50,7 +51,7 @@ class TemplateStorage(private val plugin: Plugin) {
                     runCatching {
                         loadTemplate(dir.name)
                     }.onFailure { ex ->
-                        plugin.logger.warning("Failed to load template data from ${mapFile.path}: ${ex.message}")
+                        TranslationManager.logWarning("storage.log_template_load_error", "path" to mapFile.path, "error" to (ex.message ?: "unknown"))
                     }
                 }
             }
@@ -427,7 +428,7 @@ class TemplateStorage(private val plugin: Plugin) {
                     }
                     yaml.save(file)
                 } catch (t: Throwable) {
-                    plugin.logger.warning("Failed to asynchronously save map_data.yml for ${data.templateId}: ${t.message}")
+                    TranslationManager.logWarning("storage.log_template_save_error", "template" to data.templateId, "error" to (t.message ?: "unknown"))
                 }
             }
         }.onFailure {

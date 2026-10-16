@@ -1,6 +1,7 @@
 package com.luminaris.extraction.storage
 
 import com.luminaris.extraction.core.safe.SafeCaseDefinition
+import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
@@ -206,7 +207,7 @@ class SafeCasesConfigAdapter(plugin: Plugin) : ConfigAdapter(plugin, "safe_cases
             val rawDisplay = caseSec.getString("display_name")
                 ?: caseSec.getString("title")
                 ?: "<gold>$key</gold>"
-            val displayName = miniMessage.deserialize(rawDisplay)
+            val displayName = TranslationManager.parseComponent(rawDisplay)
 
             val matName = caseSec.getString("material", "BUNDLE")!!
             val material = Material.matchMaterial(matName) ?: Material.BUNDLE

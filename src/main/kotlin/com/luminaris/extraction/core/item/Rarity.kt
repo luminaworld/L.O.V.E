@@ -11,17 +11,17 @@ enum class Rarity(
     val color: TextColor,
     val miniMessageTag: String
 ) {
-    COMMON(NamedTextColor.GRAY, "<gray>"),
-    UNCOMMON(NamedTextColor.GREEN, "<green>"),
-    RARE(NamedTextColor.BLUE, "<blue>"),
-    EPIC(NamedTextColor.DARK_PURPLE, "<dark_purple>"),
-    LEGENDARY(NamedTextColor.GOLD, "<gold>");
+    COMMON(NamedTextColor.GRAY, "<color:#AAAAAA>"),
+    UNCOMMON(NamedTextColor.GREEN, "<color:#55FF55>"),
+    RARE(NamedTextColor.BLUE, "<color:#55FFFF>"),
+    EPIC(NamedTextColor.DARK_PURPLE, "<color:#AA00AA>"),
+    LEGENDARY(NamedTextColor.GOLD, "<color:#FFAA00>");
 
     /**
      * Renders the rarity name as a stylized Adventure Component.
      */
     val displayName: Component
-        get() = Component.text(name, color)
+        get() = Component.text(com.luminaris.extraction.localization.TranslationManager.get("rarity.${name.lowercase()}"), color)
 
     companion object {
         /**

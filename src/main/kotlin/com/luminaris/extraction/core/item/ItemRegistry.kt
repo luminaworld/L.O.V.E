@@ -1,5 +1,6 @@
 package com.luminaris.extraction.core.item
 
+import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
@@ -55,7 +56,7 @@ class ItemRegistry(private val plugin: Plugin) {
         val cloned = held.clone()
         if (!customDisplayName.isNullOrBlank()) {
             cloned.editMeta { meta ->
-                meta.displayName(miniMessage.deserialize(customDisplayName))
+                meta.displayName(TranslationManager.parseComponent(customDisplayName))
             }
         }
 
@@ -143,10 +144,10 @@ class ItemRegistry(private val plugin: Plugin) {
 
                     stack.editMeta { meta ->
                         if (!rawDisplay.isNullOrBlank()) {
-                            meta.displayName(miniMessage.deserialize(rawDisplay))
+                            meta.displayName(TranslationManager.parseComponent(rawDisplay))
                         }
                         if (rawLore.isNotEmpty()) {
-                            meta.lore(rawLore.map { miniMessage.deserialize(it) })
+                            meta.lore(rawLore.map { TranslationManager.parseComponent(it) })
                         }
                     }
                     stack

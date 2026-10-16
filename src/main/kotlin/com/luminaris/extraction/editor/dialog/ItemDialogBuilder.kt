@@ -3,6 +3,7 @@ package com.luminaris.extraction.editor.dialog
 import com.luminaris.extraction.core.item.ExtractionItem
 import com.luminaris.extraction.core.item.ItemRegistry
 import com.luminaris.extraction.core.item.Rarity
+import com.luminaris.extraction.localization.TranslationManager
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.dialog.DialogResponseView
 import io.papermc.paper.registry.data.dialog.ActionButton
@@ -37,7 +38,7 @@ object ItemDialogBuilder {
     fun open(player: Player, category: String, itemRegistry: ItemRegistry) {
         val heldItem = player.inventory.itemInMainHand
         if (heldItem.isEmpty || heldItem.type.isAir) {
-            player.sendMessage(miniMessage.deserialize("<red>❌ Your main hand is empty! Please hold an item to register.</red>"))
+            TranslationManager.send(player, "editor.createitem.hand_empty")
             return
         }
 
@@ -52,31 +53,33 @@ object ItemDialogBuilder {
         }
 
         // Build Dialog Inputs as specified
-        val itemIdInput = DialogInput.text("item_id", Component.text("Unique Item ID"))
+        val itemIdInput = DialogInput.text("item_id", Component.text(TranslationManager.get("dialog.item.input_id")))
             .initial(capturedStack.type.name.lowercase())
             .maxLength(64)
             .build()
 
-        val displayNameInput = DialogInput.text("display_name", Component.text("Custom Display Name"))
+        val displayNameInput = DialogInput.text("display_name", Component.text(TranslationManager.get("dialog.item.input_display_name")))
             .initial(initialDisplayName)
             .maxLength(128)
             .build()
 
-        val priceInput = DialogInput.numberRange("price", Component.text("Sell Price"), 0.0f, 100000.0f)
+        val priceInput = DialogInput.numberRange("price", Component.text(TranslationManager.get("dialog.item.input_price")), 0.0f, 100000.0f)
             .step(10.0f)
             .initial(100.0f)
             .build()
 
-        val weightInput = DialogInput.numberRange("weight", Component.text("Drop Weight"), 1.0f, 1000.0f)
+        val weightInput = DialogInput.numberRange("weight", Component.text(TranslationManager.get("dialog.item.input_weight")), 1.0f, 1000.0f)
             .step(5.0f)
             .initial(20.0f)
             .build()
 
         // Build DialogBase
-        val dialogTitle = Component.text("Item Registry Editor", NamedTextColor.GOLD)
+        val dialogTitle = Component.text(TranslationManager.get("dialog.item.title"), NamedTextColor.GOLD)
         val descriptionBody = DialogBody.plainMessage(
-            miniMessage.deserialize(
-                "<gray>Configuring item: </gray><yellow>${capturedStack.type.name}</yellow><gray> for category: </gray><aqua>$category</aqua>"
+            TranslationManager.render(
+                "dialog.item.body",
+                "material" to capturedStack.type.name,
+                "category" to category
             )
         )
 
@@ -98,7 +101,7 @@ object ItemDialogBuilder {
 
             val rawId = responseView.getText("item_id")?.trim()
             if (rawId.isNullOrBlank()) {
-                targetPlayer.sendMessage(miniMessage.deserialize("<red>❌ Item ID cannot be empty!</red>"))
+                TranslationManager.send(targetPlayer, "dialog.item.error_empty_id")
                 return@customClick
             }
 
@@ -119,7 +122,7 @@ object ItemDialogBuilder {
 
             if (!customDisplayName.isNullOrBlank()) {
                 finalStack.editMeta { meta ->
-                    meta.displayName(miniMessage.deserialize(customDisplayName))
+                    meta.displayName(TranslationManager.parseComponent(customDisplayName))
                 }
             }
 
@@ -135,31 +138,30 @@ object ItemDialogBuilder {
 
             itemRegistry.register(extractionItem, saveToDisk = true)
 
-            val successMsg = """
-                <dark_gray>----------------------------------------</dark_gray>
-                <gradient:#00FFA3:#00B8FF><bold>✔ ITEM REGISTERED SUCCESSFULLY</bold></gradient>
-                <gray>ID:           </gray><yellow>$sanitizedId</yellow>
-                <gray>Display Name: </gray>${customDisplayName ?: finalStack.type.name}
-                <gray>Category:     </gray><aqua>$category</aqua>
-                <gray>Sell Price:   </gray><gold>$$price</gold>
-                <gray>Drop Weight:  </gray><yellow>$weight</yellow>
-                <gray>Rarity:       </gray>${rarity.miniMessageTag}${rarity.name}</color>
-                <dark_gray>----------------------------------------</dark_gray>
-            """.trimIndent()
-            targetPlayer.sendMessage(miniMessage.deserialize(successMsg))
+            TranslationManager.send(
+                targetPlayer,
+                "dialog.item.success",
+                "id" to sanitizedId,
+                "display_name" to (customDisplayName ?: finalStack.type.name),
+                "category" to category,
+                "price" to price,
+                "weight" to weight,
+                "rarity_tag" to rarity.miniMessageTag,
+                "rarity" to rarity.name
+            )
         }, clickOptions)
 
-        val confirmButton = ActionButton.builder(Component.text("✔ Register Item", NamedTextColor.GREEN))
-            .tooltip(Component.text("Save item to extraction registry"))
+        val confirmButton = ActionButton.builder(Component.text(TranslationManager.get("dialog.item.btn_save"), NamedTextColor.GREEN))
+            .tooltip(Component.text(TranslationManager.get("dialog.item.tooltip_save")))
             .action(confirmAction)
             .build()
 
         val cancelAction = DialogAction.customClick({ _, audience ->
-            (audience as? Player)?.sendMessage(miniMessage.deserialize("<gray>Item registration cancelled.</gray>"))
+            (audience as? Player)?.let { TranslationManager.send(it, "dialog.item.cancelled") }
         }, clickOptions)
 
-        val cancelButton = ActionButton.builder(Component.text("✖ Cancel", NamedTextColor.RED))
-            .tooltip(Component.text("Close dialog without saving"))
+        val cancelButton = ActionButton.builder(Component.text(TranslationManager.get("dialog.item.btn_cancel"), NamedTextColor.RED))
+            .tooltip(Component.text(TranslationManager.get("dialog.item.tooltip_cancel")))
             .action(cancelAction)
             .build()
 

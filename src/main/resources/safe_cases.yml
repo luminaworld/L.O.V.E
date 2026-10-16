@@ -1,30 +1,80 @@
-# Luminaris Extraction Core - Safe Cases Configuration
-# Secure container configurations that protect loot across extractions or on death.
+# =========================================================================
+# Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+# การกำหนดค่ากระเป๋านิรภัย (Safe Cases / Secure Containers Configuration)
+# =========================================================================
+#
+# คำอธิบายภาพรวม:
+# ไฟล์นี้ใช้สำหรับตั้งค่าโปรไฟล์กระเป๋านิรภัย (Secure Containers) ซึ่งเป็นไอเทม
+# ทางยุทธวิธีที่ช่วยปกป้องไอเทมล้ำค่าของผู้เล่นไม่ให้สูญหายเมื่อถูกกำจัด (K.I.A.)
+# หรือหมดเวลาการสกัด (M.I.A.) โดยไอเทมภายในกระเป๋าจะถูกส่งคืนให้ผู้เล่นอย่างปลอดภัย
+#
+# วิธีการตั้งค่าแต่ละพารามิเตอร์:
+# -------------------------------------------------------------------------
+# display_name:
+#   ชื่อของไอเทมกระเป๋านิรภัยที่แสดงผลในช่องเก็บของ รองรับ MiniMessage แบบเต็มรูปแบบ
+#   (สามารถใส่แท็กสี, การไล่เฉดสี เช่น <gradient:#00FFA3:#00B8FF>...</gradient>)
+#
+# title:
+#   หัวข้อที่จะปรากฏบนแถบด้านบนของหน้าต่าง GUI เมื่อผู้เล่นคลิกขวาเปิดกระเป๋านิรภัย
+#   รองรับ MiniMessage เช่นกัน
+#
+# material:
+#   ชนิดของไอเทม Minecraft (Bukkit Material Name) เช่น BUNDLE, ENDER_CHEST, CHEST
+#
+# custom_model_data:
+#   รหัส CustomModelData สำหรับเชื่อมโยงกับ Resource Pack (โมเดล 3 มิติ หรือ Texture พิเศษ)
+#   (หากไม่มีการใช้งาน Resource Pack สามารถตัดออกหรือปล่อยไว้ตามเดิมได้)
+#
+# capacity:
+#   จำนวนช่องเก็บของที่ผู้เล่นสามารถใส่ไอเทมได้จริงในกระเป๋าใบนี้
+#   - 4  ช่อง = ขนาดกะทัดรัด (2x2)
+#   - 6  ช่อง = ขนาดมาตรฐาน (3x2)
+#   - 9  ช่อง = ขนาดใหญ่เสริมเกราะ (3x3)
+#   - 12 ช่อง = ตู้เซฟนิรภัยขนาดใหญ่พิเศษ (4x3)
+#   หมายเหตุ: ช่องที่เกินจากค่า capacity ในหน้าต่าง GUI จะถูกล็อคด้วยไอเทมสีเทาโดยอัตโนมัติ
+#
+# keeps_on_death:
+#   กำหนดว่าจะให้กระเป๋าและไอเทมข้างในคงอยู่เมื่อผู้เล่นเสียชีวิตหรือไม่ (true/false)
+#   - true  : ไอเทมและตัวกระเป๋าจะไม่หล่นเป็นกล่องศพ (Corpse Crate) และจะคืนกลับให้ผู้เล่นทันที
+#   - false : ไอเทมจะหล่นตกไว้ที่จุดเกิดเหตุ
+#
+# ระบบความปลอดภัยเพิ่มเติม:
+#   - ระบบมีระบบป้องกันการซ้อนกระเป๋า (Anti-Nesting Protection) โดยจะบล็อกการนำกระเป๋านิรภัย
+#     ใส่ซ้อนเข้าไปในกระเป๋านิรภัยใบอื่นอย่างเด็ดขาดเพื่อป้องกันช่องโหว่การปั๊มช่องเก็บของ
+#
+# คำสั่งที่มีประโยชน์ในเกม:
+#   - /ext case list                      : แสดงรายชื่อกระเป๋านิรภัยทั้งหมดที่ลงทะเบียนไว้
+#   - /ext case give <ผู้เล่น> <รหัสกระเป๋า> : มอบกระเป๋านิรภัยให้แก่ผู้เล่นที่ระบุ
+# =========================================================================
+
 safe_cases:
   alpha_pouch:
-    display_name: "<gold>Alpha Secure Pouch (2x2)</gold>"
-    title: "<gold>Alpha Secure Pouch (2x2)</gold>"
+    display_name: "<gradient:#FFAA00:#FF5500><bold>Alpha Secure Pouch (2x2)</bold></gradient>"
+    title: "<gradient:#FFAA00:#FF5500><bold>Alpha Secure Pouch (2x2)</bold></gradient>"
     material: "BUNDLE"
     custom_model_data: 1001
     capacity: 4
     keeps_on_death: true
+
   beta_case:
-    display_name: "<aqua>Beta Secure Case (3x2)</aqua>"
-    title: "<aqua>Beta Secure Case (3x2)</aqua>"
+    display_name: "<gradient:#00D2FF:#3A7BD5><bold>Beta Secure Case (3x2)</bold></gradient>"
+    title: "<gradient:#00D2FF:#3A7BD5><bold>Beta Secure Case (3x2)</bold></gradient>"
     material: "BUNDLE"
     custom_model_data: 1002
     capacity: 6
     keeps_on_death: true
+
   gamma_case:
-    display_name: "<light_purple>Gamma Reinforced Case (3x3)</light_purple>"
-    title: "<light_purple>Gamma Reinforced Case (3x3)</light_purple>"
+    display_name: "<gradient:#AA00AA:#E040FB><bold>Gamma Reinforced Case (3x3)</bold></gradient>"
+    title: "<gradient:#AA00AA:#E040FB><bold>Gamma Reinforced Case (3x3)</bold></gradient>"
     material: "BUNDLE"
     custom_model_data: 1003
     capacity: 9
     keeps_on_death: true
+
   kappa_containment:
-    display_name: "<red>Kappa Vault Container (4x3)</red>"
-    title: "<red>Kappa Vault Container (4x3)</red>"
+    display_name: "<gradient:#FF0055:#FF5555><bold>Kappa Vault Container (4x3)</bold></gradient>"
+    title: "<gradient:#FF0055:#FF5555><bold>Kappa Vault Container (4x3)</bold></gradient>"
     material: "ENDER_CHEST"
     custom_model_data: 1004
     capacity: 12

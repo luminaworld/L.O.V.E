@@ -1,26 +1,101 @@
-# Luminaris Extraction Core - Items Configuration
-# Defines extraction loot items, rarities, values, and lore.
+# =========================================================================
+# Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+# การกำหนดค่าฐานข้อมูลไอเทมการสกัด (Extraction Items Registry Configuration)
+# =========================================================================
+#
+# คำอธิบายภาพรวม:
+# ไฟล์นี้เป็นฐานข้อมูลรายการไอเทมทั้งหมดที่สามารถสุ่มพบได้ในคอนเทนเนอร์ (Loot Containers)
+# ระหว่างการเล่นแมตช์การสกัดหลบหนี ผู้เล่นสามารถเก็บไอเทมเหล่านี้เพื่อนำกลับไปขาย
+# รับเงินรางวัล หรือใช้เป็นวัตถุดิบล้ำค่าตามระบบเศรษฐกิจของเซิร์ฟเวอร์
+#
+# วิธีการตั้งค่าแต่ละพารามิเตอร์:
+# -------------------------------------------------------------------------
+# material:
+#   ชนิดของไอเทม Minecraft (Bukkit Material Name เช่น REPEATER, NETHER_STAR, COOKED_BEEF, DIAMOND)
+#
+# display_name:
+#   ชื่อที่แสดงผลของไอเทม รองรับ MiniMessage แบบสมบูรณ์
+#   - สีเดี่ยว: <color:#HEX>ข้อความ</color> (เช่น <color:#55FF55>ข้อความ</color>)
+#   - ไล่เฉดสี: <gradient:#HEX1:#HEX2>ข้อความ</gradient> (เช่น <gradient:#00FFA3:#00B8FF>...</gradient>)
+#
+# rarity (หรือ tier):
+#   ระดับความหายากของไอเทม มี 5 ระดับให้เลือกใช้งาน:
+#   - COMMON    : ระดับทั่วไป (ไอเทมพื้นฐาน)
+#   - UNCOMMON  : ระดับไม่ธรรมดา (ไอเทมคุณภาพปานกลาง)
+#   - RARE      : ระดับหายาก (เทคโนโลยีขั้นสูง)
+#   - EPIC      : ระดับมหากาพย์ (ต้นแบบทางการทหาร)
+#   - LEGENDARY : ระดับตำนาน (โบราณวัตถุล้ำค่า)
+#
+# price (หรือ value):
+#   มูลค่าการสกัดหรือราคาขายของไอเทม (ทศนิยม เช่น 50.0, 750.0, 3500.0)
+#
+# weight:
+#   ค่าน้ำหนักโอกาสสุ่มดรอป (Spawn Weight)
+#   - ตัวเลขยิ่งสูง = โอกาสสุ่มได้ไอเทมชิ้นนี้ยิ่งมีมาก (เช่น 50 - 100 เหมาะกับไอเทมทั่วไป)
+#   - ตัวเลขยิ่งต่ำ = โอกาสสุ่มได้ไอเทมชิ้นนี้ยิ่งน้อยมาก (เช่น 1 - 5 เหมาะกับไอเทมตำนาน)
+#   - หากตั้งเป็น 0.0 ไอเทมชิ้นนี้จะไม่ถูกสุ่มดรอปในระบบ
+#
+# allowed_containers:
+#   รายการหมวดหมู่ของคอนเทนเนอร์ที่อนุญาตให้ไอเทมชิ้นนี้สุ่มเกิดได้
+#   (ต้องตรงกับรหัสหมวดหมู่ใน categories.yml เช่น common, uncommon, rare, epic, legendary)
+#   - หากเว้นว่างไว้หรือไม่ใส่คีย์นี้ ไอเทมจะสามารถสุ่มเกิดได้ในคอนเทนเนอร์ทุกหมวดหมู่
+#
+# lore:
+#   รายการคำอธิบายคุณสมบัติใต้ไอเทม (Lore List)
+#   ใช้รูปแบบแท็กสีเดี่ยว <color:#HEX>ข้อความ</color> หรือ <gradient:#HEX1:#HEX2>ข้อความ</gradient>
+#
+# การลงทะเบียนไอเทมผ่านตัวแก้ไขในเกม (In-game Editor):
+#   - คุณสามารถสร้างไอเทมที่มี NBT, Enchantment, Lore หรือ CustomModelData ในเกม
+#     แล้วถือไอเทมไว้ในมือหลัก จากนั้นพิมพ์คำสั่ง:
+#     /ext editor createitem <รหัสหมวดหมู่>
+#     ระบบจะเปิดหน้าต่าง GUI ให้กรอกรหัสไอเทม, ราคา และน้ำหนัก แล้วบันทึกลงไฟล์นี้ทันที
+# =========================================================================
+
 items:
   military_circuit:
     material: "REPEATER"
-    display_name: "<gold>Military Grade Circuit</gold>"
+    display_name: "<gradient:#00D2FF:#3A7BD5><bold>Military Grade Circuit</bold></gradient>"
+    rarity: "RARE"
     tier: "RARE"
+    price: 750.0
     value: 750.0
+    weight: 20.0
+    allowed_containers:
+      - "rare"
+      - "epic"
     lore:
-      - "<gray>High-frequency military electronic component.</gray>"
-      - "<dark_aqua>Origin: Extraction Sector Alpha</dark_aqua>"
+      - "<color:#AAAAAA>High-frequency military electronic component.</color>"
+      - "<color:#00AAAA>Origin: Extraction Sector Alpha</color>"
+      - "<color:#FFFF55>Extraction Value: </color><color:#FFAA00>$750.00</color>"
+
   energy_core:
     material: "NETHER_STAR"
-    display_name: "<aqua>Stabilized Energy Core</aqua>"
+    display_name: "<gradient:#FFAA00:#FF0055><bold>Stabilized Energy Core</bold></gradient>"
+    rarity: "LEGENDARY"
     tier: "LEGENDARY"
+    price: 3500.0
     value: 3500.0
+    weight: 5.0
+    allowed_containers:
+      - "epic"
+      - "legendary"
     lore:
-      - "<gray>Pulsating energy core used in high-tech apparatus.</gray>"
-      - "<red>Extremely volatile in non-stabilized zones.</red>"
+      - "<color:#AAAAAA>Pulsating energy core used in high-tech apparatus.</color>"
+      - "<color:#FF5555>Extremely volatile in non-stabilized zones.</color>"
+      - "<color:#FFFF55>Extraction Value: </color><color:#FFAA00>$3,500.00</color>"
+
   survival_ration:
     material: "COOKED_BEEF"
-    display_name: "<green>Military MRE Ration</green>"
+    display_name: "<color:#55FF55><bold>Military MRE Ration</bold></color>"
+    rarity: "COMMON"
     tier: "COMMON"
+    price: 50.0
     value: 50.0
+    weight: 60.0
+    allowed_containers:
+      - "common"
+      - "uncommon"
     lore:
-      - "<gray>Long shelf-life military food ration.</gray>"
+      - "<color:#AAAAAA>Long shelf-life military food ration.</color>"
+      - "<color:#55FF55>Nutritional Value: High</color>"
+      - "<color:#FFFF55>Extraction Value: </color><color:#FFAA00>$50.00</color>"

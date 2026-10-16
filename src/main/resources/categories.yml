@@ -1,23 +1,77 @@
-# Luminaris Extraction Core - Categories Configuration
-# Categorization, visual grading, and payout multipliers.
+# =========================================================================
+# Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+# การกำหนดค่าหมวดหมู่คอนเทนเนอร์ (Container Categories Configuration)
+# =========================================================================
+#
+# คำอธิบายภาพรวม:
+# ไฟล์นี้ใช้กำหนดหมวดหมู่ของคอนเทนเนอร์ (หีบสมบัติ, ถังเสบียง) ในระบบการสกัดหลบหนี
+# คอนเทนเนอร์แต่ละหมวดหมู่จะทำหน้าที่เป็น Loot Table สำหรับกระจายไอเทมลงในแผนที่
+# โดยสามารถกำหนดระดับความสำคัญ, จำนวนรอบการสุ่มไอเทม, และตัวคูณมูลค่าการสกัดได้
+#
+# วิธีการตั้งค่าแต่ละพารามิเตอร์:
+# -------------------------------------------------------------------------
+# display_name:
+#   ชื่อที่แสดงผลของหมวดหมู่ รองรับ MiniMessage แบบสมบูรณ์
+#   (สามารถใส่แท็กสี, ตัวหนา, หรือการไล่เฉดสี เช่น <gradient:#00FFA3:#00B8FF>...</gradient>)
+#
+# name:
+#   ชื่อหมวดหมู่มาตรฐาน (รองรับ MiniMessage สำหรับแสดงในหน้าต่าง UI และรายการคำสั่ง)
+#
+# color:
+#   รหัสสีในรูปแบบ Hex (#RRGGBB) ใช้สำหรับไฮไลต์หรือจับคู่สีกับระบบมาร์กเกอร์และเรดาร์
+#
+# multiplier:
+#   ตัวคูณมูลค่าหรือคะแนนการสกัดของไอเทมที่ได้รับจากคอนเทนเนอร์หมวดนี้ (ทศนิยม เช่น 1.0, 1.5, 4.0)
+#
+# min_rolls:
+#   จำนวนครั้งการสุ่มไอเทมขั้นต่ำที่จะถูกเติมลงในคอนเทนเนอร์เมื่อแมตช์เริ่มต้น
+#
+# max_rolls:
+#   จำนวนครั้งการสุ่มไอเทมสูงสุดที่จะถูกเติมลงในคอนเทนเนอร์ (ต้องมากกว่าหรือเท่ากับ min_rolls)
+#
+# คำสั่งที่มีประโยชน์ในเกม:
+#   - /ext chest get <รหัสหมวดหมู่> [chest|barrel] : รับบล็อกมาร์กเกอร์สำหรับไปวางในโลกเทมเพลต
+#   - /ext editor createcategory                   : เปิดหน้าต่าง GUI เพื่อสร้างหมวดหมู่ใหม่
+#   - /ext editor list                             : ตรวจสอบรายชื่อหมวดหมู่และไอเทมทั้งหมดในระบบ
+# =========================================================================
+
 categories:
   COMMON:
-    name: "Common Grade"
+    display_name: "<gradient:#9E9E9E:#E0E0E0><bold>Common Grade</bold></gradient>"
+    name: "<color:#AAAAAA>Common Grade</color>"
     color: "#AAAAAA"
     multiplier: 1.0
+    min_rolls: 2
+    max_rolls: 4
+
   UNCOMMON:
-    name: "Uncommon Grade"
+    display_name: "<gradient:#55FF55:#2E7D32><bold>Uncommon Grade</bold></gradient>"
+    name: "<color:#55FF55>Uncommon Grade</color>"
     color: "#55FF55"
     multiplier: 1.25
+    min_rolls: 2
+    max_rolls: 5
+
   RARE:
-    name: "Rare Tech"
+    display_name: "<gradient:#00D2FF:#3A7BD5><bold>Rare Tech</bold></gradient>"
+    name: "<color:#55FFFF>Rare Tech</color>"
     color: "#55FFFF"
     multiplier: 1.75
+    min_rolls: 3
+    max_rolls: 5
+
   EPIC:
-    name: "Epic Prototype"
+    display_name: "<gradient:#AA00AA:#E040FB><bold>Epic Prototype</bold></gradient>"
+    name: "<color:#AA00AA>Epic Prototype</color>"
     color: "#AA00AA"
     multiplier: 2.5
+    min_rolls: 3
+    max_rolls: 6
+
   LEGENDARY:
-    name: "Legendary Relic"
+    display_name: "<gradient:#FFAA00:#FF5500><bold>Legendary Relic</bold></gradient>"
+    name: "<color:#FFAA00>Legendary Relic</color>"
     color: "#FFAA00"
     multiplier: 4.0
+    min_rolls: 4
+    max_rolls: 7

@@ -5,6 +5,7 @@ import com.luminaris.extraction.core.extraction.ExtractionManager
 import com.luminaris.extraction.core.item.LootPopulator
 import com.luminaris.extraction.core.spawn.SpawnAllocator
 import com.luminaris.extraction.core.world.InstanceWorldService
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.storage.TemplateStorage
 import com.luminaris.extraction.util.FoliaScheduler
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -82,13 +83,22 @@ class MatchManager(
         }
 
         val matchId = UUID.randomUUID().toString().take(8)
-        logInfo("<gray>Initiating match deployment </gray><yellow>$matchId</yellow> <gray>for template </gray><aqua>$cleanTemplateId</aqua> <gray>with </gray><white>${players.size}</white> <gray>player(s)...</gray>")
+        logInfo(
+            "match.log_deployment_initiating",
+            "match_id" to matchId,
+            "template" to cleanTemplateId,
+            "count" to players.size
+        )
 
         // Stage 1: Asynchronously clone and mount ephemeral instance world
         instanceWorldService.createInstance(cleanTemplateId, matchId).thenAccept { world ->
             // Stage 2: Populate all marked loot containers across Folia regions
             lootPopulator.populateMatchWorld(world, templateData).thenAccept { containerCount ->
-                logInfo("<green>✔ Populated </green><yellow>$containerCount</yellow><green> container(s) for match </green><yellow>$matchId</yellow><green>.</green>")
+                logInfo(
+                    "match.log_populated_containers",
+                    "count" to containerCount,
+                    "match_id" to matchId
+                )
 
                 // Stage 3: Distribute squads via SpawnAllocator
                 val squadNames = players.map { it.name }
@@ -137,7 +147,12 @@ class MatchManager(
                     scheduler.runAtEntity(player) {
                         player.teleportAsync(targetLocation).whenComplete { _, tpEx ->
                             if (tpEx != null) {
-                                logWarning("Teleport error for ${player.name} to match $matchId: ${tpEx.message}")
+                                logWarning(
+                                    "match.log_teleport_error",
+                                    "player" to player.name,
+                                    "match_id" to matchId,
+                                    "error" to (tpEx.message ?: "unknown")
+                                )
                             }
 
                             // Show BossBar to operative
@@ -150,10 +165,10 @@ class MatchManager(
                                 teamIdProvider = { player.name }
                             )
 
-                            player.sendMessage(
-                                miniMessage.deserialize(
-                                    "<gradient:#00FFA3:#00B8FF><bold>[INFILTRATION CONFIRMED]</bold></gradient> <gray>Deployed to </gray><aqua>${templateData.displayName}</aqua><gray>. Raid timer active!</gray>"
-                                )
+                            TranslationManager.send(
+                                player,
+                                "match.player_deployed",
+                                "template" to templateData.displayName
                             )
 
                             pFuture.complete(null)
@@ -168,13 +183,23 @@ class MatchManager(
                 }
 
             }.exceptionally { popEx ->
-                logError("Failed to populate loot containers for match $matchId: ${popEx.message}", popEx)
+                logError(
+                    "match.log_populate_error",
+                    popEx,
+                    "match_id" to matchId,
+                    "error" to (popEx.message ?: "unknown")
+                )
                 instanceWorldService.deleteInstance(world)
                 future.completeExceptionally(popEx)
                 null
             }
         }.exceptionally { createEx ->
-            logError("Failed to create world instance for match $matchId: ${createEx.message}", createEx)
+            logError(
+                "match.log_create_world_error",
+                createEx,
+                "match_id" to matchId,
+                "error" to (createEx.message ?: "unknown")
+            )
             future.completeExceptionally(createEx)
             null
         }
@@ -242,10 +267,10 @@ class MatchManager(
         when (args[0].lowercase()) {
             "start" -> {
                 if (args.size < 2) {
-                    sender.sendMessage(miniMessage.deserialize("<red>Usage: </red><yellow>/$label match start <template_id> [players...]</yellow>"))
+                    TranslationManager.send(sender, "match.command_start_usage", "label" to label)
                     val available = templateStorage.getAllTemplates().map { it.templateId }
                     if (available.isNotEmpty()) {
-                        sender.sendMessage(miniMessage.deserialize("<gray>Available templates: </gray><aqua>${available.joinToString(", ")}</aqua>"))
+                        TranslationManager.send(sender, "match.command_available_templates", "templates" to available.joinToString(", "))
                     }
                     return true
                 }
@@ -256,32 +281,34 @@ class MatchManager(
                 } else if (sender is Player) {
                     listOf(sender)
                 } else {
-                    sender.sendMessage(miniMessage.deserialize("<red>You must specify at least one target player when running from console.</red>"))
+                    TranslationManager.send(sender, "match.command_console_requires_players")
                     return true
                 }
 
                 if (targetPlayers.isEmpty()) {
-                    sender.sendMessage(miniMessage.deserialize("<red>No valid online players found to deploy into match.</red>"))
+                    TranslationManager.send(sender, "match.command_no_valid_players")
                     return true
                 }
 
-                sender.sendMessage(
-                    miniMessage.deserialize(
-                        "<yellow>⏳ Initializing match instance for template </yellow><aqua>$templateId</aqua><yellow> with </yellow><white>${targetPlayers.size}</white><yellow> operative(s)...</yellow>"
-                    )
+                TranslationManager.send(
+                    sender,
+                    "match.command_initializing",
+                    "template" to templateId,
+                    "count" to targetPlayers.size
                 )
 
                 startMatch(templateId, targetPlayers).thenAccept { match ->
-                    sender.sendMessage(
-                        miniMessage.deserialize(
-                            "<green>✔ Match </green><yellow>${match.matchId}</yellow><green> launched successfully in world </green><aqua>${match.world.name}</aqua><green>!</green>"
-                        )
+                    TranslationManager.send(
+                        sender,
+                        "match.command_launched",
+                        "match_id" to match.matchId,
+                        "world" to match.world.name
                     )
                 }.exceptionally { ex ->
-                    sender.sendMessage(
-                        miniMessage.deserialize(
-                            "<red>✕ Failed to launch match: ${ex.cause?.message ?: ex.message}</red>"
-                        )
+                    TranslationManager.send(
+                        sender,
+                        "match.command_launch_failed",
+                        "error" to (ex.cause?.message ?: (ex.message ?: "unknown"))
                     )
                     null
                 }
@@ -289,65 +316,73 @@ class MatchManager(
 
             "stop", "end" -> {
                 if (args.size < 2) {
-                    sender.sendMessage(miniMessage.deserialize("<red>Usage: </red><yellow>/$label match stop <match_id></yellow>"))
+                    TranslationManager.send(sender, "match.command_stop_usage", "label" to label)
                     return true
                 }
                 val matchId = args[1].lowercase().trim()
                 val stopped = stopMatch(matchId)
                 if (stopped) {
-                    sender.sendMessage(miniMessage.deserialize("<green>✔ Match </green><yellow>$matchId</yellow><green> has been decommissioned.</green>"))
+                    TranslationManager.send(sender, "match.command_stopped", "match_id" to matchId)
                 } else {
-                    sender.sendMessage(miniMessage.deserialize("<red>No active match found with ID: $matchId</red>"))
+                    TranslationManager.send(sender, "match.command_not_found", "match_id" to matchId)
                 }
             }
 
             "list" -> {
                 val matches = getActiveMatches()
                 if (matches.isEmpty()) {
-                    sender.sendMessage(miniMessage.deserialize("<gray>No extraction matches currently active.</gray>"))
+                    TranslationManager.send(sender, "match.command_list_empty")
                     return true
                 }
 
-                val sb = StringBuilder()
-                sb.append("<dark_gray>----------------------------------------</dark_gray>\n")
-                sb.append("<gradient:#00FFA3:#00B8FF><bold>ACTIVE EXTRACTION MATCHES (${matches.size})</bold></gradient>\n")
+                sender.sendMessage(TranslationManager.render("general.divider"))
+                sender.sendMessage(TranslationManager.render("match.command_list_header", "count" to matches.size))
                 for (m in matches) {
                     val remaining = maxOf(0L, m.raidDurationSeconds - m.elapsedSeconds)
                     val timeFormatted = String.format("%02d:%02d", remaining / 60, remaining % 60)
-                    sb.append("<dark_gray>▪ </dark_gray><yellow>${m.matchId}</yellow> <gray>|</gray> <aqua>${m.templateData.templateId}</aqua> <gray>|</gray> <white>${m.world.name}</white> <gray>|</gray> <green>${m.players.size} players</green> <gray>| Time Left: </gray><red>$timeFormatted</red>\n")
+                    sender.sendMessage(
+                        TranslationManager.render(
+                            "match.command_list_entry",
+                            "match_id" to m.matchId,
+                            "template" to m.templateData.templateId,
+                            "world" to m.world.name,
+                            "players" to m.players.size,
+                            "time_left" to timeFormatted
+                        )
+                    )
                 }
-                sb.append("<dark_gray>----------------------------------------</dark_gray>")
-                sender.sendMessage(miniMessage.deserialize(sb.toString()))
+                sender.sendMessage(TranslationManager.render("general.divider"))
             }
 
             "status" -> {
                 if (args.size > 1) {
                     val match = getMatch(args[1])
                     if (match == null) {
-                        sender.sendMessage(miniMessage.deserialize("<red>Match not found: ${args[1]}</red>"))
+                        TranslationManager.send(sender, "match.command_not_found", "match_id" to args[1])
                         return true
                     }
                     val remaining = maxOf(0L, match.raidDurationSeconds - match.elapsedSeconds)
                     val timeFormatted = String.format("%02d:%02d", remaining / 60, remaining % 60)
+                    sender.sendMessage(TranslationManager.render("general.divider"))
+                    sender.sendMessage(TranslationManager.render("match.command_status_header", "match_id" to match.matchId))
+                    sender.sendMessage(TranslationManager.render("match.command_status_template", "template" to match.templateData.displayName))
+                    sender.sendMessage(TranslationManager.render("match.command_status_world", "world" to match.world.name))
                     sender.sendMessage(
-                        miniMessage.deserialize(
-                            """
-                            <dark_gray>----------------------------------------</dark_gray>
-                            <gradient:#00FFA3:#00B8FF><bold>MATCH STATUS: ${match.matchId}</bold></gradient>
-                            <gray>Template:</gray> <aqua>${match.templateData.displayName}</aqua>
-                            <gray>World:</gray> <white>${match.world.name}</white>
-                            <gray>Elapsed / Total:</gray> <yellow>${match.elapsedSeconds}s / ${match.raidDurationSeconds}s</yellow> (<red>$timeFormatted remaining</red>)
-                            <gray>Operatives (${match.players.size}):</gray>
-                            """.trimIndent()
+                        TranslationManager.render(
+                            "match.command_status_time",
+                            "elapsed" to match.elapsedSeconds,
+                            "duration" to match.raidDurationSeconds,
+                            "time_left" to timeFormatted
                         )
                     )
+                    sender.sendMessage(TranslationManager.render("match.command_status_operatives", "count" to match.players.size))
                     for ((uuid, state) in match.players) {
                         val pName = Bukkit.getPlayer(uuid)?.name ?: uuid.toString().take(8)
-                        sender.sendMessage(miniMessage.deserialize("  <dark_gray>• </dark_gray><white>$pName</white> <gray>-</gray> <yellow>$state</yellow>"))
+                        sender.sendMessage(TranslationManager.render("match.command_status_player", "player" to pName, "state" to state))
                     }
-                    sender.sendMessage(miniMessage.deserialize("<dark_gray>----------------------------------------</dark_gray>"))
+                    sender.sendMessage(TranslationManager.render("general.divider"))
                 } else {
-                    sender.sendMessage(miniMessage.deserialize("<gray>Active match instances: </gray><yellow>${activeMatches.size}</yellow>"))
+                    TranslationManager.send(sender, "match.command_status_count", "count" to activeMatches.size)
                 }
             }
 
@@ -358,30 +393,24 @@ class MatchManager(
     }
 
     private fun sendMatchHelp(sender: CommandSender, label: String) {
-        val help = """
-            <dark_gray>----------------------------------------</dark_gray>
-            <gradient:#00FFA3:#00B8FF><bold>EXTRACTION MATCH COMMANDS</bold></gradient>
-            <yellow>/$label match start <template_id> [players...]</yellow> <gray>- Deploy an extraction match</gray>
-            <yellow>/$label match stop <match_id></yellow>               <gray>- Force terminate an active match</gray>
-            <yellow>/$label match list</yellow>                           <gray>- List active extraction matches</gray>
-            <yellow>/$label match status [match_id]</yellow>              <gray>- View match status and roster</gray>
-            <dark_gray>----------------------------------------</dark_gray>
-        """.trimIndent()
-        sender.sendMessage(miniMessage.deserialize(help))
+        sender.sendMessage(TranslationManager.render("general.divider"))
+        sender.sendMessage(TranslationManager.render("match.command_help_title"))
+        sender.sendMessage(TranslationManager.render("match.command_help_start", "label" to label))
+        sender.sendMessage(TranslationManager.render("match.command_help_stop", "label" to label))
+        sender.sendMessage(TranslationManager.render("match.command_help_list", "label" to label))
+        sender.sendMessage(TranslationManager.render("match.command_help_status", "label" to label))
+        sender.sendMessage(TranslationManager.render("general.divider"))
     }
 
-    private fun logInfo(message: String) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#00FFA3:#00B8FF><bold>[LuminarisMatch]</bold></gradient> $message"))
+    private fun logInfo(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logInfo(key, *placeholders)
     }
 
-    private fun logWarning(message: String) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#FFAA00:#FF5500><bold>[LuminarisMatch]</bold></gradient> $message"))
+    private fun logWarning(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logWarning(key, *placeholders)
     }
 
-    private fun logError(message: String, throwable: Throwable? = null) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#FF0055:#FF5555><bold>[LuminarisMatch]</bold></gradient> $message"))
-        if (throwable != null) {
-            runCatching { plugin.logger.log(java.util.logging.Level.SEVERE, "[LuminarisMatch] $message", throwable) }
-        }
+    private fun logError(key: String, throwable: Throwable? = null, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logError(key, throwable, *placeholders)
     }
 }

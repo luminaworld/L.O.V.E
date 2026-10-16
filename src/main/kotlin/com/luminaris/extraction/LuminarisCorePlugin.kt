@@ -1,6 +1,7 @@
 package com.luminaris.extraction
 
 import com.luminaris.extraction.command.ExtCommand
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.storage.CategoriesConfigAdapter
 import com.luminaris.extraction.storage.ItemsConfigAdapter
 import com.luminaris.extraction.storage.SafeCasesConfigAdapter
@@ -26,6 +27,9 @@ class LuminarisCorePlugin : JavaPlugin() {
     private val miniMessage = MiniMessage.miniMessage()
 
     lateinit var scheduler: FoliaScheduler
+        private set
+
+    lateinit var translationManager: TranslationManager
         private set
 
     lateinit var itemsConfig: ItemsConfigAdapter
@@ -126,6 +130,10 @@ class LuminarisCorePlugin : JavaPlugin() {
      * Initializes all storage adapters safely.
      */
     private fun initializeConfigurations() {
+        translationManager = TranslationManager(this)
+        translationManager.initialize()
+        TranslationManager.instance = translationManager
+
         itemsConfig = ItemsConfigAdapter(this)
         itemsConfig.initialize()
 
@@ -194,6 +202,7 @@ class LuminarisCorePlugin : JavaPlugin() {
      * Reloads all configuration adapters and registries in memory.
      */
     fun reloadAllConfigurations() {
+        translationManager.reload()
         itemsConfig.reload()
         categoriesConfig.reload()
         safeCasesConfig.reload()
@@ -221,44 +230,27 @@ class LuminarisCorePlugin : JavaPlugin() {
      */
     private fun renderStartupBanner() {
         val platformLabel = if (FoliaScheduler.isFolia) {
-            "<gradient:#FF0055:#FFAA00><bold>FOLIA</bold></gradient> <gray>(Regionized Multi-Threaded)</gray>"
+            translationManager.getRaw("banner.platform.folia")
         } else {
-            "<gradient:#00D2FF:#3A7BD5><bold>PAPER</bold></gradient> <gray>(Universal Regional Scheduler)</gray>"
+            translationManager.getRaw("banner.platform.paper")
         }
 
         val jvmVersion = System.getProperty("java.version")
-        val banner = """
-            
-            <gradient:#00FFA3:#00B8FF><bold> __         ______     __   __     ______    </bold></gradient>
-            <gradient:#00FFA3:#00B8FF><bold>/\ \       /\  __ \   /\ \ / /    /\  ___\   </bold></gradient>
-            <gradient:#00FFA3:#00B8FF><bold>\ \ \____  \ \ \/\ \  \ \ \'/     \ \  __\   </bold></gradient>
-            <gradient:#00FFA3:#00B8FF><bold> \ \_____\  \ \_____\  \ \__|      \ \_____\ </bold></gradient>
-            <gradient:#00FFA3:#00B8FF><bold>  \/_____/   \/_____/   \/_/        \/_____/ </bold></gradient>
-            <dark_gray>================================================================</dark_gray>
-            <gradient:#00FFA3:#00B8FF><bold> LUMINARIS OPERATION VANILLA EXTRACTION (L.O.V.E) </bold></gradient>
-            <gray> Core Engine Version: </gray><aqua>${pluginMeta.version}</aqua>
-            <gray> Target Runtime:      </gray><yellow>JVM $jvmVersion (Kotlin 2.1+)</yellow>
-            <gray> Engine Platform:    </gray>$platformLabel
-            <gray> Loaded Modules:      </gray><green>Storage</green>, <green>ItemRegistry</green>, <green>ContainerRegistry</green>, <green>SafeContainerManager</green>, <green>TemplateStorage</green>, <green>ContainerMarker</green>, <green>NativeDialogUI</green>, <green>EditorCommand</green>, <green>InstanceWorldService</green>, <green>LootPopulator</green>, <green>SpawnAllocator</green>, <green>ExtractionMatrix</green>, <green>MatchEngine</green>, <green>CorpseManager</green>
-            <gray> Status:              </gray><green><bold>ACTIVE & READY</bold></green>
-            <dark_gray>================================================================</dark_gray>
-        """.trimIndent()
+        val banner = translationManager.render(
+            "banner.startup",
+            "version" to pluginMeta.version,
+            "jvm" to jvmVersion,
+            "platform" to platformLabel
+        )
 
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize(banner))
+        Bukkit.getConsoleSender().sendMessage(banner)
     }
 
     /**
      * Prints graceful shutdown notification to console.
      */
     private fun renderShutdownBanner() {
-        val shutdownMessage = """
-            <dark_gray>================================================================</dark_gray>
-            <gradient:#FF416C:#8A2387><bold>[LuminarisCore] Disabling Extraction Engine (L.O.V.E)...</bold></gradient>
-            <gray>Cancelling active regional and asynchronous tasks...</gray>
-            <red><bold>Status: OFFLINE</bold></red>
-            <dark_gray>================================================================</dark_gray>
-        """.trimIndent()
-
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize(shutdownMessage))
+        val shutdownMessage = translationManager.render("banner.shutdown")
+        Bukkit.getConsoleSender().sendMessage(shutdownMessage)
     }
 }

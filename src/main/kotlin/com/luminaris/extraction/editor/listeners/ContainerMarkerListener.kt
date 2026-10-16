@@ -3,8 +3,8 @@ package com.luminaris.extraction.editor.listeners
 import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.core.container.PlacedContainer
 import com.luminaris.extraction.editor.tool.ContainerMarkerTool
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.storage.TemplateStorage
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Particle
 import org.bukkit.Sound
 import org.bukkit.block.Block
@@ -27,8 +27,6 @@ class ContainerMarkerListener(
     private val plugin: LuminarisCorePlugin,
     private val templateStorage: TemplateStorage
 ) : Listener {
-
-    private val miniMessage = MiniMessage.miniMessage()
 
     private val villagerHappyParticle: Particle by lazy {
         runCatching { Particle.valueOf("HAPPY_VILLAGER") }
@@ -53,12 +51,8 @@ class ContainerMarkerListener(
         // Check if placed inside a template world
         if (!templateStorage.isTemplateWorld(world)) {
             event.isCancelled = true
-            player.sendMessage(
-                miniMessage.deserialize("<red>❌ Container markers can only be placed inside template worlds!</red>")
-            )
-            player.sendMessage(
-                miniMessage.deserialize("<gray>Hint: Target world name must have prefix </gray><yellow>template_</yellow><gray> or be an initialized template.</gray>")
-            )
+            TranslationManager.send(player, "listener.marker.only_template_world")
+            TranslationManager.send(player, "listener.marker.template_hint")
             return
         }
 
@@ -87,15 +81,25 @@ class ContainerMarkerListener(
         // Play sound BLOCK_CHEST_LOCKED
         world.playSound(centerLoc, Sound.BLOCK_CHEST_LOCKED, 1.0f, 1.2f)
 
-        // Send actionbar message: "<green>Registered container: <yellow>{category_id}</yellow> at {x}, {y}, {z}</green>"
-        val actionbarText = "<green>Registered container: <yellow>$categoryId</yellow> at $x, $y, $z</green>"
-        player.sendActionBar(miniMessage.deserialize(actionbarText))
+        // Send actionbar message
+        TranslationManager.sendActionBar(
+            player,
+            "listener.marker.actionbar_placed",
+            "category" to categoryId,
+            "x" to x,
+            "y" to y,
+            "z" to z
+        )
 
         // Confirm in chat
-        player.sendMessage(
-            miniMessage.deserialize(
-                "<gradient:#00FFA3:#00B8FF><bold>✔ [L.O.V.E Marker]</bold></gradient> <green>Registered container <yellow>$categoryId</yellow> at <aqua>($x, $y, $z)</aqua> in template <yellow>$templateId</yellow></green>"
-            )
+        TranslationManager.send(
+            player,
+            "listener.marker.chat_placed",
+            "category" to categoryId,
+            "x" to x,
+            "y" to y,
+            "z" to z,
+            "template" to templateId
         )
     }
 
@@ -119,10 +123,8 @@ class ContainerMarkerListener(
         val hasPermission = player.hasPermission("luminaris.editor") || player.hasPermission("luminaris.admin")
         if (!hasPermission) {
             event.isCancelled = true
-            player.sendMessage(
-                miniMessage.deserialize("<red>❌ You do not have permission to break registered extraction containers!</red>")
-            )
-            player.sendActionBar(miniMessage.deserialize("<red>Permission denied: Registered container marker</red>"))
+            TranslationManager.send(player, "listener.marker.no_permission_break")
+            TranslationManager.sendActionBar(player, "listener.marker.actionbar_denied")
             return
         }
 
@@ -130,13 +132,22 @@ class ContainerMarkerListener(
         val removed = templateStorage.removeContainer(templateId, block.x, block.y, block.z, saveToDisk = true)
 
         // Send message notifying deletion
-        player.sendMessage(
-            miniMessage.deserialize(
-                "<red>✖ Removed registered container <yellow>${container.categoryId}</yellow> at <aqua>${block.x}, ${block.y}, ${block.z}</aqua> from template <yellow>$templateId</yellow>.</red>"
-            )
+        TranslationManager.send(
+            player,
+            "listener.marker.chat_removed",
+            "category" to container.categoryId,
+            "x" to block.x,
+            "y" to block.y,
+            "z" to block.z,
+            "template" to templateId
         )
-        player.sendActionBar(
-            miniMessage.deserialize("<red>Removed container: <yellow>${container.categoryId}</yellow> at ${block.x}, ${block.y}, ${block.z}</red>")
+        TranslationManager.sendActionBar(
+            player,
+            "listener.marker.actionbar_removed",
+            "category" to container.categoryId,
+            "x" to block.x,
+            "y" to block.y,
+            "z" to block.z
         )
 
         // Play feedback sound

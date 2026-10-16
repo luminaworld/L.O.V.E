@@ -1,5 +1,6 @@
 package com.luminaris.extraction.editor.tool
 
+import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -13,7 +14,6 @@ import org.bukkit.persistence.PersistentDataType
 object ContainerMarkerTool {
 
     val KEY_CONTAINER_CATEGORY = NamespacedKey("luminaris", "container_category")
-    private val miniMessage = MiniMessage.miniMessage()
 
     /**
      * Checks if the given ItemStack is a valid container marker tool item.
@@ -56,14 +56,14 @@ object ContainerMarkerTool {
             // Display name
             val label = categoryDisplayName ?: cleanCatId
             meta.displayName(
-                miniMessage.deserialize("<gradient:#00FFA3:#00B8FF><bold>Container Marker</bold></gradient> <gray>(</gray><yellow>$label</yellow><gray>)</gray>")
+                TranslationManager.render("tool.marker.display_name", "label" to label)
             )
 
-            // Lore with MiniMessage: "<gray>Category: <yellow>{category_id}</yellow></gray>"
+            // Lore with MiniMessage
             val loreLines = listOf(
-                miniMessage.deserialize("<gray>Category: <yellow>$cleanCatId</yellow></gray>"),
-                miniMessage.deserialize("<dark_gray>▪ Place in a template world to register.</dark_gray>"),
-                miniMessage.deserialize("<dark_gray>▪ Break with editor permission to remove.</dark_gray>")
+                TranslationManager.render("tool.marker.lore_category", "category" to cleanCatId),
+                TranslationManager.render("tool.marker.lore_place"),
+                TranslationManager.render("tool.marker.lore_break")
             )
             meta.lore(loreLines)
 

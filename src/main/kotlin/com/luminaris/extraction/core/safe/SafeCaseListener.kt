@@ -1,7 +1,7 @@
 package com.luminaris.extraction.core.safe
 
 import com.luminaris.extraction.LuminarisCorePlugin
-import net.kyori.adventure.text.minimessage.MiniMessage
+import com.luminaris.extraction.localization.TranslationManager
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -23,8 +23,6 @@ class SafeCaseListener(
     private val plugin: LuminarisCorePlugin,
     private val safeCaseManager: SafeCaseManager
 ) : Listener {
-
-    private val miniMessage = MiniMessage.miniMessage()
 
     /**
      * Detects right-click interactions with a Safe Case item in main hand or off hand.
@@ -76,7 +74,7 @@ class SafeCaseListener(
         if (clickedInventory == topInventory) {
             if (safeCaseManager.isSafeCase(event.cursor)) {
                 event.isCancelled = true
-                player.sendMessage(miniMessage.deserialize("<red>✕ You cannot place a Safe Container inside another Safe Container!</red>"))
+                TranslationManager.send(player, "safe_case.error_nesting_cursor")
                 return
             }
         }
@@ -86,7 +84,7 @@ class SafeCaseListener(
             val clickedItem = event.currentItem
             if (safeCaseManager.isSafeCase(clickedItem)) {
                 event.isCancelled = true
-                player.sendMessage(miniMessage.deserialize("<red>✕ You cannot store a Safe Container inside another Safe Container!</red>"))
+                TranslationManager.send(player, "safe_case.error_nesting_shift")
                 return
             }
         }
@@ -101,7 +99,7 @@ class SafeCaseListener(
                 if (clickedInventory == topInventory) {
                     if (safeCaseManager.isSafeCase(hotbarItem)) {
                         event.isCancelled = true
-                        player.sendMessage(miniMessage.deserialize("<red>✕ Hotbar swapping a Safe Container into storage is prohibited!</red>"))
+                        TranslationManager.send(player, "safe_case.error_hotbar_swap")
                         return
                     }
                 }
@@ -189,7 +187,7 @@ class SafeCaseListener(
             val touchesTop = event.rawSlots.any { it < topInventory.size }
             if (touchesTop) {
                 event.isCancelled = true
-                player.sendMessage(miniMessage.deserialize("<red>✕ You cannot drag a Safe Container into another Safe Container!</red>"))
+                TranslationManager.send(player, "safe_case.error_nesting_drag")
                 return
             }
         }

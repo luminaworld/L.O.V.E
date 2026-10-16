@@ -1,5 +1,6 @@
 package com.luminaris.extraction.core.extraction
 
+import com.luminaris.extraction.localization.TranslationManager
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -62,7 +63,7 @@ class ExtractionCountdownTask(
             // Player was already in a zone
             if (!currentZone.boundingBox.contains(vector)) {
                 // Player moved outside the bounding box: Reset countdown and alert player
-                resetCountdown(alertMessage = "<red><bold>EXTRACTION CANCELLED</bold> - You moved outside the evacuation zone!</red>")
+                resetCountdown(alertComponent = TranslationManager.render("extraction.cancelled_outside"))
                 return
             }
 
@@ -79,10 +80,7 @@ class ExtractionCountdownTask(
             // Increments active countdown timer
             countdownTimer++
             val remaining = maxOf(0, currentZone.countdownSeconds - countdownTimer)
-            val actionbar = miniMessage.deserialize(
-                String.format("<green>Extracting in <yellow>%d</yellow>s... Stay in the zone!</green>", remaining)
-            )
-            player.sendActionBar(actionbar)
+            TranslationManager.sendActionBar(player, "extraction.countdown_actionbar", "remaining" to remaining)
             manager.setPlayerState(player, ExtractionState.EXTRACTING)
 
             // When timer hits 0: execute extraction
@@ -102,10 +100,7 @@ class ExtractionCountdownTask(
                 // Increments active countdown timer starting from 1
                 countdownTimer = 1
                 val remaining = maxOf(0, candidateZone.countdownSeconds - countdownTimer)
-                val actionbar = miniMessage.deserialize(
-                    String.format("<green>Extracting in <yellow>%d</yellow>s... Stay in the zone!</green>", remaining)
-                )
-                player.sendActionBar(actionbar)
+                TranslationManager.sendActionBar(player, "extraction.countdown_actionbar", "remaining" to remaining)
                 manager.setPlayerState(player, ExtractionState.EXTRACTING)
 
                 if (remaining <= 0) {
@@ -122,7 +117,7 @@ class ExtractionCountdownTask(
      */
     fun onDamage() {
         if (activeZone != null || countdownTimer > 0) {
-            resetCountdown(alertMessage = "<red><bold>EXTRACTION INTERRUPTED</bold> - You took damage!</red>")
+            resetCountdown(alertComponent = TranslationManager.render("extraction.interrupted_damage"))
         }
     }
 
@@ -139,7 +134,7 @@ class ExtractionCountdownTask(
             if (alertComponent != null) {
                 player.sendActionBar(alertComponent)
             } else if (!alertMessage.isNullOrBlank()) {
-                player.sendActionBar(miniMessage.deserialize(alertMessage))
+                player.sendActionBar(TranslationManager.parseComponent(alertMessage))
             } else {
                 player.sendActionBar(Component.empty())
             }
@@ -177,11 +172,9 @@ class ExtractionCountdownTask(
         val targetLobby = event.targetLobbyLocation ?: manager.resolveLobbyLocation()
         player.teleportAsync(targetLobby).whenComplete { _, ex ->
             if (ex != null) {
-                plugin.logger.warning("Failed to teleport extracted player ${player.name}: ${ex.message}")
+                TranslationManager.logWarning("extraction.log_teleport_error", "player" to player.name, "error" to (ex.message ?: "unknown"))
             } else {
-                player.sendActionBar(
-                    miniMessage.deserialize("<green><bold>EXTRACTION SUCCESSFUL!</bold> Evacuation complete.</green>")
-                )
+                TranslationManager.sendActionBar(player, "extraction.success_actionbar")
             }
         }
     }

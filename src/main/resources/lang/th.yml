@@ -1,0 +1,426 @@
+# =========================================================================
+# Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+# ไฟล์ภาษาและการแปล: ภาษาไทย (Thai Localization: th.yml)
+# =========================================================================
+#
+# คำแนะนำการแก้ไขและการจัดรูปแบบข้อความ:
+# 1. ข้อความทั้งหมดในไฟล์นี้ใช้มาตรฐาน Adventure MiniMessage:
+#    - ข้อความสีเดี่ยว: ใช้รูปแบบ <color:#HEX>ข้อความ</color> (เช่น <color:#F3CFFD>ตัวอย่าง</color>)
+#    - ข้อความไล่เฉดสี: ใช้รูปแบบ <gradient:#HEX1:#HEX2>ข้อความ</gradient> (เช่น <gradient:#00FFA3:#00B8FF>ตัวอย่าง</gradient>)
+#    - รูปแบบตัวอักษร: <bold> หรือ <b>, <italic> หรือ <i>, <underlined> หรือ <u>
+# 2. ตัวแปรในข้อความจะอยู่ในรูปแบบปีกกา เช่น {player}, {count}, {template}, {time}
+#    ห้ามแก้ไขหรือลบชื่อตัวแปรภายในเครื่องหมาย { } เนื่องจากระบบจะนำค่าจริงมาแทนที่
+# =========================================================================
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 1: คำนำหน้าชื่อระบบ (Prefixes)
+# ใช้แสดงหน้าข้อความในแชทและคอนโซลเพื่อระบุโมดูลย่อยที่ส่งข้อความ
+# -------------------------------------------------------------------------
+prefix:
+  # คำนำหน้าระบบแกนหลัก LuminarisCore
+  core: "<gradient:#00FFA3:#00B8FF><bold>[LuminarisCore]</bold></gradient>"
+  # คำนำหน้าสำหรับเครื่องมือมาร์กเกอร์จุดวางคอนเทนเนอร์
+  marker: "<gradient:#00FFA3:#00B8FF><bold>✔ [มาร์กเกอร์ L.O.V.E]</bold></gradient>"
+  # คำนำหน้าระบบการจัดการแมตช์ (ข้อความทั่วไป)
+  match: "<gradient:#00FFA3:#00B8FF><bold>[LuminarisMatch]</bold></gradient>"
+  # คำนำหน้าระบบการจัดการแมตช์ (ข้อความเตือน)
+  match_warn: "<gradient:#FFAA00:#FF5500><bold>[LuminarisMatch]</bold></gradient>"
+  # คำนำหน้าระบบการจัดการแมตช์ (ข้อผิดพลาด)
+  match_error: "<gradient:#FF0055:#FF5555><bold>[LuminarisMatch]</bold></gradient>"
+  # คำนำหน้าระบบจัดการโลกจำลอง InstanceWorld (ข้อความทั่วไป)
+  world: "<gradient:#00FFA3:#00B8FF><bold>[LuminarisWorld]</bold></gradient>"
+  # คำนำหน้าระบบจัดการโลกจำลอง (ข้อความเตือน)
+  world_warn: "<gradient:#FFAA00:#FF5500><bold>[LuminarisWorld]</bold></gradient>"
+  # คำนำหน้าระบบจัดการโลกจำลอง (ข้อผิดพลาด)
+  world_error: "<gradient:#FF0055:#FF5555><bold>[LuminarisWorld]</bold></gradient>"
+  # คำนำหน้าระบบสุ่มไอเทมลงกล่อง LootPopulator (ข้อความทั่วไป)
+  loot: "<gradient:#00FFA3:#00B8FF><bold>[LootPopulator]</bold></gradient>"
+  # คำนำหน้าระบบสุ่มไอเทม (ข้อความเตือน)
+  loot_warn: "<gradient:#FFAA00:#FF5500><bold>[LootPopulator]</bold></gradient>"
+  # คำนำหน้าระบบสุ่มไอเทม (ข้อผิดพลาด)
+  loot_error: "<gradient:#FF0055:#FF5555><bold>[LootPopulator]</bold></gradient>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 2: ข้อความทั่วไป (General Messages)
+# ข้อความพื้นฐานที่ใช้ร่วมกันในหลายส่วน เช่น การแจ้งเตือนสิทธิ์, เส้นคั่น
+# -------------------------------------------------------------------------
+general:
+  divider: "<color:#555555>----------------------------------------</color>"
+  divider_long: "<color:#555555>================================================================</color>"
+  divider_long_sub: "<color:#555555>----------------------------------------------------------------</color>"
+  divider_editor: "<color:#555555>==================================================</color>"
+  divider_editor_sub: "<color:#555555>--------------------------------------------------</color>"
+  no_permission: "<color:#FF5555>คุณไม่มีสิทธิ์ในการใช้งานคำสั่งนี้</color>"
+  player_only: "<color:#FF5555>❌ คำสั่งนี้สามารถใช้งานได้โดยผู้เล่นในเกมเท่านั้น</color>"
+  player_not_found: "<color:#FF5555>ไม่พบผู้เล่น: <color:#FFFF55>{player}</color></color>"
+  all: "<color:#AAAAAA>ทั้งหมด</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 3: แบนเนอร์เริ่มต้นและปิดระบบ (Banner)
+# ข้อความ ASCII Art และข้อมูลโมดูลที่แสดงบนคอนโซลขณะเซิร์ฟเวอร์เปิดหรือปิด
+# -------------------------------------------------------------------------
+banner:
+  platform:
+    folia: "<gradient:#FF0055:#FFAA00><bold>FOLIA</bold></gradient> <color:#AAAAAA>(แบ่งเธรดตามภูมิภาค Multi-Threaded)</color>"
+    paper: "<gradient:#00D2FF:#3A7BD5><bold>PAPER</bold></gradient> <color:#AAAAAA>(ตัวจัดการงานมาตรฐาน Universal Scheduler)</color>"
+  startup: |
+    
+    <gradient:#00FFA3:#00B8FF><bold> __         ______     __   __     ______    </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>/\ \       /\  __ \   /\ \ / /    /\  ___\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>\ \ \____  \ \ \/\ \  \ \ \'/     \ \  __\   </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold> \ \_____\  \ \_____\  \ \__|      \ \_____\ </bold></gradient>
+    <gradient:#00FFA3:#00B8FF><bold>  \/_____/   \/_____/   \/_/        \/_____/ </bold></gradient>
+    <color:#555555>================================================================</color>
+    <gradient:#00FFA3:#00B8FF><bold> LUMINARIS OPERATION VANILLA EXTRACTION (L.O.V.E) </bold></gradient>
+    <color:#AAAAAA> เวอร์ชันแกนหลัก:    </color><color:#55FFFF>{version}</color>
+    <color:#AAAAAA> สภาพแวดล้อมรันไทม์: </color><color:#FFFF55>JVM {jvm}</color>
+    <color:#AAAAAA> แพลตฟอร์มเซิร์ฟเวอร์: </color>{platform}
+    <color:#AAAAAA> โมดูลที่โหลดแล้ว:    </color><color:#55FF55>Storage</color>, <color:#55FF55>ItemRegistry</color>, <color:#55FF55>ContainerRegistry</color>, <color:#55FF55>SafeContainerManager</color>, <color:#55FF55>TemplateStorage</color>, <color:#55FF55>ContainerMarker</color>, <color:#55FF55>NativeDialogUI</color>, <color:#55FF55>EditorCommand</color>, <color:#55FF55>InstanceWorldService</color>, <color:#55FF55>LootPopulator</color>, <color:#55FF55>SpawnAllocator</color>, <color:#55FF55>ExtractionMatrix</color>, <color:#55FF55>MatchEngine</color>, <color:#55FF55>CorpseManager</color>
+    <color:#AAAAAA> สถานะระบบ:          </color><color:#55FF55><bold>พร้อมทำงานและเปิดใช้งานแล้ว</bold></color>
+    <color:#555555>================================================================</color>
+  shutdown: |
+    <color:#555555>================================================================</color>
+    <gradient:#FF416C:#8A2387><bold>[LuminarisCore] กำลังปิดการทำงานของ Extraction Engine (L.O.V.E)...</bold></gradient>
+    <color:#AAAAAA>กำลังยกเลิกงานที่ทำงานตามภูมิภาคและงานอะซิงโครนัสทั้งหมด...</color>
+    <color:#FF5555><bold>สถานะ: ออฟไลน์ (OFFLINE)</bold></color>
+    <color:#555555>================================================================</color>
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 4: คำสั่งทั่วไปของระบบ (/ext)
+# ข้อความตอบกลับสำหรับคำสั่ง reload, status, help, case, และ chest
+# -------------------------------------------------------------------------
+command:
+  reload:
+    success: "<color:#55FF55>✔ [LuminarisCore] โหลดการตั้งค่าและฐานข้อมูลระบบทั้งหมดใหม่เรียบร้อยแล้ว!</color>"
+  unknown_subcommand: "<color:#FF5555>ไม่พบคำสั่งย่อย: <color:#FFFF55>{subcommand}</color> ใช้ </color><color:#FFFF55>/{label} help</color><color:#FF5555> เพื่อดูคำสั่งที่ใช้งานได้</color>"
+  status:
+    title: "<gradient:#00FFA3:#00B8FF><bold>สถานะระบบสกัด LUMINARIS EXTRACTION ENGINE</bold></gradient>"
+    version: "<color:#AAAAAA>เวอร์ชัน:</color> <color:#FFFFFF>{version}</color>"
+    threading: "<color:#AAAAAA>รูปแบบเธรด:</color> {platform}"
+    items: "<color:#AAAAAA>ไอเทมการสกัดที่เปิดใช้งาน:</color> <color:#FFFF55>{count}</color>"
+    categories: "<color:#AAAAAA>หมวดหมู่คอนเทนเนอร์:</color> <color:#FFFF55>{count}</color>"
+    cases: "<color:#AAAAAA>โปรไฟล์กระเป๋านิรภัย:</color> <color:#FFFF55>{count}</color>"
+    instances: "<color:#AAAAAA>แมตช์ที่กำลังดำเนินการ:</color> <color:#FFFF55>{count}</color>"
+  help:
+    title: "<gradient:#00FFA3:#00B8FF><bold>คำสั่งระบบสกัดหลบหนี LUMINARIS (L.O.V.E)</bold></gradient>"
+    match_start: "<color:#FFFF55>/ext match start <แผนที่> [ผู้เล่น]</color> <color:#AAAAAA>- เริ่มต้นและเปิดรอบการเล่นการสกัดหลบหนี</color>"
+    match_stop: "<color:#FFFF55>/ext match stop <รหัสแมตช์></color>       <color:#AAAAAA>- บังคับยุติการเล่นของแมตช์ที่เปิดอยู่</color>"
+    match_list: "<color:#FFFF55>/ext match list</color>                  <color:#AAAAAA>- ดูรายการแมตช์ที่กำลังดำเนินการอยู่</color>"
+    chest_get: "<color:#FFFF55>/ext chest get <หมวดหมู่> [ประเภท]</color> <color:#AAAAAA>- รับไอเทมมาร์กเกอร์จุดวางคอนเทนเนอร์ (หีบ/ถัง)</color>"
+    chest_list: "<color:#FFFF55>/ext chest list</color>                  <color:#AAAAAA>- ดูรายการมาร์กเกอร์คอนเทนเนอร์ในแผนที่เทมเพลต</color>"
+    case_list: "<color:#FFFF55>/ext case list</color>                    <color:#AAAAAA>- แสดงรายการกระเป๋านิรภัยทั้งหมดที่ตั้งค่าไว้</color>"
+    case_give: "<color:#FFFF55>/ext case give <ผู้เล่น> <รหัส></color>   <color:#AAAAAA>- มอบกระเป๋านิรภัยให้แก่ผู้เล่น</color>"
+    editor_createitem: "<color:#FFFF55>/ext editor createitem <หมวดหมู่></color> <color:#AAAAAA>- ลงทะเบียนไอเทมในมือผ่านหน้าต่าง Native Dialog UI</color>"
+    editor_createcategory: "<color:#FFFF55>/ext editor createcategory</color>       <color:#AAAAAA>- ตั้งค่าหมวดหมู่ไอเทมสุ่มผ่านหน้าต่าง Dialog UI</color>"
+    editor_list: "<color:#FFFF55>/ext editor list</color>                 <color:#AAAAAA>- แสดงรายการไอเทมและหมวดหมู่ทั้งหมดที่ลงทะเบียนไว้</color>"
+    status: "<color:#FFFF55>/ext status</color>                      <color:#AAAAAA>- ดูข้อมูลสถานะระบบหลักและรูปแบบเธรดการทำงาน</color>"
+    reload: "<color:#FFFF55>/ext reload</color>                      <color:#AAAAAA>- โหลดไฟล์ไอเทม, หมวดหมู่, เทมเพลต และกระเป๋านิรภัยใหม่ทันที</color>"
+    help: "<color:#FFFF55>/ext help</color>                        <color:#AAAAAA>- แสดงคู่มือการใช้งานคำสั่งทั้งหมด</color>"
+  case:
+    usage: "<color:#FF5555>วิธีใช้: </color><color:#FFFF55>/{label} case <give|list></color>"
+    give_usage: "<color:#FF5555>วิธีใช้: </color><color:#FFFF55>/{label} case give <ผู้เล่น> <รหัสกระเป๋า></color>"
+    empty_list: "<color:#AAAAAA>ไม่มีการลงทะเบียนโปรไฟล์กระเป๋านิรภัยในระบบ</color>"
+    list_header: "<gradient:#00FFA3:#00B8FF><bold>--- รายการกระเป๋านิรภัยที่ลงทะเบียนไว้ ({count}) ---</bold></gradient>"
+    list_entry: "<color:#555555>▪ </color><color:#FFFF55>{id}</color> <color:#AAAAAA>-</color> {display_name} <color:#AAAAAA>(ความจุ: </color><color:#55FFFF>{capacity}</color><color:#AAAAAA>, วัตถุดิบ: </color><color:#55FF55>{material}</color><color:#AAAAAA>)</color>"
+    unknown_id: "<color:#FF5555>ไม่พบรหัสกระเป๋านิรภัย: <color:#FFFF55>{id}</color> โปรดใช้คำสั่ง </color><color:#FFFF55>/{label} case list</color>"
+    give_success_sender: "<color:#55FF55>✔ มอบกระเป๋านิรภัย </color><color:#FFFF55>{id}</color><color:#55FF55> ให้แก่ </color><color:#55FFFF>{player}</color><color:#55FF55> เรียบร้อยแล้ว!</color>"
+    give_success_target: "<color:#55FF55>คุณได้รับกระเป๋านิรภัย: </color>"
+    unknown_action: "<color:#FF5555>ไม่พบการกระทำ: <color:#FFFF55>{action}</color> วิธีใช้: </color><color:#FFFF55>/{label} case <give|list></color>"
+  chest:
+    usage: "<color:#FF5555>วิธีใช้: </color><color:#FFFF55>/{label} chest <get|list></color>"
+    missing_category: |
+      <color:#FF5555>กรุณาระบุรหัสหมวดหมู่!</color>
+      <color:#FFFF55>วิธีใช้: </color><color:#FFFFFF>/{label} chest get <รหัสหมวดหมู่> [chest|barrel]</color>
+      {hint}
+    available_categories: "<color:#AAAAAA>หมวดหมู่ที่ใช้ได้: </color><color:#55FFFF>{categories}</color>"
+    no_categories: "<color:#FFFF55>ยังไม่มีหมวดหมู่ที่ลงทะเบียน สร้างหมวดหมู่ได้ด้วย /ext editor createcategory</color>"
+    category_notice: "<color:#FFFF55>⚠ ข้อควรระวัง: หมวดหมู่ </color><color:#55FFFF>{category}</color><color:#FFFF55> ยังไม่มีใน ContainerRegistry แต่มาร์กเกอร์จะยังถูกสร้างขึ้น</color>"
+    give_success: "<color:#55FF55>✔ มอบเครื่องมือมาร์กเกอร์สำหรับหมวดหมู่ </color><color:#FFFF55>{category}</color> <color:#AAAAAA>({material})</color><color:#55FF55> ให้แก่ </color><color:#55FFFF>{player}</color><color:#55FF55> แล้ว!</color>"
+    list_header: "<gradient:#00FFA3:#00B8FF><bold>รายการคอนเทนเนอร์ในแผนที่เทมเพลตที่ลงทะเบียน</bold></gradient>"
+    list_empty: "<color:#AAAAAA>ไม่มีแผนที่เทมเพลตที่ลงทะเบียนหรือโหลดไว้</color>"
+    list_template_entry: "<color:#555555>▪ </color><color:#FFFF55>{template}</color> <color:#AAAAAA>({display_name}): </color><color:#55FFFF>{count} คอนเทนเนอร์</color>"
+    list_container_entry: "   <color:#555555>• </color><color:#AAAAAA>รหัส: </color><color:#FFFFFF>{id}</color> <color:#AAAAAA>| หมวดหมู่: </color><color:#FFFF55>{category}</color> <color:#AAAAAA>| พิกัด: </color><color:#55FFFF>({x}, {y}, {z})</color>"
+    unknown_action: "<color:#FF5555>ไม่พบการกระทำ: <color:#FFFF55>{action}</color> วิธีใช้: </color><color:#FFFF55>/{label} chest <get|list></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 5: ตัวแก้ไขในเกม (/ext editor)
+# คำสั่งสำหรับแอดมินในการสร้างไอเทม, สร้างหมวดหมู่, และดูรายการในระบบ
+# -------------------------------------------------------------------------
+editor:
+  no_permission: "<color:#FF5555>❌ คุณไม่มีสิทธิ์เข้าถึงเครื่องมือแก้ไขระบบการสกัด</color>"
+  unknown_subcommand: "<color:#FF5555>ไม่พบคำสั่งย่อยของตัวแก้ไข: <color:#FFFF55>{subcommand}</color></color> <color:#FFFF55>ใช้ </color><color:#55FFFF>/{label} editor help</color><color:#FFFF55> เพื่อดูคู่มือ</color>"
+  missing_category: |
+    <color:#FF5555>❌ กรุณาระบุหมวดหมู่!</color>
+    <color:#FFFF55>วิธีใช้: </color><color:#FFFFFF>/{label} editor createitem <หมวดหมู่></color>
+    {hint}
+  available_categories: "<color:#AAAAAA>หมวดหมู่ที่ใช้ได้: </color><color:#55FFFF>{categories}</color>"
+  no_categories_note: "<color:#FFFF55>หมายเหตุ: ยังไม่มีหมวดหมู่ที่ลงทะเบียน สร้างหมวดหมู่ได้ด้วย </color><color:#55FFFF>/{label} editor createcategory</color>"
+  hand_empty: "<color:#FF5555>❌ มือหลักของคุณว่างเปล่า! กรุณาถือไอเทมที่ต้องการลงทะเบียนในมือหลัก</color>"
+  category_unregistered_note: "<color:#FFFF55>⚠ หมายเหตุ: หมวดหมู่ </color><color:#55FFFF>{category}</color><color:#FFFF55> ยังไม่อยู่ใน ContainerRegistry ระบบจะทำการลงทะเบียนต่อไป...</color>"
+  list:
+    title: "<gradient:#00FFA3:#00B8FF><bold>ภาพรวมฐานข้อมูล LUMINARIS EXTRACTION</bold></gradient>"
+    summary: "<color:#AAAAAA>หมวดหมู่ทั้งหมด: </color><color:#FFFF55>{categories_count}</color><color:#AAAAAA> | ไอเทมทั้งหมด: </color><color:#FFFF55>{items_count}</color>"
+    categories_header: "<color:#FFAA00><bold>[หมวดหมู่คอนเทนเนอร์]</bold></color>"
+    categories_empty: "<color:#AAAAAA>  <i>ยังไม่มีหมวดหมู่คอนเทนเนอร์ที่ลงทะเบียน</i></color>"
+    category_entry: "  <color:#FFFF55>•</color> <color:#55FFFF><bold>{id}</bold></color> <color:#AAAAAA>-</color> {display_name} <color:#AAAAAA>(สุ่ม: </color><color:#55FF55>{min_rolls}-{max_rolls}</color><color:#AAAAAA> | ไอเทมที่เชื่อม: </color><color:#FFFF55>{linked_items}</color><color:#AAAAAA>)</color>"
+    items_header: "<color:#FFAA00><bold>[ไอเทมการสกัดหลบหนี]</bold></color>"
+    items_empty: "<color:#AAAAAA>  <i>ยังไม่มีไอเทมการสกัดที่ลงทะเบียน</i></color>"
+    item_entry: "  <color:#FFFF55>•</color> <color:#FFFF55>{id}</color> [{rarity_tag}{rarity}</color>] {display_name} <color:#AAAAAA>-</color> <color:#FFAA00>${price}</color> <color:#AAAAAA>| นน.: </color><color:#FFFFFF>{weight}</color> <color:#AAAAAA>| ใน: </color><color:#55FFFF>[{containers}]</color>"
+  help:
+    title: "<gradient:#00FFA3:#00B8FF><bold>เครื่องมือแก้ไขในเกม LUMINARIS EXTRACTION</bold></gradient>"
+    createitem: |
+      <color:#FFFF55>/{label} editor createitem <หมวดหมู่></color>
+      <color:#AAAAAA>  └ ลงทะเบียนไอเทมในมือหลักเข้าหมวดหมู่ผ่าน Dialog UI</color>
+    createcategory: |
+      <color:#FFFF55>/{label} editor createcategory</color>
+      <color:#AAAAAA>  └ เปิดหน้าต่างตั้งค่าหมวดหมู่ (จำนวนสุ่ม, ชื่อแสดงผล, รหัส)</color>
+    list: |
+      <color:#FFFF55>/{label} editor list</color>
+      <color:#AAAAAA>  └ ดูรายงานสรุปไอเทมและหมวดหมู่ทั้งหมดที่ลงทะเบียนไว้</color>
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 6: หน้าต่างโต้ตอบในเกม (Native Dialog UI)
+# ข้อความในหน้าต่าง GUI แบบ Native ที่ใช้กำหนดค่าไอเทมและหมวดหมู่
+# -------------------------------------------------------------------------
+dialog:
+  category:
+    title: "เครื่องมือแก้ไขหมวดหมู่คอนเทนเนอร์"
+    body: "<color:#AAAAAA>ตั้งค่าคุณสมบัติการสุ่มไอเทมและชื่อสำหรับหมวดหมู่นี้</color>"
+    input_id: "รหัสหมวดหมู่"
+    input_display_name: "ชื่อแสดงผลหมวดหมู่"
+    input_min_rolls: "จำนวนสุ่มขั้นต่ำ"
+    input_max_rolls: "จำนวนสุ่มสูงสุด"
+    default_display: "<gradient:#FFAA00:#FF5555>กล่องเสบียงทางทหาร</gradient>"
+    btn_save: "✔ บันทึกหมวดหมู่"
+    tooltip_save: "สร้างและบันทึกหมวดหมู่คอนเทนเนอร์ลงระบบ"
+    btn_cancel: "✖ ยกเลิก"
+    tooltip_cancel: "ปิดหน้าต่างโดยไม่บันทึก"
+    error_empty_id: "<color:#FF5555>❌ รหัสหมวดหมู่ต้องไม่เว้นว่าง!</color>"
+    success: |
+      <color:#555555>----------------------------------------</color>
+      <gradient:#00FFA3:#00B8FF><bold>✔ สร้างหมวดหมู่สำเร็จแล้ว</bold></gradient>
+      <color:#AAAAAA>รหัส:         </color><color:#FFFF55>{id}</color>
+      <color:#AAAAAA>ชื่อแสดงผล:   </color><color:#FFFFFF>{display_name}</color>
+      <color:#AAAAAA>จำนวนสุ่มขั้นต่ำ: </color><color:#55FF55>{min_rolls}</color>
+      <color:#AAAAAA>จำนวนสุ่มสูงสุด: </color><color:#55FF55>{max_rolls}</color>
+      <color:#555555>----------------------------------------</color>
+    cancelled: "<color:#AAAAAA>ยกเลิกการสร้างหมวดหมู่แล้ว</color>"
+  item:
+    title: "เครื่องมือลงทะเบียนไอเทม"
+    body: "<color:#AAAAAA>กำลังตั้งค่าไอเทม: </color><color:#FFFF55>{material}</color><color:#AAAAAA> สำหรับหมวดหมู่: </color><color:#55FFFF>{category}</color>"
+    input_id: "รหัสเฉพาะของไอเทม"
+    input_display_name: "ชื่อแสดงผลแบบกำหนดเอง"
+    input_price: "ราคาขาย"
+    input_weight: "น้ำหนักโอกาสสุ่ม (Weight)"
+    btn_save: "✔ ลงทะเบียนไอเทม"
+    tooltip_save: "บันทึกไอเทมเข้าสู่ฐานข้อมูลการสกัด"
+    btn_cancel: "✖ ยกเลิก"
+    tooltip_cancel: "ปิดหน้าต่างโดยไม่บันทึก"
+    error_empty_id: "<color:#FF5555>❌ รหัสไอเทมต้องไม่เว้นว่าง!</color>"
+    success: |
+      <color:#555555>----------------------------------------</color>
+      <gradient:#00FFA3:#00B8FF><bold>✔ ลงทะเบียนไอเทมสำเร็จแล้ว</bold></gradient>
+      <color:#AAAAAA>รหัส:         </color><color:#FFFF55>{id}</color>
+      <color:#AAAAAA>ชื่อแสดงผล:   </color>{display_name}
+      <color:#AAAAAA>หมวดหมู่:     </color><color:#55FFFF>{category}</color>
+      <color:#AAAAAA>ราคาขาย:     </color><color:#FFAA00>${price}</color>
+      <color:#AAAAAA>น้ำหนักโอกาสสุ่ม: </color><color:#FFFF55>{weight}</color>
+      <color:#AAAAAA>ระดับความหายาก: </color>{rarity_tag}{rarity}</color>
+      <color:#555555>----------------------------------------</color>
+    cancelled: "<color:#AAAAAA>ยกเลิกการลงทะเบียนไอเทมแล้ว</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 7: เครื่องมือมาร์กเกอร์คอนเทนเนอร์ (Tool)
+# ชื่อและคำอธิบายใต้ไอเทม (Lore) ของบล็อกมาร์กเกอร์ที่แจกจ่ายให้แอดมิน
+# -------------------------------------------------------------------------
+tool:
+  marker:
+    display_name: "<gradient:#00FFA3:#00B8FF><bold>มาร์กเกอร์คอนเทนเนอร์</bold></gradient> <color:#AAAAAA>(</color><color:#FFFF55>{label}</color><color:#AAAAAA>)</color>"
+    lore_category: "<color:#AAAAAA>หมวดหมู่: <color:#FFFF55>{category}</color></color>"
+    lore_place: "<color:#555555>▪ วางในโลกเทมเพลตเพื่อลงทะเบียน</color>"
+    lore_break: "<color:#555555>▪ ทุบออกด้วยสิทธิ์ผู้แก้ไขเพื่อลบ</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 8: ตัวตรวจจับเหตุการณ์มาร์กเกอร์ (Listener)
+# ข้อความแจ้งเตือนเมื่อวางหรือทุบบล็อกมาร์กเกอร์ในโลกเทมเพลต
+# -------------------------------------------------------------------------
+listener:
+  marker:
+    only_template_world: "<color:#FF5555>❌ มาร์กเกอร์คอนเทนเนอร์สามารถวางได้ในโลกเทมเพลตเท่านั้น!</color>"
+    template_hint: "<color:#AAAAAA>คำแนะนำ: ชื่อโลกปลายทางต้องขึ้นต้นด้วย </color><color:#FFFF55>template_</color><color:#AAAAAA> หรือเป็นเทมเพลตที่ลงทะเบียนไว้</color>"
+    actionbar_placed: "<color:#55FF55>ลงทะเบียนคอนเทนเนอร์: <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    chat_placed: "<gradient:#00FFA3:#00B8FF><bold>✔ [มาร์กเกอร์ L.O.V.E]</bold></gradient> <color:#55FF55>ลงทะเบียนคอนเทนเนอร์ <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>({x}, {y}, {z})</color> ในเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
+    no_permission_break: "<color:#FF5555>❌ คุณไม่มีสิทธิ์ในการทุบคอนเทนเนอร์การสกัดที่ลงทะเบียนไว้!</color>"
+    actionbar_denied: "<color:#FF5555>ปฏิเสธการเข้าถึง: มาร์กเกอร์คอนเทนเนอร์ที่ลงทะเบียนแล้ว</color>"
+    chat_removed: "<color:#FF5555>✖ ลบคอนเทนเนอร์ <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color> ออกจากเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
+    actionbar_removed: "<color:#FF5555>ลบคอนเทนเนอร์: <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 9: ระบบจุดสกัดหลบหนี (Extraction Matrix)
+# ข้อความขณะผู้เล่นยืนในจุดอพยพ (Evacuation Zone), นับถอยหลัง, และเงื่อนไขต่างๆ
+# -------------------------------------------------------------------------
+extraction:
+  cancelled_outside: "<color:#FF5555><bold>ยกเลิกการสกัดหลบหนี</bold> - คุณเคลื่อนที่ออกนอกพื้นที่อพยพ!</color>"
+  countdown_actionbar: "<color:#55FF55>กำลังสกัดหลบหนีในอีก <color:#FFFF55>{remaining}</color> วินาที... โปรดอยู่ในพื้นที่!</color>"
+  interrupted_damage: "<color:#FF5555><bold>การสกัดหลบหนีถูกขัดจังหวะ</bold> - คุณได้รับความเสียหาย!</color>"
+  success_actionbar: "<color:#55FF55><bold>สกัดหลบหนีสำเร็จ!</bold> การอพยพเสร็จสมบูรณ์</color>"
+  log_teleport_error: "<color:#FF5555>เกิดข้อผิดพลาดในการเทเลพอร์ตผู้เล่นที่สกัดสำเร็จ <color:#FFFF55>{player}</color>: <color:#FFFFFF>{error}</color></color>"
+  reason_inactive: "<color:#FF5555>จุดอพยพยังไม่เปิดใช้งาน จะเปิดในอีก <color:#FFFF55>{remaining} วินาที</color></color>"
+  reason_expired: "<color:#FF5555>จุดอพยพหมดเวลาและปิดให้บริการแล้ว</color>"
+  reason_restricted: "<color:#FF5555>จุดอพยพนี้จำกัดเฉพาะทีม: <color:#FFFF55>{squads}</color></color>"
+  reason_requires_item: "<color:#FF5555>การอพยพต้องใช้ไอเทม: <color:#FFFF55>{item}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 10: การจัดการแมตช์การสกัด (Match Engine)
+# การเริ่มแมตช์, บอสบาร์เวลา, ข้อความเตือน MIA, และรายงานสรุปผล Debrief
+# -------------------------------------------------------------------------
+match:
+  log_deployment_initiating: "<color:#AAAAAA>กำลังเริ่มเตรียมการแมตช์ </color><color:#FFFF55>{match_id}</color> <color:#AAAAAA>สำหรับเทมเพลต </color><color:#55FFFF>{template}</color> <color:#AAAAAA>โดยมีผู้เล่น </color><color:#FFFFFF>{count}</color> <color:#AAAAAA>คน...</color>"
+  log_populated_containers: "<color:#55FF55>✔ เติมไอเทมใน </color><color:#FFFF55>{count}</color><color:#55FF55> คอนเทนเนอร์สำหรับแมตช์ </color><color:#FFFF55>{match_id}</color><color:#55FF55> เรียบร้อย</color>"
+  log_teleport_error: "<color:#FF5555>เกิดข้อผิดพลาดในการเทเลพอร์ต <color:#FFFF55>{player}</color> ไปยังแมตช์ <color:#55FFFF>{match_id}</color>: <color:#FFFFFF>{error}</color></color>"
+  player_deployed: "<gradient:#00FFA3:#00B8FF><bold>[ยืนยันการแทรกซึม]</bold></gradient> <color:#AAAAAA>ถูกส่งเข้าสู่ </color><color:#55FFFF>{template}</color><color:#AAAAAA> เวลารอบปฏิบัติการเริ่มต้นแล้ว!</color>"
+  log_populate_error: "<color:#FF5555>ล้มเหลวในการเติมไอเทมในคอนเทนเนอร์สำหรับแมตช์ <color:#FFFF55>{match_id}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_create_world_error: "<color:#FF5555>ล้มเหลวในการสร้างโลกจำลองสำหรับแมตช์ <color:#FFFF55>{match_id}</color>: <color:#FFFFFF>{error}</color></color>"
+  command_start_usage: "<color:#FF5555>วิธีใช้: </color><color:#FFFF55>/{label} match start <รหัสเทมเพลต> [รายชื่อผู้เล่น...]</color>"
+  command_available_templates: "<color:#AAAAAA>เทมเพลตที่ใช้ได้: </color><color:#55FFFF>{templates}</color>"
+  command_console_requires_players: "<color:#FF5555>คุณต้องระบุผู้เล่นอย่างน้อยหนึ่งคนเมื่อใช้งานผ่านคอนโซล</color>"
+  command_no_valid_players: "<color:#FF5555>ไม่พบผู้เล่นออนไลน์ที่ถูกต้องสำหรับส่งเข้าแมตช์</color>"
+  command_initializing: "<color:#FFFF55>⏳ กำลังเตรียมแมตช์สำหรับเทมเพลต </color><color:#55FFFF>{template}</color><color:#FFFF55> โดยมีเจ้าหน้าที่ </color><color:#FFFFFF>{count}</color><color:#FFFF55> นาย...</color>"
+  command_launched: "<color:#55FF55>✔ เริ่มแมตช์ </color><color:#FFFF55>{match_id}</color><color:#55FF55> สำเร็จในโลก </color><color:#55FFFF>{world}</color><color:#55FF55>!</color>"
+  command_launch_failed: "<color:#FF5555>✕ ล้มเหลวในการเริ่มแมตช์: <color:#FFFFFF>{error}</color></color>"
+  command_stop_usage: "<color:#FF5555>วิธีใช้: </color><color:#FFFF55>/{label} match stop <รหัสแมตช์></color>"
+  command_stopped: "<color:#55FF55>✔ ยุติและปลดระวางแมตช์ </color><color:#FFFF55>{match_id}</color><color:#55FF55> เรียบร้อยแล้ว</color>"
+  command_not_found: "<color:#FF5555>ไม่พบแมตช์ที่เปิดอยู่ด้วยรหัส: <color:#FFFF55>{match_id}</color></color>"
+  command_list_empty: "<color:#AAAAAA>ขณะนี้ไม่มีแมตช์การสกัดที่กำลังดำเนินอยู่</color>"
+  command_list_header: "<gradient:#00FFA3:#00B8FF><bold>แมตช์การสกัดที่กำลังดำเนินการ ({count})</bold></gradient>"
+  command_list_entry: "<color:#555555>▪ </color><color:#FFFF55>{match_id}</color> <color:#AAAAAA>|</color> <color:#55FFFF>{template}</color> <color:#AAAAAA>|</color> <color:#FFFFFF>{world}</color> <color:#AAAAAA>|</color> <color:#55FF55>{players} ผู้เล่น</color> <color:#AAAAAA>| เวลาคงเหลือ: </color><color:#FF5555>{time_left}</color>"
+  command_status_header: "<gradient:#00FFA3:#00B8FF><bold>สถานะแมตช์: {match_id}</bold></gradient>"
+  command_status_template: "<color:#AAAAAA>เทมเพลต:</color> <color:#55FFFF>{template}</color>"
+  command_status_world: "<color:#AAAAAA>โลก:</color> <color:#FFFFFF>{world}</color>"
+  command_status_time: "<color:#AAAAAA>เวลาผ่านไป / ทั้งหมด:</color> <color:#FFFF55>{elapsed}s / {duration}s</color> (<color:#FF5555>เหลือ {time_left}</color>)"
+  command_status_operatives: "<color:#AAAAAA>เจ้าหน้าที่ ({count}):</color>"
+  command_status_player: "  <color:#555555>• </color><color:#FFFFFF>{player}</color> <color:#AAAAAA>-</color> <color:#FFFF55>{state}</color>"
+  command_status_count: "<color:#AAAAAA>จำนวนแมตช์ที่กำลังดำเนินการ: </color><color:#FFFF55>{count}</color>"
+  command_help_title: "<gradient:#00FFA3:#00B8FF><bold>คำสั่งการจัดการแมตช์การสกัด</bold></gradient>"
+  command_help_start: "<color:#FFFF55>/{label} match start <รหัสเทมเพลต> [รายชื่อผู้เล่น...]</color> <color:#AAAAAA>- ส่งผู้เล่นเข้าสู่แมตช์การสกัด</color>"
+  command_help_stop: "<color:#FFFF55>/{label} match stop <รหัสแมตช์></color>               <color:#AAAAAA>- บังคับยุติการทำงานของแมตช์</color>"
+  command_help_list: "<color:#FFFF55>/{label} match list</color>                           <color:#AAAAAA>- แสดงรายการแมตช์ที่เปิดอยู่</color>"
+  command_help_status: "<color:#FFFF55>/{label} match status [รหัสแมตช์]</color>              <color:#AAAAAA>- ดูสถานะแมตช์และรายชื่อผู้เล่น</color>"
+  bossbar_title: "<color:#FF5555>เวลารอบ: </color><color:#FFFF55>{time}</color>"
+  log_started: "<color:#55FF55>✔ แมตช์ </color><color:#FFFF55>{match_id}</color><color:#55FF55> เริ่มต้นขึ้นในโลก </color><color:#55FFFF>{world}</color><color:#55FF55> เป็นเวลา </color><color:#FFFF55>{duration} วินาที</color><color:#55FF55> โดยมีเจ้าหน้าที่ </color><color:#FFFFFF>{count}</color><color:#55FF55> นาย</color>"
+  log_early_teardown: "<color:#FFFF55>เจ้าหน้าที่ทั้งหมดสกัดสำเร็จหรือเสียชีวิตในแมตช์ {match_id} เริ่มต้นการปิดรอบก่อนเวลา...</color>"
+  log_timeout: "<color:#FF5555><bold>[หมดเวลารอบ]</bold> เวลาปฏิบัติการหมดลงสำหรับแมตช์ <color:#FFFF55>{match_id}</color> กำลังประมวลผลเจ้าหน้าที่สูญหาย (MIA)...</color>"
+  player_mia: "<color:#AA0000><bold>[M.I.A]</bold></color> <color:#FF5555>เวลาการสกัดหลบหนีหมดลงแล้ว! คุณไม่สามารถอพยพออกจากพื้นที่ปฏิบัติการได้ทันเวลา</color>"
+  log_world_deletion_error: "<color:#FF5555>เกิดข้อผิดพลาดในการลบโลกจำลอง <color:#FFFF55>{world}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_world_purged: "<color:#55FF55>✔ ปลดระวางและล้างข้อมูลโลกจำลอง </color><color:#FFFF55>{world}</color><color:#55FF55> เสร็จสมบูรณ์</color>"
+  debrief:
+    title: "<gradient:#00FFA3:#00B8FF><bold>       สรุปผลปฏิบัติการ LUMINARIS OPERATION EXTRACTION       </bold></gradient>"
+    match_id: "<color:#AAAAAA> รหัสแมตช์:        </color><color:#FFFF55>{match_id}</color>"
+    template: "<color:#AAAAAA> แผนที่ / เทมเพลต: </color><color:#55FFFF>{template}</color> <color:#555555>({template_id})</color>"
+    world: "<color:#AAAAAA> โลกจำลอง:        </color><color:#FFFFFF>{world}</color>"
+    elapsed: "<color:#AAAAAA> เวลาที่ใช้ทั้งหมด: </color><color:#FFFF55>{elapsed}</color> <color:#AAAAAA>/ {duration} ({seconds} วินาที)</color>"
+    operatives: "<color:#AAAAAA> เจ้าหน้าที่ทั้งหมด: </color><color:#FFFFFF> {count}</color> <color:#AAAAAA>(</color><color:#55FF55>{survived} รอดชีวิต</color><color:#AAAAAA>, </color><color:#FF5555>{kia} เสียชีวิต</color><color:#AAAAAA>, </color><color:#AA0000>{mia} สูญหาย</color><color:#AAAAAA>)</color>"
+    outcomes_header: "<color:#AAAAAA> ผลลัพธ์ของเจ้าหน้าที่:</color>"
+    no_operatives: "  <color:#555555>▪ </color><color:#AAAAAA>ไม่มีบันทึกข้อมูลเจ้าหน้าที่ในรอบนี้</color>"
+    outcome_entry: "  <color:#555555>▪ </color><color:#FFFFFF>{player}</color> <color:#AAAAAA>➜</color> {state}"
+    state_extracted: "<color:#55FF55><bold>สกัดหลบหนีสำเร็จ</bold></color>"
+    state_kia: "<color:#FF5555><bold>เสียชีวิตในการรบ (KIA)</bold></color>"
+    state_mia: "<color:#AA0000><bold>สูญหายในการรบ (MIA)</bold></color>"
+    state_extracting: "<color:#FFFF55><bold>กำลังสกัดหลบหนี</bold></color>"
+    state_in_raid: "<color:#AAAAAA><bold>อยู่ในพื้นที่ปฏิบัติการ</bold></color>"
+    purged: "<color:#AAAAAA> การปลดระวาง:      </color><color:#55FF55><bold>ล้างข้อมูลโลกจำลองแล้ว</bold></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 11: ระบบกล่องศพผู้เล่น (Corpse Box)
+# กล่องที่ถูกสร้างขึ้น ณ จุดที่ผู้เล่นเสียชีวิตเพื่อเก็บรักษาไอเทมไว้
+# -------------------------------------------------------------------------
+corpse:
+  chest_title: "<color:#FF5555><bold>กล่องศพ:</bold> <color:#FFFF55>{player}</color></color>"
+  overflow_title: "<color:#FF5555><bold>กล่องศพส่วนเกิน:</bold> <color:#FFFF55>{player}</color></color>"
+  log_spawn_error: "<color:#FF5555>ล้มเหลวในการสร้างกล่องศพสำหรับ <color:#FFFF55>{player}</color> ที่พิกัด <color:#55FFFF>{location}</color>: <color:#FFFFFF>{error}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 12: การเสียชีวิตและการส่งคืนไอเทม (Death & Restoration)
+# -------------------------------------------------------------------------
+death:
+  player_kia: "<color:#FF5555><bold>[เสียชีวิตในการรบ]</bold> คุณถูกกำจัดแล้ว! ไอเทมของคุณถูกเก็บรักษาไว้ในกล่องศพ ณ จุดที่คุณเสียชีวิต</color>"
+  safe_cases_restored: "<color:#55FF55>✔ <bold>[คืนกระเป๋านิรภัยสำเร็จ]</bold> ไอเทมและกระเป๋าที่ได้รับการปกป้องทั้งหมดถูกส่งคืนสู่ช่องเก็บของของคุณแล้ว!</color>"
+  extracted_success: "<color:#55FF55><bold>[สกัดหลบหนีสำเร็จ]</bold> ยืนยันการอพยพ สถานะทางยุทธวิธี: รอดชีวิต</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 13: เมนูกระเป๋านิรภัย (Safe Case Container)
+# ข้อความในหน้าต่าง GUI กระเป๋านิรภัย, ช่องล็อค, และการป้องกันนำกระเป๋าซ้อนกัน
+# -------------------------------------------------------------------------
+safe_case:
+  locked_slot_name: "<color:#555555>▪ <color:#AAAAAA>ช่องเก็บของที่ล็อคอยู่</color></color>"
+  locked_slot_lore_1: "<color:#555555>ช่องนี้เกินความจุของคอนเทนเนอร์นี้</color>"
+  locked_slot_lore_2: "<color:#555555>อัปเกรดเป็นกระเป๋านิรภัยขนาดใหญ่ขึ้นเพื่อปลดล็อค</color>"
+  lore_capacity: "<color:#555555>▪ <color:#AAAAAA>ความจุ: <color:#FFFF55>{capacity} ช่อง</color></color></color>"
+  lore_secure: "<color:#555555>▪ <color:#55FFFF>กระเป๋านิรภัย L.O.V.E</color></color>"
+  lore_keeps_on_death: "<color:#555555>▪ <color:#55FF55>คงอยู่หลังการสกัดและเมื่อเสียชีวิต</color></color>"
+  lore_lost_on_death: "<color:#555555>▪ <color:#FF5555>สูญหายเมื่อเสียชีวิต</color></color>"
+  lore_divider: "<color:#555555>------------------------</color>"
+  lore_instruction: "<color:#FFFF55>คลิกขวาเพื่อเปิดช่องเก็บของ</color>"
+  default_title: "<color:#FFAA00>กระเป๋านิรภัย</color>"
+  error_nesting_cursor: "<color:#FF5555>✕ คุณไม่สามารถวางกระเป๋านิรภัยซ้อนในกระเป๋านิรภัยอื่นได้!</color>"
+  error_nesting_shift: "<color:#FF5555>✕ คุณไม่สามารถเก็บกระเป๋านิรภัยซ้อนในกระเป๋านิรภัยอื่นได้!</color>"
+  error_hotbar_swap: "<color:#FF5555>✕ ไม่อนุญาตให้สลับกระเป๋านิรภัยจาก Hotbar เข้าสู่ช่องเก็บของ!</color>"
+  error_nesting_drag: "<color:#FF5555>✕ คุณไม่สามารถลากกระเป๋านิรภัยลงในกระเป๋านิรภัยอื่นได้!</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 14: ระบบสุ่มไอเทมลงคอนเทนเนอร์ (Loot Populator)
+# บันทึกคอนโซลแสดงสถานะการโหลดชังก์และการสุ่มเติมไอเทม
+# -------------------------------------------------------------------------
+loot:
+  log_no_containers: "<color:#AAAAAA>ไม่มีคอนเทนเนอร์ที่ลงทะเบียนไว้สำหรับเทมเพลต </color><color:#FFFF55>{template}</color> <color:#AAAAAA>ในโลก {world}</color>"
+  log_initiating: "<color:#AAAAAA>กำลังเริ่มสุ่มเติมไอเทมตามภูมิภาคสำหรับ </color><color:#FFFF55>{count}</color> <color:#AAAAAA>คอนเทนเนอร์ในโลก </color><color:#55FFFF>{world}</color><color:#AAAAAA>...</color>"
+  log_chunk_error: "<color:#FF5555>ล้มเหลวในการโหลดชังก์แบบอะซิงโครนัส <color:#55FFFF>({x}, {z})</color> สำหรับคอนเทนเนอร์ <color:#FFFF55>{id}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_success: "<color:#55FF55>✔ สุ่มเติมไอเทมสำเร็จใน </color><color:#FFFF55>{successful}/{total}</color> <color:#55FF55>คอนเทนเนอร์ทั่วทุกภูมิภาคในโลก </color><color:#55FFFF>{world}</color> <color:#AAAAAA>(เทมเพลต: {template})</color>"
+  log_container_error: "<color:#FF5555>ล้มเหลวในการเติมไอเทมในคอนเทนเนอร์ <color:#FFFF55>{id}</color> ที่พิกัด <color:#55FFFF>({x}, {y}, {z})</color>:</color> <color:#FFFFFF>{error}</color>"
+  log_not_container_block: "<color:#FFFF55>บล็อกที่พิกัด ({x}, {y}, {z}) ใน {world} คือ {material} ซึ่งไม่ใช่คอนเทนเนอร์ (หีบ, ถัง) จึงข้ามคอนเทนเนอร์ '{id}'</color>"
+  log_category_not_found: "<color:#FFFF55>ไม่พบหมวดหมู่ '{category}' สำหรับคอนเทนเนอร์ '{id}' ใน ContainerRegistry ปล่อยให้ว่างเปล่า</color>"
+  log_no_items_in_category: "<color:#FFFF55>ไม่มีไอเทมที่มี weight > 0 ในหมวดหมู่ '{category}' (คอนเทนเนอร์: '{id}') ปล่อยให้ว่างเปล่า</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 15: ระบบจัดการโลกจำลองชั่วคราว (Instance World Service)
+# บันทึกคอนโซลการคัดลอกเทมเพลต, เมานต์โลก, และปลดระวางเมื่อจบเกม
+# -------------------------------------------------------------------------
+world:
+  log_preparing: "<color:#AAAAAA>กำลังเตรียมโลกจำลองชั่วคราว </color><color:#FFFF55>{instance}</color> <color:#AAAAAA>จากเทมเพลต </color><color:#55FFFF>{template}</color><color:#AAAAAA>...</color>"
+  log_template_not_found: "<color:#FF5555>ไม่พบโฟลเดอร์โลกเทมเพลตสำหรับ '<color:#FFFF55>{template}</color>'!</color>"
+  log_world_creator_null: "<color:#FF5555>ล้มเหลวในการโหลดโลกจำลอง '<color:#FFFF55>{instance}</color>'!</color>"
+  log_mounted: "<color:#55FF55>✔ เปิดใช้งานโลกจำลองชั่วคราวสำเร็จ </color><color:#FFFF55>{instance}</color> <color:#AAAAAA>(โลก: {world})</color>"
+  log_load_error: "<color:#FF5555>เกิดข้อผิดพลาดไม่คาดคิดขณะโหลดโลกจำลอง <color:#FFFF55>{instance}</color> บน Global Region: <color:#FFFFFF>{error}</color></color>"
+  log_copy_error: "<color:#FF5555>ล้มเหลวในการคัดลอกโฟลเดอร์เทมเพลต '<color:#FFFF55>{template}</color>' แบบอะซิงโครนัส: <color:#FFFFFF>{error}</color></color>"
+  log_decommissioning: "<color:#AAAAAA>กำลังเริ่มต้นปลดระวางโลกจำลอง </color><color:#FFFF55>{world}</color><color:#AAAAAA>...</color>"
+  log_unloading: "<color:#AAAAAA>กำลังถอดการโหลดโลก </color><color:#FFFF55>{world}</color> <color:#AAAAAA>(doSave = false)...</color>"
+  log_unload_false: "<color:#FFFF55>Bukkit.unloadWorld ส่งค่าคืนเป็น false สำหรับ '{world}' กำลังดำเนินการลบไฟล์จากดิสก์ต่อไป...</color>"
+  log_unload_error: "<color:#FF5555>ล้มเหลวระหว่างการถอดการโหลดโลก <color:#FFFF55>{world}</color> บน Global Region: <color:#FFFFFF>{error}</color></color>"
+  log_evacuation_error: "<color:#FF5555>เกิดข้อผิดพลาดในการอพยพผู้เล่น <color:#FFFF55>{player}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_folder_deleted: "<color:#55FF55>✔ ลบโฟลเดอร์โลกจำลองสำเร็จ: </color><color:#FFFF55>{folder}</color>"
+  log_folder_deleted_attempt: "<color:#55FF55>✔ ลบโฟลเดอร์โลกจำลองสำเร็จ: </color><color:#FFFF55>{folder}</color> <color:#AAAAAA>(ความพยายามที่ {attempt})</color>"
+  log_delete_retry_warning: "<color:#FF5555>ไม่สามารถลบโฟลเดอร์ <color:#FFFF55>{folder}</color> ได้อย่างสมบูรณ์หลังพยายาม {retries} ครั้ง ตั้งเวลาลบเมื่อปิดเซิร์ฟเวอร์ (deleteOnExit)</color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 16: ระบบจัดเก็บข้อมูลเทมเพลต (Template Storage)
+# -------------------------------------------------------------------------
+storage:
+  log_template_load_error: "<color:#FF5555>ล้มเหลวในการโหลดข้อมูลเทมเพลตจาก <color:#FFFF55>{path}</color>: <color:#FFFFFF>{error}</color></color>"
+  log_template_save_error: "<color:#FF5555>ล้มเหลวในการบันทึก map_data.yml สำหรับ <color:#FFFF55>{template}</color> แบบอะซิงโครนัส: <color:#FFFFFF>{error}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 17: ระบบแปลงข้อมูลไอเทม (ItemStack Serializer)
+# -------------------------------------------------------------------------
+serializer:
+  log_serialize_error: "<color:#FF5555>ล้มเหลวในการแปลงอาร์เรย์ ItemStack เป็น Base64: <color:#FFFFFF>{error}</color></color>"
+  log_deserialize_error: "<color:#FF5555>ล้มเหลวในการแปลง Base64 กลับเป็นอาร์เรย์ ItemStack: <color:#FFFFFF>{error}</color></color>"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 18: ระดับความหายากของไอเทม (Item Rarity)
+# -------------------------------------------------------------------------
+rarity:
+  common: "ทั่วไป"
+  uncommon: "ไม่ธรรมดา"
+  rare: "หายาก"
+  epic: "มหากาพย์"
+  legendary: "ตำนาน"

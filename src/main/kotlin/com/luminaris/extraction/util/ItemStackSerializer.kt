@@ -1,6 +1,6 @@
 package com.luminaris.extraction.util
 
-import com.luminaris.extraction.LuminarisCorePlugin
+import com.luminaris.extraction.localization.TranslationManager
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.io.BukkitObjectInputStream
 import org.bukkit.util.io.BukkitObjectOutputStream
@@ -32,7 +32,7 @@ object ItemStackSerializer {
                 Base64.getEncoder().encodeToString(byteOut.toByteArray())
             }
         }.getOrElse { ex ->
-            LuminarisCorePlugin.instance.logger.severe("Failed to serialize ItemStack array to Base64: ${ex.message}")
+            TranslationManager.logError("serializer.log_serialize_error", "error" to (ex.message ?: "unknown"))
             ""
         }
     }
@@ -56,7 +56,7 @@ object ItemStackSerializer {
                 }
             }
         }.getOrElse { ex ->
-            LuminarisCorePlugin.instance.logger.severe("Failed to deserialize ItemStack array from Base64: ${ex.message}")
+            TranslationManager.logError("serializer.log_deserialize_error", "error" to (ex.message ?: "unknown"))
             emptyArray()
         }
     }

@@ -3,6 +3,7 @@ package com.luminaris.extraction.editor
 import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.editor.dialog.CategoryDialogBuilder
 import com.luminaris.extraction.editor.dialog.ItemDialogBuilder
+import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -35,7 +36,7 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
      */
     fun execute(sender: CommandSender, label: String, args: Array<out String>): Boolean {
         if (!sender.hasPermission("luminaris.admin")) {
-            sender.sendMessage(miniMessage.deserialize("<red>❌ You do not have permission to access the extraction editor.</red>"))
+            TranslationManager.send(sender, "editor.no_permission")
             return true
         }
 
@@ -50,7 +51,7 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
             "list" -> handleList(sender)
             "help" -> sendEditorHelp(sender, label)
             else -> {
-                sender.sendMessage(miniMessage.deserialize("<red>Unknown editor subcommand: ${args[0]}.</red> <yellow>Use </yellow><aqua>/$label editor help</aqua><yellow> for manual.</yellow>"))
+                TranslationManager.send(sender, "editor.unknown_subcommand", "subcommand" to args[0], "label" to label)
             }
         }
 
@@ -59,39 +60,31 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
 
     private fun handleCreateItem(sender: CommandSender, label: String, args: Array<out String>) {
         if (sender !is Player) {
-            sender.sendMessage(miniMessage.deserialize("<red>❌ This command can only be executed by in-game players.</red>"))
+            TranslationManager.send(sender, "general.player_only")
             return
         }
 
         if (args.size < 2 || args[1].isBlank()) {
             val availableCategories = plugin.containerRegistry.getAllCategories().map { it.id }
             val catHint = if (availableCategories.isNotEmpty()) {
-                "<gray>Available categories: </gray><aqua>${availableCategories.joinToString(", ")}</aqua>"
+                TranslationManager.get("editor.available_categories", "categories" to availableCategories.joinToString(", "))
             } else {
-                "<yellow>Note: No categories registered yet. Create one with </yellow><aqua>/$label editor createcategory</aqua>"
+                TranslationManager.get("editor.no_categories_note", "label" to label)
             }
 
-            sender.sendMessage(miniMessage.deserialize("""
-                <red>❌ Missing category argument!</red>
-                <yellow>Usage: </yellow><white>/$label editor createitem <category></white>
-                $catHint
-            """.trimIndent()))
+            TranslationManager.send(sender, "editor.missing_category", "label" to label, "hint" to catHint)
             return
         }
 
         val categoryId = args[1].lowercase().trim()
         val heldItem = sender.inventory.itemInMainHand
         if (heldItem.isEmpty || heldItem.type.isAir) {
-            sender.sendMessage(miniMessage.deserialize(
-                "<red>❌ Your main hand is empty! Please hold the item you want to register in your main hand.</red>"
-            ))
+            TranslationManager.send(sender, "editor.hand_empty")
             return
         }
 
         if (!plugin.containerRegistry.hasCategory(categoryId)) {
-            sender.sendMessage(miniMessage.deserialize(
-                "<yellow>⚠ Note: Category </yellow><aqua>$categoryId</aqua><yellow> is not in ContainerRegistry yet. Registering anyway...</yellow>"
-            ))
+            TranslationManager.send(sender, "editor.category_unregistered_note", "category" to categoryId)
         }
 
         ItemDialogBuilder.open(sender, categoryId, plugin.itemRegistry)
@@ -99,7 +92,7 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
 
     private fun handleCreateCategory(sender: CommandSender) {
         if (sender !is Player) {
-            sender.sendMessage(miniMessage.deserialize("<red>❌ This command can only be executed by in-game players.</red>"))
+            TranslationManager.send(sender, "general.player_only")
             return
         }
 
@@ -111,57 +104,69 @@ class EditorCommand(private val plugin: LuminarisCorePlugin) : CommandExecutor, 
         val items = plugin.itemRegistry.getAllItems()
 
         val sb = StringBuilder()
-        sb.append("<dark_gray>==================================================</dark_gray>\n")
-        sb.append("<gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION REGISTRY OVERVIEW</bold></gradient>\n")
-        sb.append("<gray>Total Categories: </gray><yellow>${categories.size}</yellow><gray> | Total Items: </gray><yellow>${items.size}</yellow>\n")
-        sb.append("<dark_gray>--------------------------------------------------</dark_gray>\n")
+        sb.append(TranslationManager.get("general.divider_editor")).append("\n")
+        sb.append(TranslationManager.get("editor.list.title")).append("\n")
+        sb.append(TranslationManager.get("editor.list.summary", "categories_count" to categories.size, "items_count" to items.size)).append("\n")
+        sb.append(TranslationManager.get("general.divider_editor_sub")).append("\n")
 
         // 1. Categories Section
-        sb.append("<gold><bold>[CONTAINER CATEGORIES]</bold></gold>\n")
+        sb.append(TranslationManager.get("editor.list.categories_header")).append("\n")
         if (categories.isEmpty()) {
-            sb.append("<gray>  <i>No container categories registered yet.</i></gray>\n")
+            sb.append(TranslationManager.get("editor.list.categories_empty")).append("\n")
         } else {
             for (cat in categories) {
                 val catItems = items.filter { it.allowedContainers.isEmpty() || it.allowedContainers.contains(cat.id) }.size
                 val serializedDisplay = miniMessage.serialize(cat.displayName)
-                sb.append("  <yellow>•</yellow> <aqua><bold>${cat.id}</bold></aqua> <gray>-</gray> $serializedDisplay ")
-                sb.append("<gray>(Rolls: </gray><green>${cat.minRolls}-${cat.maxRolls}</green><gray> | Linked Items: </gray><yellow>$catItems</yellow><gray>)</gray>\n")
+                sb.append(TranslationManager.get(
+                    "editor.list.category_entry",
+                    "id" to cat.id,
+                    "display_name" to serializedDisplay,
+                    "min_rolls" to cat.minRolls,
+                    "max_rolls" to cat.maxRolls,
+                    "linked_items" to catItems
+                )).append("\n")
             }
         }
 
-        sb.append("<dark_gray>--------------------------------------------------</dark_gray>\n")
+        sb.append(TranslationManager.get("general.divider_editor_sub")).append("\n")
 
         // 2. Items Section
-        sb.append("<gold><bold>[EXTRACTION ITEMS]</bold></gold>\n")
+        sb.append(TranslationManager.get("editor.list.items_header")).append("\n")
         if (items.isEmpty()) {
-            sb.append("<gray>  <i>No extraction items registered yet.</i></gray>\n")
+            sb.append(TranslationManager.get("editor.list.items_empty")).append("\n")
         } else {
             for (item in items) {
                 val rarityTag = item.rarity.miniMessageTag
-                val containersStr = if (item.allowedContainers.isEmpty()) "ALL" else item.allowedContainers.joinToString(",")
+                val rarityName = TranslationManager.get("rarity.${item.rarity.name.lowercase()}")
+                val containersStr = if (item.allowedContainers.isEmpty()) TranslationManager.get("general.all") else item.allowedContainers.joinToString(",")
                 val displayStr = miniMessage.serialize(item.resolveDisplayName())
-                sb.append("  <yellow>•</yellow> <yellow>${item.id}</yellow> [${rarityTag}${item.rarity.name}</color>] $displayStr ")
-                sb.append("<gray>-</gray> <gold>$${item.price}</gold> <gray>| W: </gray><white>${item.weight}</white> <gray>| In: </gray><aqua>[$containersStr]</aqua>\n")
+                sb.append(TranslationManager.get(
+                    "editor.list.item_entry",
+                    "id" to item.id,
+                    "rarity_tag" to rarityTag,
+                    "rarity" to rarityName,
+                    "display_name" to displayStr,
+                    "price" to item.price,
+                    "weight" to item.weight,
+                    "containers" to containersStr
+                )).append("\n")
             }
         }
 
-        sb.append("<dark_gray>==================================================</dark_gray>")
-        sender.sendMessage(miniMessage.deserialize(sb.toString()))
+        sb.append(TranslationManager.get("general.divider_editor"))
+        sender.sendMessage(TranslationManager.parseComponent(sb.toString()))
     }
 
     private fun sendEditorHelp(sender: CommandSender, label: String) {
-        val help = """
-            <dark_gray>----------------------------------------</dark_gray>
-            <gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION IN-GAME EDITOR</bold></gradient>
-            <yellow>/$label editor createitem <category></yellow>
-            <gray>  └ Register item in your main hand into a category via Dialog UI</gray>
-            <yellow>/$label editor createcategory</yellow>
-            <gray>  └ Open category configuration Dialog (rolls, title, ID)</gray>
-            <yellow>/$label editor list</yellow>
-            <gray>  └ View comprehensive report of all registered items & categories</gray>
-            <dark_gray>----------------------------------------</dark_gray>
-        """.trimIndent()
-        sender.sendMessage(miniMessage.deserialize(help))
+        val help = buildString {
+            append(TranslationManager.get("general.divider")).append("\n")
+            append(TranslationManager.get("editor.help.title")).append("\n")
+            append(TranslationManager.get("editor.help.createitem", "label" to label)).append("\n")
+            append(TranslationManager.get("editor.help.createcategory", "label" to label)).append("\n")
+            append(TranslationManager.get("editor.help.list", "label" to label)).append("\n")
+            append(TranslationManager.get("general.divider"))
+        }
+        sender.sendMessage(TranslationManager.parseComponent(help))
     }
 
     override fun onTabComplete(

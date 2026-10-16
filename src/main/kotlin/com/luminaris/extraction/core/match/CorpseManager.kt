@@ -1,6 +1,7 @@
 package com.luminaris.extraction.core.match
 
 import com.luminaris.extraction.LuminarisCorePlugin
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.util.FoliaScheduler
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Location
@@ -84,8 +85,9 @@ class CorpseManager(
                 val state = block.state
                 if (state is Container) {
                     // Set custom title displaying player's name in MiniMessage
-                    val containerName = miniMessage.deserialize(
-                        "<red><bold>Corpse:</bold> <yellow>${player.name}</yellow></red>"
+                    val containerName = TranslationManager.render(
+                        "corpse.chest_title",
+                        "player" to player.name
                     )
                     state.customName(containerName)
                     state.update(true)
@@ -110,8 +112,9 @@ class CorpseManager(
                         val overflowState = overflowBlock.state
                         if (overflowState is Container) {
                             overflowState.customName(
-                                miniMessage.deserialize(
-                                    "<red><bold>Corpse Cache (Overflow):</bold> <yellow>${player.name}</yellow></red>"
+                                TranslationManager.render(
+                                    "corpse.overflow_title",
+                                    "player" to player.name
                                 )
                             )
                             overflowState.update(true)
@@ -130,7 +133,12 @@ class CorpseManager(
                     future.complete(null)
                 }
             } catch (t: Throwable) {
-                plugin.logger.warning("Failed to spawn corpse crate for ${player.name} at $deathLocation: ${t.message}")
+                TranslationManager.logWarning(
+                    "corpse.log_spawn_error",
+                    "player" to player.name,
+                    "location" to deathLocation.toString(),
+                    "error" to (t.message ?: "unknown")
+                )
                 future.completeExceptionally(t)
             }
         }

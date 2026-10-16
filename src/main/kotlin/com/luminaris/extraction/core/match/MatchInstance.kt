@@ -4,6 +4,7 @@ import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.core.extraction.ExtractionManager
 import com.luminaris.extraction.core.template.TemplateMapData
 import com.luminaris.extraction.core.world.InstanceWorldService
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.util.FoliaScheduler
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import net.kyori.adventure.bossbar.BossBar
@@ -90,7 +91,13 @@ class MatchInstance(
             tick()
         }
 
-        logInfo("<green>✔ Match <yellow>$matchId</yellow> started in world <aqua>${world.name}</aqua> for <yellow>${raidDurationSeconds}s</yellow> with <white>${players.size}</white> operative(s).</green>")
+        logInfo(
+            "match.log_started",
+            "match_id" to matchId,
+            "world" to world.name,
+            "duration" to raidDurationSeconds,
+            "count" to players.size
+        )
     }
 
     /**
@@ -104,7 +111,7 @@ class MatchInstance(
 
         // Check if all players have reached a terminal state (extracted, killed, or MIA)
         if (players.isNotEmpty() && players.values.all { it.isTerminal }) {
-            logInfo("<yellow>All operatives have extracted or fallen in match $matchId. Commencing early teardown...</yellow>")
+            logInfo("match.log_early_teardown", "match_id" to matchId)
             teardown()
             return
         }
@@ -122,7 +129,7 @@ class MatchInstance(
     fun handleTimeout() {
         if (!isTeardownInitiated.compareAndSet(false, true)) return
 
-        logWarning("<red><bold>[MATCH TIMEOUT]</bold> Raid duration elapsed for match <yellow>$matchId</yellow>. Processing MIA operatives...</red>")
+        logWarning("match.log_timeout", "match_id" to matchId)
 
         // Stop timer task immediately
         timerTask?.cancel()
@@ -147,11 +154,7 @@ class MatchInstance(
                             try {
                                 if (player.isOnline && !player.isDead) {
                                     player.damage(100000.0)
-                                    player.sendMessage(
-                                        miniMessage.deserialize(
-                                            "<dark_red><bold>[M.I.A]</bold></dark_red> <red>Extraction window has expired! You failed to evacuate the operational area in time.</red>"
-                                        )
-                                    )
+                                    TranslationManager.send(player, "match.player_mia")
                                 }
                             } finally {
                                 pFuture.complete(null)
@@ -221,9 +224,9 @@ class MatchInstance(
         // 5. Decommission and delete instance world asynchronously
         activeInstanceWorldService?.deleteInstance(world)?.whenComplete { _, ex ->
             if (ex != null) {
-                logWarning("Instance world deletion error for ${world.name}: ${ex.message}")
+                logWarning("match.log_world_deletion_error", "world" to world.name, "error" to (ex.message ?: "unknown"))
             } else {
-                logInfo("<green>✔ Decommissioning of world instance <yellow>${world.name}</yellow> complete.</green>")
+                logInfo("match.log_world_purged", "world" to world.name)
             }
         }
     }
@@ -284,7 +287,7 @@ class MatchInstance(
         val mm = remainingSeconds / 60
         val ss = remainingSeconds % 60
         val timeFormatted = String.format("%02d:%02d", mm, ss)
-        return miniMessage.deserialize("<red>RAID TIME: <yellow>$timeFormatted</yellow></red>")
+        return TranslationManager.render("match.bossbar_title", "time" to timeFormatted)
     }
 
     /**
@@ -298,51 +301,43 @@ class MatchInstance(
         val totalKia = players.values.count { it == PlayerRaidState.KILLED_IN_ACTION }
         val totalMia = players.values.count { it == PlayerRaidState.MISSING_IN_ACTION }
 
-        val sb = StringBuilder()
-        sb.append("\n<dark_gray>================================================================</dark_gray>\n")
-        sb.append("<gradient:#00FFA3:#00B8FF><bold>       LUMINARIS OPERATION EXTRACTION - MATCH DEBRIEF       </bold></gradient>\n")
-        sb.append("<dark_gray>----------------------------------------------------------------</dark_gray>\n")
-        sb.append("<gray> Match ID:        </gray><yellow>$matchId</yellow>\n")
-        sb.append("<gray> Template / Map:  </gray><aqua>${templateData.displayName}</aqua> <dark_gray>(${templateData.templateId})</dark_gray>\n")
-        sb.append("<gray> World Instance:  </gray><white>${world.name}</white>\n")
-        sb.append("<gray> Total Elapsed:   </gray><yellow>$durationFormatted</yellow> <gray>/ $maxDurationFormatted (${elapsedSeconds}s)</gray>\n")
-        sb.append("<gray> Total Operatives:</gray><white> ${players.size}</white> <gray>(</gray><green>$totalSurv Survived</green><gray>, </gray><red>$totalKia KIA</red><gray>, </gray><dark_red>$totalMia MIA</dark_red><gray>)</gray>\n")
-        sb.append("<gray> Operative Outcomes:</gray>\n")
+        val console = runCatching { Bukkit.getConsoleSender() }.getOrNull() ?: return
+        console.sendMessage(TranslationManager.render("general.divider_long"))
+        console.sendMessage(TranslationManager.render("match.debrief.title"))
+        console.sendMessage(TranslationManager.render("general.divider_long_sub"))
+        console.sendMessage(TranslationManager.render("match.debrief.match_id", "match_id" to matchId))
+        console.sendMessage(TranslationManager.render("match.debrief.template", "template" to templateData.displayName, "template_id" to templateData.templateId))
+        console.sendMessage(TranslationManager.render("match.debrief.world", "world" to world.name))
+        console.sendMessage(TranslationManager.render("match.debrief.elapsed", "elapsed" to durationFormatted, "duration" to maxDurationFormatted, "seconds" to elapsedSeconds))
+        console.sendMessage(TranslationManager.render("match.debrief.operatives", "count" to players.size, "survived" to totalSurv, "kia" to totalKia, "mia" to totalMia))
+        console.sendMessage(TranslationManager.render("match.debrief.outcomes_header"))
 
         if (players.isEmpty()) {
-            sb.append("  <dark_gray>▪ </dark_gray><gray>No participating operatives recorded.</gray>\n")
+            console.sendMessage(TranslationManager.render("match.debrief.no_operatives"))
         } else {
             for ((uuid, state) in players) {
                 val pName = runCatching { Bukkit.getPlayer(uuid)?.name }.getOrNull() ?: uuid.toString().take(8)
                 val stateTag = when (state) {
-                    PlayerRaidState.EXTRACTED -> "<green><bold>EXTRACTED</bold></green>"
-                    PlayerRaidState.KILLED_IN_ACTION -> "<red><bold>KILLED IN ACTION</bold></red>"
-                    PlayerRaidState.MISSING_IN_ACTION -> "<dark_red><bold>M.I.A (Timed Out)</bold></dark_red>"
-                    PlayerRaidState.EXTRACTING -> "<yellow><bold>EXTRACTING</bold></yellow>"
-                    PlayerRaidState.IN_RAID -> "<gray><bold>IN RAID</bold></gray>"
+                    PlayerRaidState.EXTRACTED -> TranslationManager.render("match.debrief.state_extracted")
+                    PlayerRaidState.KILLED_IN_ACTION -> TranslationManager.render("match.debrief.state_kia")
+                    PlayerRaidState.MISSING_IN_ACTION -> TranslationManager.render("match.debrief.state_mia")
+                    PlayerRaidState.EXTRACTING -> TranslationManager.render("match.debrief.state_extracting")
+                    PlayerRaidState.IN_RAID -> TranslationManager.render("match.debrief.state_in_raid")
                 }
-                sb.append("  <dark_gray>▪ </dark_gray><white>$pName</white> <gray>➜</gray> $stateTag\n")
+                console.sendMessage(TranslationManager.render("match.debrief.outcome_entry", "player" to pName, "state" to stateTag))
             }
         }
 
-        sb.append("<dark_gray>----------------------------------------------------------------</dark_gray>\n")
-        sb.append("<gray> Decommissioning: </gray><green><bold>INSTANCE WORLD PURGED</bold></green>\n")
-        sb.append("<dark_gray>================================================================</dark_gray>")
-
-        runCatching {
-            Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize(sb.toString()))
-        }
+        console.sendMessage(TranslationManager.render("general.divider_long_sub"))
+        console.sendMessage(TranslationManager.render("match.debrief.purged"))
+        console.sendMessage(TranslationManager.render("general.divider_long"))
     }
 
-    private fun logInfo(message: String) {
-        runCatching {
-            Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#00FFA3:#00B8FF><bold>[LuminarisMatch]</bold></gradient> $message"))
-        }
+    private fun logInfo(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logInfo(key, *placeholders)
     }
 
-    private fun logWarning(message: String) {
-        runCatching {
-            Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#FFAA00:#FF5500><bold>[LuminarisMatch]</bold></gradient> $message"))
-        }
+    private fun logWarning(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logWarning(key, *placeholders)
     }
 }

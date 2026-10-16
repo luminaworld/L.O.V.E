@@ -3,6 +3,7 @@ package com.luminaris.extraction.core.extraction
 import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.core.item.ItemRegistry
 import com.luminaris.extraction.core.safe.SafeCaseManager
+import com.luminaris.extraction.localization.TranslationManager
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -134,13 +135,14 @@ class ExtractionManager(
         if (zone.type == ExtractionType.TIMED_WINDOW || zone.timeStartSeconds > 0L || zone.timeEndSeconds < Long.MAX_VALUE) {
             if (matchElapsedSeconds < zone.timeStartSeconds) {
                 val secondsUntilOpen = zone.timeStartSeconds - matchElapsedSeconds
-                val reason = miniMessage.deserialize(
-                    "<red>Evacuation zone is inactive. Opens in <yellow>${secondsUntilOpen}s</yellow>.</red>"
+                val reason = TranslationManager.render(
+                    "extraction.reason_inactive",
+                    "remaining" to secondsUntilOpen
                 )
                 return Pair(false, reason)
             }
             if (matchElapsedSeconds > zone.timeEndSeconds) {
-                val reason = miniMessage.deserialize("<red>Evacuation zone has expired and is now closed.</red>")
+                val reason = TranslationManager.render("extraction.reason_expired")
                 return Pair(false, reason)
             }
         }
@@ -151,8 +153,9 @@ class ExtractionManager(
             val matchesTeam = zone.allowedTeamIds.any { it.trim().lowercase() == normalizedTeam }
             if (!matchesTeam) {
                 val allowedNames = zone.allowedTeamIds.joinToString(", ")
-                val reason = miniMessage.deserialize(
-                    "<red>Evacuation zone is restricted to squad(s): <yellow>$allowedNames</yellow>.</red>"
+                val reason = TranslationManager.render(
+                    "extraction.reason_restricted",
+                    "squads" to allowedNames
                 )
                 return Pair(false, reason)
             }
@@ -163,8 +166,9 @@ class ExtractionManager(
             val reqItemId = zone.requiredItemId
             if (!reqItemId.isNullOrBlank() && !hasRequiredItem(player, reqItemId)) {
                 val displayLabel = resolveItemDisplayLabel(reqItemId)
-                val reason = miniMessage.deserialize(
-                    "<red>Evacuation requires: <yellow>$displayLabel</yellow>.</red>"
+                val reason = TranslationManager.render(
+                    "extraction.reason_requires_item",
+                    "item" to displayLabel
                 )
                 return Pair(false, reason)
             }

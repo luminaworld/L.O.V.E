@@ -1,9 +1,11 @@
 package com.luminaris.extraction.command
 
 import com.luminaris.extraction.LuminarisCorePlugin
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.util.FoliaScheduler
 import io.papermc.paper.command.brigadier.BasicCommand
 import io.papermc.paper.command.brigadier.CommandSourceStack
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 
@@ -29,37 +31,41 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
 
             "reload" -> {
                 if (!sender.hasPermission("luminaris.admin")) {
-                    sender.sendMessage(miniMessage.deserialize("<red>You do not have permission to execute this command.</red>"))
+                    TranslationManager.send(sender, "general.no_permission")
                     return
                 }
                 plugin.reloadAllConfigurations()
-                sender.sendMessage(miniMessage.deserialize("<green>✔ [LuminarisCore] All extraction configurations and registries reloaded successfully!</green>"))
+                TranslationManager.send(sender, "command.reload.success")
             }
 
             "status" -> {
-                val platformName = if (FoliaScheduler.isFolia) "<light_purple>Folia (Regionized Multi-Threaded)</light_purple>" else "<aqua>Paper (Universal Scheduler)</aqua>"
+                val platformName = if (FoliaScheduler.isFolia) {
+                    TranslationManager.get("banner.platform.folia")
+                } else {
+                    TranslationManager.get("banner.platform.paper")
+                }
                 val itemsCount = plugin.itemRegistry.getAllItems().size
                 val categoriesCount = plugin.containerRegistry.getAllCategories().size
                 val casesCount = plugin.safeCaseManager.getAllDefinitions().size
                 val instancesCount = plugin.instanceWorldService.getActiveInstanceCount()
 
-                val statusMessage = """
-                    <dark_gray>----------------------------------------</dark_gray>
-                    <gradient:#00FFA3:#00B8FF><bold>LUMINARIS EXTRACTION ENGINE STATUS</bold></gradient>
-                    <gray>Version:</gray> <white>${plugin.pluginMeta.version}</white>
-                    <gray>Threading Model:</gray> $platformName
-                    <gray>Active Extraction Items:</gray> <yellow>$itemsCount</yellow>
-                    <gray>Container Categories:</gray> <yellow>$categoriesCount</yellow>
-                    <gray>Safe Container Profiles:</gray> <yellow>$casesCount</yellow>
-                    <gray>Active Match Instances:</gray> <yellow>$instancesCount</yellow>
-                    <dark_gray>----------------------------------------</dark_gray>
-                """.trimIndent()
-                sender.sendMessage(miniMessage.deserialize(statusMessage))
+                val statusMessage = buildString {
+                    append(TranslationManager.get("general.divider")).append("\n")
+                    append(TranslationManager.get("command.status.title")).append("\n")
+                    append(TranslationManager.get("command.status.version", "version" to plugin.pluginMeta.version)).append("\n")
+                    append(TranslationManager.get("command.status.threading", "platform" to platformName)).append("\n")
+                    append(TranslationManager.get("command.status.items", "count" to itemsCount)).append("\n")
+                    append(TranslationManager.get("command.status.categories", "count" to categoriesCount)).append("\n")
+                    append(TranslationManager.get("command.status.cases", "count" to casesCount)).append("\n")
+                    append(TranslationManager.get("command.status.instances", "count" to instancesCount)).append("\n")
+                    append(TranslationManager.get("general.divider"))
+                }
+                sender.sendMessage(TranslationManager.parseComponent(statusMessage))
             }
 
             "case" -> {
                 if (!sender.hasPermission("luminaris.admin")) {
-                    sender.sendMessage(miniMessage.deserialize("<red>You do not have permission to execute this command.</red>"))
+                    TranslationManager.send(sender, "general.no_permission")
                     return
                 }
                 handleCaseCommand(sender, label, args.drop(1).toTypedArray())
@@ -67,7 +73,7 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
 
             "chest" -> {
                 if (!sender.hasPermission("luminaris.admin") && !sender.hasPermission("luminaris.editor")) {
-                    sender.sendMessage(miniMessage.deserialize("<red>You do not have permission to execute this command.</red>"))
+                    TranslationManager.send(sender, "general.no_permission")
                     return
                 }
                 handleChestCommand(sender, label, args.drop(1).toTypedArray())
@@ -75,7 +81,7 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
 
             "match" -> {
                 if (!sender.hasPermission("luminaris.admin")) {
-                    sender.sendMessage(miniMessage.deserialize("<red>You do not have permission to execute this command.</red>"))
+                    TranslationManager.send(sender, "general.no_permission")
                     return
                 }
                 plugin.matchManager.handleCommand(sender, label, args.drop(1).toTypedArray())
@@ -84,14 +90,14 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
             "help" -> sendHelp(sender)
 
             else -> {
-                sender.sendMessage(miniMessage.deserialize("<red>Unknown subcommand: ${args[0]}. Use </red><yellow>/$label help</yellow><red> for available commands.</red>"))
+                TranslationManager.send(sender, "command.unknown_subcommand", "subcommand" to args[0], "label" to label)
             }
         }
     }
 
     private fun handleCaseCommand(sender: CommandSender, label: String, args: Array<out String>) {
         if (args.isEmpty()) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: </red><yellow>/$label case <give|list></yellow>"))
+            TranslationManager.send(sender, "command.case.usage", "label" to label)
             return
         }
 
@@ -99,35 +105,38 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
             "list" -> {
                 val cases = plugin.safeCaseManager.getAllDefinitions()
                 if (cases.isEmpty()) {
-                    sender.sendMessage(miniMessage.deserialize("<gray>No safe container definitions registered.</gray>"))
+                    TranslationManager.send(sender, "command.case.empty_list")
                     return
                 }
-                sender.sendMessage(miniMessage.deserialize("<gradient:#00FFA3:#00B8FF><bold>--- Registered Safe Containers (${cases.size}) ---</bold></gradient>"))
+                TranslationManager.send(sender, "command.case.list_header", "count" to cases.size)
                 for (caseDef in cases) {
                     val titleFormatted = miniMessage.serialize(caseDef.displayName)
-                    sender.sendMessage(
-                        miniMessage.deserialize(
-                            "<dark_gray>▪ </dark_gray><yellow>${caseDef.id}</yellow> <gray>-</gray> $titleFormatted <gray>(Cap: </gray><aqua>${caseDef.capacity}</aqua><gray>, Mat: </gray><green>${caseDef.material.name}</green><gray>)</gray>"
-                        )
+                    TranslationManager.send(
+                        sender,
+                        "command.case.list_entry",
+                        "id" to caseDef.id,
+                        "display_name" to titleFormatted,
+                        "capacity" to caseDef.capacity,
+                        "material" to caseDef.material.name
                     )
                 }
             }
 
             "give" -> {
                 if (args.size < 3) {
-                    sender.sendMessage(miniMessage.deserialize("<red>Usage: </red><yellow>/$label case give <player> <caseId></yellow>"))
+                    TranslationManager.send(sender, "command.case.give_usage", "label" to label)
                     return
                 }
                 val targetName = args[1]
                 val targetPlayer = org.bukkit.Bukkit.getPlayerExact(targetName)
                 if (targetPlayer == null) {
-                    sender.sendMessage(miniMessage.deserialize("<red>Player not found: $targetName</red>"))
+                    TranslationManager.send(sender, "general.player_not_found", "player" to targetName)
                     return
                 }
                 val caseId = args[2].lowercase()
                 val safeItem = plugin.safeCaseManager.createSafeItemStack(caseId)
                 if (safeItem == null) {
-                    sender.sendMessage(miniMessage.deserialize("<red>Unknown safe container ID: $caseId. Use </red><yellow>/$label case list</yellow>"))
+                    TranslationManager.send(sender, "command.case.unknown_id", "id" to caseId, "label" to label)
                     return
                 }
 
@@ -141,19 +150,22 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                     }
                 })
 
-                sender.sendMessage(miniMessage.deserialize("<green>✔ Successfully granted Safe Container </green><yellow>$caseId</yellow><green> to </green><aqua>${targetPlayer.name}</aqua><green>!</green>"))
-                targetPlayer.sendMessage(miniMessage.deserialize("<green>You received a secure safe container: </green>").append(safeItem.itemMeta?.displayName() ?: net.kyori.adventure.text.Component.text(caseId)))
+                TranslationManager.send(sender, "command.case.give_success_sender", "id" to caseId, "player" to targetPlayer.name)
+                targetPlayer.sendMessage(
+                    TranslationManager.render("command.case.give_success_target")
+                        .append(safeItem.itemMeta?.displayName() ?: Component.text(caseId))
+                )
             }
 
             else -> {
-                sender.sendMessage(miniMessage.deserialize("<red>Unknown case action: ${args[0]}. Usage: </red><yellow>/$label case <give|list></yellow>"))
+                TranslationManager.send(sender, "command.case.unknown_action", "action" to args[0], "label" to label)
             }
         }
     }
 
     private fun handleChestCommand(sender: CommandSender, label: String, args: Array<out String>) {
         if (args.isEmpty()) {
-            sender.sendMessage(miniMessage.deserialize("<red>Usage: </red><yellow>/$label chest <get|list></yellow>"))
+            TranslationManager.send(sender, "command.chest.usage", "label" to label)
             return
         }
 
@@ -162,25 +174,17 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                 if (args.size < 2) {
                     val available = plugin.containerRegistry.getAllCategories().map { it.id }
                     val catHint = if (available.isNotEmpty()) {
-                        "<gray>Available categories: </gray><aqua>${available.joinToString(", ")}</aqua>"
+                        TranslationManager.get("command.chest.available_categories", "categories" to available.joinToString(", "))
                     } else {
-                        "<yellow>No categories registered. Create one with /ext editor createcategory</yellow>"
+                        TranslationManager.get("command.chest.no_categories")
                     }
-                    sender.sendMessage(
-                        miniMessage.deserialize(
-                            """
-                            <red>Missing category ID!</red>
-                            <yellow>Usage: </yellow><white>/$label chest get <category_id> [chest|barrel]</white>
-                            $catHint
-                            """.trimIndent()
-                        )
-                    )
+                    TranslationManager.send(sender, "command.chest.missing_category", "label" to label, "hint" to catHint)
                     return
                 }
 
                 val player = sender as? org.bukkit.entity.Player
                 if (player == null) {
-                    sender.sendMessage(miniMessage.deserialize("<red>This command can only be executed by an in-game player.</red>"))
+                    TranslationManager.send(sender, "general.player_only")
                     return
                 }
 
@@ -192,11 +196,7 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                 }
 
                 if (!plugin.containerRegistry.hasCategory(categoryId)) {
-                    sender.sendMessage(
-                        miniMessage.deserialize(
-                            "<yellow>⚠ Notice: Category </yellow><aqua>$categoryId</aqua><yellow> is not currently in ContainerRegistry, but marker will still be created.</yellow>"
-                        )
-                    )
+                    TranslationManager.send(sender, "command.chest.category_notice", "category" to categoryId)
                 }
 
                 val category = plugin.containerRegistry.getCategory(categoryId)
@@ -218,59 +218,60 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                     }
                 })
 
-                sender.sendMessage(
-                    miniMessage.deserialize(
-                        "<green>✔ Granted Container Marker tool for category </green><yellow>$categoryId</yellow> <gray>(${material.name})</gray><green> to </green><aqua>${player.name}</aqua><green>!</green>"
-                    )
+                TranslationManager.send(
+                    sender,
+                    "command.chest.give_success",
+                    "category" to categoryId,
+                    "material" to material.name,
+                    "player" to player.name
                 )
             }
 
             "list" -> {
                 val templates = plugin.templateStorage.getAllTemplates()
                 val sb = StringBuilder()
-                sb.append("<dark_gray>----------------------------------------</dark_gray>\n")
-                sb.append("<gradient:#00FFA3:#00B8FF><bold>REGISTERED TEMPLATE CONTAINERS</bold></gradient>\n")
+                sb.append(TranslationManager.get("general.divider")).append("\n")
+                sb.append(TranslationManager.get("command.chest.list_header")).append("\n")
                 if (templates.isEmpty()) {
-                    sb.append("<gray>No template maps registered or loaded.</gray>\n")
+                    sb.append(TranslationManager.get("command.chest.list_empty")).append("\n")
                 } else {
                     for (tmpl in templates) {
                         val count = tmpl.containers.size
-                        sb.append("<dark_gray>▪ </dark_gray><yellow>${tmpl.templateId}</yellow> <gray>(${tmpl.displayName}): </gray><aqua>$count containers</aqua>\n")
+                        sb.append(TranslationManager.get("command.chest.list_template_entry", "template" to tmpl.templateId, "display_name" to tmpl.displayName, "count" to count)).append("\n")
                         for (c in tmpl.containers) {
-                            sb.append("   <dark_gray>• </dark_gray><gray>ID: </gray><white>${c.id}</white> <gray>| Cat: </gray><yellow>${c.categoryId}</yellow> <gray>| Pos: </gray><aqua>(${c.x}, ${c.y}, ${c.z})</aqua>\n")
+                            sb.append(TranslationManager.get("command.chest.list_container_entry", "id" to c.id, "category" to c.categoryId, "x" to c.x, "y" to c.y, "z" to c.z)).append("\n")
                         }
                     }
                 }
-                sb.append("<dark_gray>----------------------------------------</dark_gray>")
-                sender.sendMessage(miniMessage.deserialize(sb.toString()))
+                sb.append(TranslationManager.get("general.divider"))
+                sender.sendMessage(TranslationManager.parseComponent(sb.toString()))
             }
 
             else -> {
-                sender.sendMessage(miniMessage.deserialize("<red>Unknown chest action: ${args[0]}. Usage: </red><yellow>/$label chest <get|list></yellow>"))
+                TranslationManager.send(sender, "command.chest.unknown_action", "action" to args[0], "label" to label)
             }
         }
     }
 
     private fun sendHelp(sender: CommandSender) {
-        val helpMessage = """
-            <dark_gray>----------------------------------------</dark_gray>
-            <gradient:#00FFA3:#00B8FF><bold>LUMINARIS (L.O.V.E) EXTRACTION COMMANDS</bold></gradient>
-            <yellow>/ext match start <map> [players]</yellow>   <gray>- Initialize and start an extraction raid</gray>
-            <yellow>/ext match stop <matchId></yellow>         <gray>- Terminate an active match instance</gray>
-            <yellow>/ext match list</yellow>                    <gray>- View active extraction matches</gray>
-            <yellow>/ext chest get <cat> [type]</yellow>         <gray>- Dispense Container Marker (chest/barrel)</gray>
-            <yellow>/ext chest list</yellow>                    <gray>- View registered template container markers</gray>
-            <yellow>/ext case list</yellow>                      <gray>- List all configured Safe Containers</gray>
-            <yellow>/ext case give <player> <id></yellow>       <gray>- Give a Safe Container to a player</gray>
-            <yellow>/ext editor createitem <cat></yellow>       <gray>- Register held item via Native Dialog UI</gray>
-            <yellow>/ext editor createcategory</yellow>         <gray>- Configure loot category via Dialog UI</gray>
-            <yellow>/ext editor list</yellow>                   <gray>- List registered items and categories</gray>
-            <yellow>/ext status</yellow>                        <gray>- View active core engine telemetry & threading model</gray>
-            <yellow>/ext reload</yellow>                        <gray>- Hot-reload items, categories, templates, safe cases</gray>
-            <yellow>/ext help</yellow>                          <gray>- Display extraction command manual</gray>
-            <dark_gray>----------------------------------------</dark_gray>
-        """.trimIndent()
-        sender.sendMessage(miniMessage.deserialize(helpMessage))
+        val sb = StringBuilder()
+        sb.append(TranslationManager.get("general.divider")).append("\n")
+        sb.append(TranslationManager.get("command.help.title")).append("\n")
+        sb.append(TranslationManager.get("command.help.match_start")).append("\n")
+        sb.append(TranslationManager.get("command.help.match_stop")).append("\n")
+        sb.append(TranslationManager.get("command.help.match_list")).append("\n")
+        sb.append(TranslationManager.get("command.help.chest_get")).append("\n")
+        sb.append(TranslationManager.get("command.help.chest_list")).append("\n")
+        sb.append(TranslationManager.get("command.help.case_list")).append("\n")
+        sb.append(TranslationManager.get("command.help.case_give")).append("\n")
+        sb.append(TranslationManager.get("command.help.editor_createitem")).append("\n")
+        sb.append(TranslationManager.get("command.help.editor_createcategory")).append("\n")
+        sb.append(TranslationManager.get("command.help.editor_list")).append("\n")
+        sb.append(TranslationManager.get("command.help.status")).append("\n")
+        sb.append(TranslationManager.get("command.help.reload")).append("\n")
+        sb.append(TranslationManager.get("command.help.help")).append("\n")
+        sb.append(TranslationManager.get("general.divider"))
+        sender.sendMessage(TranslationManager.parseComponent(sb.toString()))
     }
 
     override fun suggest(

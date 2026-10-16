@@ -1,5 +1,6 @@
 package com.luminaris.extraction.core.container
 
+import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
@@ -85,14 +86,14 @@ class ContainerRegistry(private val plugin: Plugin) {
                     val rawDisplay = catSec.getString("display_name")
                         ?: catSec.getString("name")
                         ?: key
-                    val displayName = if (rawDisplay.contains("<") && rawDisplay.contains(">")) {
-                        miniMessage.deserialize(rawDisplay)
+                    val displayName = if ((rawDisplay.contains("<") && rawDisplay.contains(">")) || rawDisplay.contains("&") || rawDisplay.contains("§")) {
+                        TranslationManager.parseComponent(rawDisplay)
                     } else {
                         val colorHex = catSec.getString("color")
                         if (colorHex != null) {
-                            miniMessage.deserialize("<color:$colorHex>$rawDisplay</color>")
+                            TranslationManager.parseComponent("<color:$colorHex>$rawDisplay</color>")
                         } else {
-                            miniMessage.deserialize("<yellow>$rawDisplay</yellow>")
+                            TranslationManager.parseComponent("<yellow>$rawDisplay</yellow>")
                         }
                     }
 

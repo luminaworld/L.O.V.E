@@ -40,22 +40,22 @@ class MatchInstanceTest {
         // 1200 seconds = 20:00
         val title1200 = match.formatBossBarTitle(1200L)
         val serialized1200 = miniMessage.serialize(title1200)
-        assertEquals("<red>RAID TIME: <yellow>20:00", serialized1200)
+        assertEquals("<red>RAID TIME: </red><yellow>20:00", serialized1200)
 
         // 65 seconds = 01:05
         val title65 = match.formatBossBarTitle(65L)
         val serialized65 = miniMessage.serialize(title65)
-        assertEquals("<red>RAID TIME: <yellow>01:05", serialized65)
+        assertEquals("<red>RAID TIME: </red><yellow>01:05", serialized65)
 
         // 9 seconds = 00:09
         val title9 = match.formatBossBarTitle(9L)
         val serialized9 = miniMessage.serialize(title9)
-        assertEquals("<red>RAID TIME: <yellow>00:09", serialized9)
+        assertEquals("<red>RAID TIME: </red><yellow>00:09", serialized9)
 
         // 0 seconds = 00:00
         val title0 = match.formatBossBarTitle(0L)
         val serialized0 = miniMessage.serialize(title0)
-        assertEquals("<red>RAID TIME: <yellow>00:00", serialized0)
+        assertEquals("<red>RAID TIME: </red><yellow>00:00", serialized0)
     }
 
     @Test

@@ -4,7 +4,7 @@ import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.core.extraction.PlayerExtractEvent
 import com.luminaris.extraction.core.safe.SafeCaseManager
 import com.luminaris.extraction.util.FoliaScheduler
-import net.kyori.adventure.text.minimessage.MiniMessage
+import com.luminaris.extraction.localization.TranslationManager
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -29,8 +29,6 @@ class DeathListener(
     private val safeCaseManager: SafeCaseManager = plugin.safeCaseManager,
     private val scheduler: FoliaScheduler = plugin.scheduler
 ) : Listener {
-
-    private val miniMessage = MiniMessage.miniMessage()
 
     /**
      * Intercepts player deaths inside active extraction matches at HIGHEST priority.
@@ -98,9 +96,7 @@ class DeathListener(
         }
         plugin.extractionManager.stopExtractionCountdown(player)
 
-        player.sendMessage(
-            miniMessage.deserialize("<red><bold>[K.I.A]</bold> You were eliminated! Your items were secured into a Corpse Crate at your death site.</red>")
-        )
+        TranslationManager.send(player, "death.player_kia")
 
         // Check if all players have extracted or died to trigger teardown
         match.checkCompletion()
@@ -145,9 +141,7 @@ class DeathListener(
                 }
             }
 
-            player.sendMessage(
-                miniMessage.deserialize("<green>✔ <bold>[SECURE SAFE CONTAINER RESTORED]</bold> All protected items and pouches have been returned to your inventory!</green>")
-            )
+            TranslationManager.send(player, "death.safe_cases_restored")
         }
     }
 
@@ -165,9 +159,7 @@ class DeathListener(
             player.hideBossBar(match.bossBar)
         }
 
-        player.sendMessage(
-            miniMessage.deserialize("<green><bold>[EXTRACTION SUCCESS]</bold> Evacuation confirmed. Tactical status: SURVIVED.</green>")
-        )
+        TranslationManager.send(player, "death.extracted_success")
 
         match.checkCompletion()
     }

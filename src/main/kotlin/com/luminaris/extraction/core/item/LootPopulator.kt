@@ -4,6 +4,7 @@ import com.luminaris.extraction.LuminarisCorePlugin
 import com.luminaris.extraction.core.container.ContainerRegistry
 import com.luminaris.extraction.core.container.PlacedContainer
 import com.luminaris.extraction.core.template.TemplateData
+import com.luminaris.extraction.localization.TranslationManager
 import com.luminaris.extraction.util.FoliaScheduler
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
@@ -68,11 +69,11 @@ class LootPopulator(
     fun populateMatchWorld(world: World, templateData: TemplateData): CompletableFuture<Int> {
         val totalContainers = templateData.containers.size
         if (totalContainers == 0) {
-            logInfo("<gray>No containers registered for template </gray><yellow>${templateData.templateId}</yellow> <gray>in world ${world.name}.</gray>")
+            logInfo("loot.log_no_containers", "template" to templateData.templateId, "world" to world.name)
             return CompletableFuture.completedFuture(0)
         }
 
-        logInfo("<gray>Initiating regional loot population for </gray><yellow>$totalContainers</yellow> <gray>containers in world </gray><aqua>${world.name}</aqua><gray>...</gray>")
+        logInfo("loot.log_initiating", "count" to totalContainers, "world" to world.name)
 
         val populationFutures = templateData.containers.map { placedContainer ->
             val future = CompletableFuture<Boolean>()
@@ -92,7 +93,7 @@ class LootPopulator(
                 chunkAsync.thenAccept {
                     scheduleContainerPopulation(world, placedContainer, location, future)
                 }.exceptionally { ex ->
-                    logError("Failed to asynchronously load chunk ($chunkX, $chunkZ) for container ${placedContainer.id}: ${ex.message}", ex)
+                    logError("loot.log_chunk_error", ex, "x" to chunkX, "z" to chunkZ, "id" to placedContainer.id, "error" to (ex.message ?: "unknown"))
                     future.complete(false)
                     null
                 }
@@ -105,7 +106,13 @@ class LootPopulator(
 
         return CompletableFuture.allOf(*populationFutures.toTypedArray()).thenApply {
             val successfulCount = populationFutures.count { it.join() }
-            logInfo("<green>✔ Successfully populated </green><yellow>$successfulCount/$totalContainers</yellow> <green>containers across regions in world </green><aqua>${world.name}</aqua> <gray>(template: ${templateData.templateId})</gray>")
+            logInfo(
+                "loot.log_success",
+                "successful" to successfulCount,
+                "total" to totalContainers,
+                "world" to world.name,
+                "template" to templateData.templateId
+            )
             successfulCount
         }
     }
@@ -124,7 +131,15 @@ class LootPopulator(
                 val success = populateContainer(world, placedContainer)
                 future.complete(success)
             } catch (t: Throwable) {
-                logError("<red>Failed to populate container ${placedContainer.id} at (${placedContainer.x}, ${placedContainer.y}, ${placedContainer.z}):</red> ${t.message}", t)
+                logError(
+                    "loot.log_container_error",
+                    t,
+                    "id" to placedContainer.id,
+                    "x" to placedContainer.x,
+                    "y" to placedContainer.y,
+                    "z" to placedContainer.z,
+                    "error" to (t.message ?: "unknown")
+                )
                 future.complete(false)
             }
         }
@@ -143,7 +158,15 @@ class LootPopulator(
 
         // Ensure the block is an actual tile-entity container (Chest, Barrel, etc.)
         if (state !is Container) {
-            logWarning("<yellow>Block at (${container.x}, ${container.y}, ${container.z}) in ${world.name} is ${block.type}, expected Container (Chest, Barrel). Container '${container.id}' skipped.</yellow>")
+            logWarning(
+                "loot.log_not_container_block",
+                "x" to container.x,
+                "y" to container.y,
+                "z" to container.z,
+                "world" to world.name,
+                "material" to block.type.name,
+                "id" to container.id
+            )
             return false
         }
 
@@ -154,7 +177,7 @@ class LootPopulator(
         val categoryId = container.categoryId
         val category = activeContainerRegistry.getCategory(categoryId)
         if (category == null) {
-            logWarning("<yellow>Category '$categoryId' for container '${container.id}' not found in ContainerRegistry. Leaving container empty.</yellow>")
+            logWarning("loot.log_category_not_found", "category" to categoryId, "id" to container.id)
             return false
         }
 
@@ -175,7 +198,7 @@ class LootPopulator(
         // Retrieve extraction items eligible for this category
         val candidateItems = activeItemRegistry.getItemsForCategory(categoryId).filter { it.weight > 0.0 }
         if (candidateItems.isEmpty()) {
-            logWarning("<yellow>No loot items registered with weight > 0 for category '$categoryId' (container: '${container.id}'). Left empty.</yellow>")
+            logWarning("loot.log_no_items_in_category", "category" to categoryId, "id" to container.id)
             state.update(true, false)
             return true
         }
@@ -249,18 +272,15 @@ class LootPopulator(
         return results
     }
 
-    private fun logInfo(message: String) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#00FFA3:#00B8FF><bold>[LootPopulator]</bold></gradient> $message"))
+    private fun logInfo(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logInfo(key, *placeholders)
     }
 
-    private fun logWarning(message: String) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#FFAA00:#FF5500><bold>[LootPopulator]</bold></gradient> $message"))
+    private fun logWarning(key: String, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logWarning(key, *placeholders)
     }
 
-    private fun logError(message: String, throwable: Throwable? = null) {
-        Bukkit.getConsoleSender().sendMessage(miniMessage.deserialize("<gradient:#FF0055:#FF5555><bold>[LootPopulator]</bold></gradient> $message"))
-        if (throwable != null) {
-            runCatching { activePlugin.logger.log(java.util.logging.Level.SEVERE, "[LootPopulator] $message", throwable) }
-        }
+    private fun logError(key: String, throwable: Throwable? = null, vararg placeholders: Pair<String, Any?>) {
+        TranslationManager.logError(key, throwable, *placeholders)
     }
 }
