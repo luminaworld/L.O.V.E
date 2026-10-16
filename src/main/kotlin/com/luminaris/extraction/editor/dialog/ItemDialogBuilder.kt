@@ -112,7 +112,7 @@ object ItemDialogBuilder {
         val loreInput = DialogInput.text("lore", Component.text(TranslationManager.get("dialog.item.input_lore")))
             .initial(initialLore)
             .maxLength(512)
-            .multiline(TextDialogInput.MultilineOptions.create(10, 4))
+            .multiline(TextDialogInput.MultilineOptions.create(10, 60))
             .build()
 
         // 4. Rarity Selection Dropdown
@@ -138,12 +138,13 @@ object ItemDialogBuilder {
 
         // Build DialogBase
         val dialogTitle = Component.text(TranslationManager.get("dialog.item.title"), NamedTextColor.GOLD)
-        val descriptionBody = DialogBody.plainMessage(
-            TranslationManager.render(
-                "dialog.item.body",
-                "material" to capturedStack.type.name
-            )
-        )
+        val rawBody = TranslationManager.get("dialog.item.body", "material" to capturedStack.type.name)
+            .replace(Regex("<color:[^>]+>\\s*สำหรับกล่อง:.*$", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("\\s*สำหรับกล่อง:.*$", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("\\s*for (?:categories|category|boxes|box):.*$", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("\\{category\\}", RegexOption.IGNORE_CASE), "")
+            .trim()
+        val descriptionBody = DialogBody.plainMessage(TranslationManager.parseComponent(rawBody))
 
         val dialogBase = DialogBase.builder(dialogTitle)
             .body(listOf(descriptionBody))

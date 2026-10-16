@@ -335,7 +335,7 @@ dialog:
       <color:#555555>----------------------------------------</color>
     cancelled: "<color:#AAAAAA>ยกเลิกการแก้ไขกล่องดรอปแล้ว</color>"
   item:
-    title: "เครื่องมือแก้ไขข้อมูลไอเทม"
+    title: "เครื่องมือแก้ไขไอเทมดรอป"
     body: "<color:#AAAAAA>กำลังตั้งค่าไอเทม: </color><color:#FFFF55>{material}</color>"
     input_id: "รหัสเฉพาะของไอเทม (Item ID)"
     input_display_name: "ชื่อแสดงผลไอเทม (รองรับสี/MiniMessage)"

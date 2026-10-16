@@ -340,7 +340,7 @@ dialog:
       <color:#555555>----------------------------------------</color>
     cancelled: "<color:#AAAAAA>Drop box configuration cancelled.</color>"
   item:
-    title: "Item Details Editor"
+    title: "Drop Item Editor"
     body: "<color:#AAAAAA>Configuring item: </color><color:#FFFF55>{material}</color>"
     input_id: "Unique Item ID"
     input_display_name: "Custom Display Name"
