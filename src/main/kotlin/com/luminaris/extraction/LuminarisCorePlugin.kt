@@ -59,6 +59,9 @@ class LuminarisCorePlugin : JavaPlugin() {
     lateinit var editorGuiListener: com.luminaris.extraction.editor.gui.EditorGuiListener
         private set
 
+    lateinit var dropBoxManager: com.luminaris.extraction.core.container.DropBoxManager
+        private set
+
     lateinit var templateStorage: com.luminaris.extraction.storage.TemplateStorage
         private set
 
@@ -165,6 +168,8 @@ class LuminarisCorePlugin : JavaPlugin() {
 
         safeCaseListener = com.luminaris.extraction.core.safe.SafeCaseListener(this, safeCaseManager)
         server.pluginManager.registerEvents(safeCaseListener, this)
+
+        dropBoxManager = com.luminaris.extraction.core.container.DropBoxManager(this)
 
         containerMarkerListener = com.luminaris.extraction.editor.listeners.ContainerMarkerListener(this, templateStorage)
         server.pluginManager.registerEvents(containerMarkerListener, this)

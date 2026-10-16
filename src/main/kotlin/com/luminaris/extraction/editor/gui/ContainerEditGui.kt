@@ -46,7 +46,8 @@ class ContainerEditGui(
         val markerLore = listOf(
             TranslationManager.render("editor.gui.marker_tool_lore_1"),
             Component.empty(),
-            TranslationManager.render("editor.gui.marker_tool_lore_action")
+            TranslationManager.render("editor.gui.marker_tool_lore_left"),
+            TranslationManager.render("editor.gui.marker_tool_lore_right")
         )
         val markerItem = GuiUtils.createItem(
             Material.CHEST,
@@ -161,6 +162,20 @@ class ContainerEditGui(
         )
         inventory.setItem(16, deleteItem)
 
+        // Slot 17: Test Drop Simulation Button
+        val testLore = listOf(
+            TranslationManager.render("editor.gui.test_drop_lore_1"),
+            Component.empty(),
+            TranslationManager.render("editor.gui.test_drop_lore_action")
+        )
+        val testItem = GuiUtils.createItem(
+            Material.ENDER_EYE,
+            TranslationManager.render("editor.gui.btn_test_drop"),
+            testLore,
+            glowing = true
+        )
+        inventory.setItem(17, testItem)
+
         // Slot 22: Header for Rarity Section
         val rarityHeader = GuiUtils.createItem(
             Material.COMPARATOR,
@@ -229,18 +244,24 @@ class ContainerEditGui(
         val slot = event.slot
         when (slot) {
             10 -> {
-                // Get Marker Tool
-                GuiUtils.playSuccessSound(player)
-                val markerItem = ContainerMarkerTool.createContainerMarker(
-                    categoryId = category.id,
-                    material = Material.CHEST,
-                    categoryDisplayName = null
-                )
-                val leftover = player.inventory.addItem(markerItem)
-                for (item in leftover.values) {
-                    player.world.dropItemNaturally(player.location, item)
+                if (event.click == ClickType.RIGHT) {
+                    // Open Material Picker
+                    GuiUtils.playClickSound(player)
+                    ContainerMaterialSelectGui(plugin, category).open(player)
+                } else {
+                    // Get Default Chest Marker Tool
+                    GuiUtils.playSuccessSound(player)
+                    val markerItem = ContainerMarkerTool.createContainerMarker(
+                        categoryId = category.id,
+                        material = Material.CHEST,
+                        categoryDisplayName = null
+                    )
+                    val leftover = player.inventory.addItem(markerItem)
+                    for (item in leftover.values) {
+                        player.world.dropItemNaturally(player.location, item)
+                    }
+                    TranslationManager.send(player, "editor.gui.marker_tool_given", "id" to category.id)
                 }
-                TranslationManager.send(player, "editor.gui.marker_tool_given", "id" to category.id)
                 return
             }
             11 -> {
@@ -307,6 +328,12 @@ class ContainerEditGui(
                 } else {
                     GuiUtils.playErrorSound(player)
                 }
+                return
+            }
+            17 -> {
+                // Test Drop Simulation
+                GuiUtils.playClickSound(player)
+                plugin.dropBoxManager.openSimulation(player, category)
                 return
             }
             45, 53 -> {

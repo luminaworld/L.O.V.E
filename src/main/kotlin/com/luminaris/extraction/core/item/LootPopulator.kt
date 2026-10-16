@@ -155,9 +155,15 @@ class LootPopulator(
     fun populateContainer(world: World, container: PlacedContainer): Boolean {
         val block = world.getBlockAt(container.x, container.y, container.z)
         val state = block.state
+        val isContainerTile = state is Container
+        val hasArmorStand = runCatching {
+            world.getNearbyEntities(block.location.clone().add(0.5, 0.5, 0.5), 1.0, 1.0, 1.0)
+                .any { it is org.bukkit.entity.ArmorStand }
+        }.getOrDefault(false)
 
-        // Ensure the block is an actual tile-entity container (Chest, Barrel, etc.)
-        if (state !is Container) {
+        val isSupported = isContainerTile || com.luminaris.extraction.editor.tool.ContainerMarkerTool.isSupportedMaterial(block.type) || hasArmorStand
+
+        if (!isSupported) {
             logWarning(
                 "loot.log_not_container_block",
                 "x" to container.x,
@@ -170,9 +176,9 @@ class LootPopulator(
             return false
         }
 
-        val inventory = state.inventory
-        // Clear any existing contents
-        inventory.clear()
+        if (isContainerTile) {
+            (state as Container).inventory.clear()
+        }
 
         val categoryId = container.categoryId
         val category = activeContainerRegistry.getCategory(categoryId)
@@ -191,7 +197,7 @@ class LootPopulator(
         }
 
         if (rolls <= 0) {
-            state.update(true, false)
+            if (isContainerTile) state.update(true, false)
             return true
         }
 
@@ -199,32 +205,43 @@ class LootPopulator(
         val candidateItems = activeItemRegistry.getItemsForCategory(categoryId).filter { it.weight > 0.0 }
         if (candidateItems.isEmpty()) {
             logWarning("loot.log_no_items_in_category", "category" to categoryId, "id" to container.id)
-            state.update(true, false)
+            if (isContainerTile) state.update(true, false)
             return true
         }
 
         // Execute Cumulative Weight Selection respecting Container Category rarity drop chances
         val rolledStacks = rollCategoryItems(category, candidateItems, rolls)
 
-        // Distribute the rolled ItemStacks into randomized slot indices across the inventory
-        val invSize = inventory.size
-        if (invSize <= 0) {
-            return false
-        }
+        // Pre-register with DropBoxManager for this match world
+        (activePlugin as? LuminarisCorePlugin)?.dropBoxManager?.setContainerLoot(
+            worldName = world.name,
+            containerId = container.id,
+            x = container.x,
+            y = container.y,
+            z = container.z,
+            loot = rolledStacks
+        )
 
-        val availableSlots = (0 until invSize).toMutableList()
-        availableSlots.shuffle()
+        // Distribute the rolled ItemStacks into container tile inventory if applicable
+        if (isContainerTile) {
+            val inventory = (state as Container).inventory
+            val invSize = inventory.size
+            if (invSize > 0) {
+                val availableSlots = (0 until invSize).toMutableList()
+                availableSlots.shuffle()
 
-        for (stack in rolledStacks) {
-            if (availableSlots.isNotEmpty()) {
-                val slot = availableSlots.removeAt(0)
-                inventory.setItem(slot, stack)
-            } else {
-                inventory.addItem(stack)
+                for (stack in rolledStacks) {
+                    if (availableSlots.isNotEmpty()) {
+                        val slot = availableSlots.removeAt(0)
+                        inventory.setItem(slot, stack)
+                    } else {
+                        inventory.addItem(stack)
+                    }
+                }
             }
+            state.update(true, false)
         }
 
-        state.update(true, false)
         return true
     }
 

@@ -71,7 +71,7 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                 handleCaseCommand(sender, label, args.drop(1).toTypedArray())
             }
 
-            "chest" -> {
+            "chest", "drop", "container", "box" -> {
                 if (!sender.hasPermission("luminaris.admin") && !sender.hasPermission("luminaris.editor")) {
                     TranslationManager.send(sender, "general.no_permission")
                     return
@@ -189,8 +189,9 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                 }
 
                 val categoryId = args[1].lowercase().trim()
-                val material = if (args.size >= 3 && args[2].equals("barrel", ignoreCase = true)) {
-                    org.bukkit.Material.BARREL
+                val material = if (args.size >= 3) {
+                    val requested = args[2].uppercase().trim()
+                    org.bukkit.Material.matchMaterial(requested) ?: org.bukkit.Material.CHEST
                 } else {
                     org.bukkit.Material.CHEST
                 }
@@ -225,6 +226,31 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                     "material" to material.name,
                     "player" to player.name
                 )
+            }
+
+            "test" -> {
+                val player = sender as? org.bukkit.entity.Player
+                if (player == null) {
+                    TranslationManager.send(sender, "general.player_only")
+                    return
+                }
+                if (args.size < 2) {
+                    val available = plugin.containerRegistry.getAllCategories().map { it.id }
+                    val catHint = if (available.isNotEmpty()) {
+                        TranslationManager.get("command.chest.available_categories", "categories" to available.joinToString(", "))
+                    } else {
+                        TranslationManager.get("command.chest.no_categories")
+                    }
+                    TranslationManager.send(sender, "command.chest.missing_category", "label" to label, "hint" to catHint)
+                    return
+                }
+                val categoryId = args[1].lowercase().trim()
+                val material = if (args.size >= 3) {
+                    org.bukkit.Material.matchMaterial(args[2].uppercase().trim()) ?: org.bukkit.Material.CHEST
+                } else {
+                    org.bukkit.Material.CHEST
+                }
+                plugin.dropBoxManager.openSimulation(player, categoryId, material)
             }
 
             "list" -> {
@@ -307,16 +333,18 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
             return emptyList()
         }
 
-        if (args.size > 1 && args[0].equals("chest", ignoreCase = true)) {
+        val chestAliases = setOf("chest", "drop", "container", "box")
+        if (args.size > 1 && chestAliases.contains(args[0].lowercase())) {
             if (!sender.hasPermission("luminaris.admin") && !sender.hasPermission("luminaris.editor")) return emptyList()
             if (args.size == 2) {
-                return listOf("get", "list").filter { it.startsWith(args[1], ignoreCase = true) }
+                return listOf("get", "test", "list").filter { it.startsWith(args[1], ignoreCase = true) }
             }
-            if (args.size == 3 && args[1].equals("get", ignoreCase = true)) {
+            if (args.size == 3 && (args[1].equals("get", ignoreCase = true) || args[1].equals("test", ignoreCase = true))) {
                 return plugin.containerRegistry.getAllCategories().map { it.id }.filter { it.startsWith(args[2], ignoreCase = true) }
             }
-            if (args.size == 4 && args[1].equals("get", ignoreCase = true)) {
-                return listOf("chest", "barrel").filter { it.startsWith(args[3], ignoreCase = true) }
+            if (args.size == 4 && (args[1].equals("get", ignoreCase = true) || args[1].equals("test", ignoreCase = true))) {
+                val mats = com.luminaris.extraction.editor.tool.ContainerMarkerTool.ALL_SUPPORTED_MATERIALS.map { it.name.lowercase() }
+                return mats.filter { it.startsWith(args[3], ignoreCase = true) }
             }
             return emptyList()
         }

@@ -221,7 +221,8 @@ class MatchInstance(
         // 4. Notify match manager callback
         runCatching { onComplete(this) }
 
-        // 5. Decommission and delete instance world asynchronously
+        // 5. Clean up cached match drop containers and decommission world asynchronously
+        activePlugin?.dropBoxManager?.clearWorld(world.name)
         activeInstanceWorldService?.deleteInstance(world)?.whenComplete { _, ex ->
             if (ex != null) {
                 logWarning("match.log_world_deletion_error", "world" to world.name, "error" to (ex.message ?: "unknown"))

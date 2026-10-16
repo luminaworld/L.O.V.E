@@ -182,7 +182,20 @@ editor:
     btn_marker_tool: "<color:#55FFFF><bold>รับบล็อกมาร์กเกอร์</bold></color>"
     marker_tool_lore_1: "<color:#AAAAAA>คลิกเพื่อรับบล็อกมาร์กเกอร์สำหรับนำไปวางในแผนที่</color>"
     marker_tool_lore_action: "<color:#55FF55>▶ คลิกเพื่อรับบล็อกเข้าตัว</color>"
+    marker_tool_lore_left: "<color:#55FFFF>คลิกซ้าย:</color> <color:#AAAAAA>รับบล็อกมาร์กเกอร์ (หีบไม้มาตรฐาน)</color>"
+    marker_tool_lore_right: "<color:#FFAA00>คลิกขวา:</color> <color:#AAAAAA>เลือกวัสดุกล่องดรอป (38 รูปแบบ)</color>"
     marker_tool_given: "<color:#55FF55>✔ ได้รับบล็อกมาร์กเกอร์สำหรับกล่อง </color><color:#FFFF55>{id}</color>"
+    marker_tool_given_mat: "<color:#55FF55>✔ ได้รับบล็อกมาร์กเกอร์ </color><color:#FFAA00>{mat}</color> <color:#55FF55>สำหรับกล่อง </color><color:#FFFF55>{id}</color>"
+    btn_test_drop: "<gradient:#FFAA00:#FF5500><bold>ทดสอบการดรอป (Drop Test)</bold></gradient>"
+    test_drop_lore_1: "<color:#AAAAAA>จำลองการสุ่มและเปิดกล่องดรอปตามเรทจริง</color>"
+    test_drop_lore_action: "<color:#55FF55>▶ คลิกเพื่อเปิดหน้าต่างจำลองการดรอป</color>"
+    material_select_title: "<gradient:#FFAA00:#FF5500><bold>เลือกวัสดุกล่องดรอป: {id}</bold></gradient>"
+    marker_material_lore_cat: "<color:#AAAAAA>หมวดหมู่: <color:#FFFF55>{category}</color></color>"
+    marker_material_lore_click: "<color:#55FF55>▶ คลิกเพื่อรับบล็อกมาร์กเกอร์นี้</color>"
+    material_info_title: "<color:#55FFFF><bold>วัสดุกล่องดรอปทั้งหมด (38 รูปแบบ)</bold></color>"
+    material_info_lore_1: "<color:#AAAAAA>รองรับ หีบไม้, หีบทองแดงทุกแบบ, บาร์แรล,</color>"
+    material_info_lore_2: "<color:#AAAAAA>ชัคเกอร์บ็อกซ์ทุกสี, โต๊ะคราฟต์, เตาเผาทุกแบบ,</color>"
+    material_info_lore_3: "<color:#AAAAAA>โต๊ะเอนชานท์, กระถาง, ชั้นหนังสือ, เอนเดอร์, และแท่นเกราะ</color>"
     btn_edit_name_id: "<gradient:#00FFA3:#00B8FF><bold>แก้ไขชื่อและรหัส (Dialog)</bold></gradient>"
     edit_name_id_lore_1: "<color:#AAAAAA>แก้ไขรหัสเฉพาะและชื่อแสดงผลของกล่องผ่านหน้าต่าง Dialog</color>"
     edit_name_id_lore_action: "<color:#55FF55>▶ คลิกเพื่อเปิด Dialog แก้ไขชื่อและรหัส</color>"
@@ -367,6 +380,7 @@ tool:
     lore_category: "<color:#AAAAAA>หมวดหมู่: <color:#FFFF55>{category}</color></color>"
     lore_place: "<color:#555555>▪ วางในโลกเทมเพลตเพื่อลงทะเบียน</color>"
     lore_break: "<color:#555555>▪ ทุบออกด้วยสิทธิ์ผู้แก้ไขเพื่อลบ</color>"
+    lore_test: "<color:#55FF55>▪ ย่อ + คลิกขวา เพื่อจำลองการเปิดในเกมจริง</color>"
 
 # -------------------------------------------------------------------------
 # ส่วนที่ 8: ตัวตรวจจับเหตุการณ์มาร์กเกอร์ (Listener)
@@ -376,12 +390,13 @@ listener:
   marker:
     only_template_world: "<color:#FF5555>❌ มาร์กเกอร์คอนเทนเนอร์สามารถวางได้ในโลกเทมเพลตเท่านั้น!</color>"
     template_hint: "<color:#AAAAAA>คำแนะนำ: ชื่อโลกปลายทางต้องขึ้นต้นด้วย </color><color:#FFFF55>template_</color><color:#AAAAAA> หรือเป็นเทมเพลตที่ลงทะเบียนไว้</color>"
-    actionbar_placed: "<color:#55FF55>ลงทะเบียนคอนเทนเนอร์: <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color></color>"
-    chat_placed: "<gradient:#00FFA3:#00B8FF><bold>✔ [มาร์กเกอร์ L.O.V.E]</bold></gradient> <color:#55FF55>ลงทะเบียนคอนเทนเนอร์ <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>({x}, {y}, {z})</color> ในเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
-    no_permission_break: "<color:#FF5555>❌ คุณไม่มีสิทธิ์ในการทุบคอนเทนเนอร์การสกัดที่ลงทะเบียนไว้!</color>"
-    actionbar_denied: "<color:#FF5555>ปฏิเสธการเข้าถึง: มาร์กเกอร์คอนเทนเนอร์ที่ลงทะเบียนแล้ว</color>"
-    chat_removed: "<color:#FF5555>✖ ลบคอนเทนเนอร์ <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color> ออกจากเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
-    actionbar_removed: "<color:#FF5555>ลบคอนเทนเนอร์: <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    actionbar_placed: "<color:#55FF55>ลงทะเบียนกล่องดรอป: <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    chat_placed: "<gradient:#00FFA3:#00B8FF><bold>✔ [มาร์กเกอร์ L.O.V.E]</bold></gradient> <color:#55FF55>ลงทะเบียนกล่องดรอป <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>({x}, {y}, {z})</color> ในเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
+    no_permission_break: "<color:#FF5555>❌ คุณไม่มีสิทธิ์ในการทุบกล่องดรอปที่ลงทะเบียนไว้!</color>"
+    actionbar_denied: "<color:#FF5555>ปฏิเสธการเข้าถึง: มาร์กเกอร์กล่องดรอปที่ลงทะเบียนแล้ว</color>"
+    chat_removed: "<color:#FF5555>✖ ลบกล่องดรอป <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color> ออกจากเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
+    actionbar_removed: "<color:#FF5555>ลบกล่องดรอป: <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    hint_sneak_click: "<color:#FFFF55>💡 ย่อ + คลิกขวา เพื่อจำลองการเปิดกล่องดรอปนี้ในเกมจริง</color>"
 
 # -------------------------------------------------------------------------
 # ส่วนที่ 9: ระบบจุดสกัดหลบหนี (Extraction Matrix)
@@ -552,3 +567,23 @@ rarity:
   rare: "หายาก"
   epic: "มหากาพย์"
   legendary: "ตำนาน"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 19: ระบบกล่องดรอปไอเทมและการจำลอง (Drop Box System & Simulation)
+# -------------------------------------------------------------------------
+drop:
+  gui_title_sim: "<color:#FFAA00><bold>ทดสอบดรอป</bold></color> <color:#555555>•</color> <color:#FFFF55>{category}</color>"
+  gui_title_match: "<color:#FF55FF><bold>กล่องดรอปไอเทม</bold></color> <color:#555555>•</color> <color:#FFFF55>{category}</color>"
+  searching_title: "<color:#FFAA00><bold>กำลังค้นหา...</bold></color>"
+  searching_lore_desc: "<color:#FFFF55>🔍 กำลังตรวจค้นสิ่งของในกล่อง...</color>"
+  searching_lore_time: "<color:#AAAAAA>เวลาค้นหา: <color:#FFAA00>{current}/{time} วินาที</color></color>"
+  searching_actionbar: "<color:#FFFF55>🔍 กำลังค้นหาช่องที่ {item_num}/{total_items} ({current}/{duration} วินาที)...</color>"
+  still_searching: "<color:#FF5555>⏳ ยังค้นหาไม่เสร็จ กรุณารอสักครู่...</color>"
+  search_complete: "<color:#55FF55><bold>✔ ตรวจค้นกล่องเสร็จสิ้น!</bold></color>"
+  revealed_item: "<color:#55FF55>✔ พบไอเทม: </color>{tag}{name}</color> <color:#AAAAAA>({rarity})</color>"
+  sim_started: "<color:#55FF55>✔ เริ่มต้นจำลองการเปิดกล่องดรอป </color><color:#FFFF55>{category}</color> <color:#AAAAAA>(สุ่มได้ {count} ชิ้น)</color>"
+  sim_closed: "<color:#AAAAAA>[จำลองการดรอป] ปิดหน้าต่างการทดสอบ</color>"
+  empty_container: "<color:#AAAAAA>กล่องนี้ว่างเปล่า ไม่มีไอเทมที่ดรอป</color>"
+  inventory_full: "<color:#FF5555>ช่องเก็บของของคุณเต็มแล้ว!</color>"
+  waiting_title: "<color:#777777>รอการค้นหา...</color>"
+  waiting_lore: "<color:#555555>จะเริ่มค้นหาหลังจากเปิดช่องก่อนหน้า</color>"

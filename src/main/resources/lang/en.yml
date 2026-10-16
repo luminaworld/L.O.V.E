@@ -187,7 +187,20 @@ editor:
     btn_marker_tool: "<color:#55FFFF><bold>Get Marker Block</bold></color>"
     marker_tool_lore_1: "<color:#AAAAAA>Click to receive container marker block for placing.</color>"
     marker_tool_lore_action: "<color:#55FF55>▶ Click to get block in inventory</color>"
+    marker_tool_lore_left: "<color:#55FFFF>Left-Click:</color> <color:#AAAAAA>Get standard chest marker block</color>"
+    marker_tool_lore_right: "<color:#FFAA00>Right-Click:</color> <color:#AAAAAA>Select container material (38 variants)</color>"
     marker_tool_given: "<color:#55FF55>✔ Received container marker block for </color><color:#FFFF55>{id}</color>"
+    marker_tool_given_mat: "<color:#55FF55>✔ Received container marker block </color><color:#FFAA00>{mat}</color> <color:#55FF55>for </color><color:#FFFF55>{id}</color>"
+    btn_test_drop: "<gradient:#FFAA00:#FF5500><bold>Test Drop (Simulation)</bold></gradient>"
+    test_drop_lore_1: "<color:#AAAAAA>Simulate item drop rolls and opening animation.</color>"
+    test_drop_lore_action: "<color:#55FF55>▶ Click to open test simulation</color>"
+    material_select_title: "<gradient:#FFAA00:#FF5500><bold>Select Container Material: {id}</bold></gradient>"
+    marker_material_lore_cat: "<color:#AAAAAA>Category: <color:#FFFF55>{category}</color></color>"
+    marker_material_lore_click: "<color:#55FF55>▶ Click to receive this marker block</color>"
+    material_info_title: "<color:#55FFFF><bold>Supported Container Materials (38 Types)</bold></color>"
+    material_info_lore_1: "<color:#AAAAAA>Supports wooden chests, copper chests, barrels,</color>"
+    material_info_lore_2: "<color:#AAAAAA>all shulker boxes, crafting tables, furnaces,</color>"
+    material_info_lore_3: "<color:#AAAAAA>enchanting tables, pots, bookshelves, ender chests, armor stands.</color>"
     btn_edit_name_id: "<gradient:#00FFA3:#00B8FF><bold>Edit Name & ID (Dialog)</bold></gradient>"
     edit_name_id_lore_1: "<color:#AAAAAA>Configure container ID and display name via Dialog window.</color>"
     edit_name_id_lore_action: "<color:#55FF55>▶ Click to open Name & ID Dialog</color>"
@@ -372,6 +385,7 @@ tool:
     lore_category: "<color:#AAAAAA>Category: <color:#FFFF55>{category}</color></color>"
     lore_place: "<color:#555555>▪ Place in a template world to register.</color>"
     lore_break: "<color:#555555>▪ Break with editor permission to remove.</color>"
+    lore_test: "<color:#55FF55>▪ Sneak + Right-Click to simulate in-game drop opening.</color>"
 
 # -------------------------------------------------------------------------
 # ส่วนที่ 8: ตัวตรวจจับเหตุการณ์มาร์กเกอร์ (Listener)
@@ -387,6 +401,7 @@ listener:
     actionbar_denied: "<color:#FF5555>Permission denied: Registered container marker</color>"
     chat_removed: "<color:#FF5555>✖ Removed registered container <color:#FFFF55>{category}</color> at <color:#55FFFF>{x}, {y}, {z}</color> from template <color:#FFFF55>{template}</color>.</color>"
     actionbar_removed: "<color:#FF5555>Removed container: <color:#FFFF55>{category}</color> at <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    hint_sneak_click: "<color:#FFFF55>💡 Sneak + Right-Click to simulate opening this drop box in-game.</color>"
 
 # -------------------------------------------------------------------------
 # ส่วนที่ 9: ระบบจุดสกัดหลบหนี (Extraction Matrix)
@@ -557,3 +572,23 @@ rarity:
   rare: "RARE"
   epic: "EPIC"
   legendary: "LEGENDARY"
+
+# -------------------------------------------------------------------------
+# ส่วนที่ 19: ระบบกล่องดรอปไอเทมและการจำลอง (Drop Box System & Simulation)
+# -------------------------------------------------------------------------
+drop:
+  gui_title_sim: "<color:#FFAA00><bold>Drop Test</bold></color> <color:#555555>•</color> <color:#FFFF55>{category}</color>"
+  gui_title_match: "<color:#FF55FF><bold>Drop Box</bold></color> <color:#555555>•</color> <color:#FFFF55>{category}</color>"
+  searching_title: "<color:#FFAA00><bold>Searching...</bold></color>"
+  searching_lore_desc: "<color:#FFFF55>🔍 Searching inside the container...</color>"
+  searching_lore_time: "<color:#AAAAAA>Search time: <color:#FFAA00>{current}/{time}s</color></color>"
+  searching_actionbar: "<color:#FFFF55>🔍 Searching slot {item_num}/{total_items} ({current}/{duration}s)...</color>"
+  still_searching: "<color:#FF5555>⏳ Still searching, please wait...</color>"
+  search_complete: "<color:#55FF55><bold>✔ Container search complete!</bold></color>"
+  revealed_item: "<color:#55FF55>✔ Found item: </color>{tag}{name}</color> <color:#AAAAAA>({rarity})</color>"
+  sim_started: "<color:#55FF55>✔ Started drop simulation for </color><color:#FFFF55>{category}</color> <color:#AAAAAA>({count} items rolled)</color>"
+  sim_closed: "<color:#AAAAAA>[Drop Simulation] Test session closed.</color>"
+  empty_container: "<color:#AAAAAA>This container is empty.</color>"
+  inventory_full: "<color:#FF5555>Your inventory is full!</color>"
+  waiting_title: "<color:#777777>Waiting to search...</color>"
+  waiting_lore: "<color:#555555>Will search after previous slot opens</color>"
