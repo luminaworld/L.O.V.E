@@ -192,7 +192,7 @@ class TranslationManagerTest {
         assertEquals("เครื่องมือแก้ไขหมวดหมู่กล่องดรอป", TranslationManager.get("dialog.category.title"))
         assertEquals("รหัสเฉพาะของกล่อง (Container ID)", TranslationManager.get("dialog.category.input_id"))
         assertEquals("รหัสเฉพาะของไอเทม (Item ID)", TranslationManager.get("dialog.item.input_id"))
-        assertEquals("คำอธิบายไอเทม (Lore บรรทัดใหม่หรือ \\n)", TranslationManager.get("dialog.item.input_lore"))
+        assertEquals("คำอธิบายไอเทม (Lore กด Enter ขึ้นบรรทัดใหม่ได้)", TranslationManager.get("dialog.item.input_lore"))
         assertTrue(TranslationManager.get("editor.gui.btn_items").contains("คลังไอเทมดรอป"))
         assertTrue(TranslationManager.get("editor.gui.btn_edit_name_id").contains("แก้ไขชื่อและรหัส"))
         assertTrue(TranslationManager.get("editor.gui.btn_select_containers").contains("เลือกกล่องที่อนุญาตให้ดรอป"))

@@ -339,7 +339,7 @@ dialog:
     body: "<color:#AAAAAA>กำลังตั้งค่าไอเทม: </color><color:#FFFF55>{material}</color>"
     input_id: "รหัสเฉพาะของไอเทม (Item ID)"
     input_display_name: "ชื่อแสดงผลไอเทม (รองรับสี/MiniMessage)"
-    input_lore: "คำอธิบายไอเทม (Lore บรรทัดใหม่หรือ \\n)"
+    input_lore: "คำอธิบายไอเทม (Lore กด Enter ขึ้นบรรทัดใหม่ได้)"
     input_rarity: "ระดับความหายาก (Rarity)"
     input_price: "ราคาขาย ($ พิมพ์ตัวเลข)"
     btn_save: "✔ บันทึกไอเทม"

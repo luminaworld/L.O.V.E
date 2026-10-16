@@ -344,7 +344,7 @@ dialog:
     body: "<color:#AAAAAA>Configuring item: </color><color:#FFFF55>{material}</color>"
     input_id: "Unique Item ID"
     input_display_name: "Custom Display Name"
-    input_lore: "Item Lore (newlines or \\n supported)"
+    input_lore: "Item Lore (Press Enter for new line)"
     input_rarity: "Rarity Tier"
     input_price: "Sell Price ($ Enter number)"
     btn_save: "✔ Save Item"

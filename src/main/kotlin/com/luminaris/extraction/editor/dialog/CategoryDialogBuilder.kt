@@ -54,11 +54,13 @@ object CategoryDialogBuilder {
         val idInput = DialogInput.text("category_id", Component.text(TranslationManager.get("dialog.category.input_id")))
             .initial(defaultId)
             .maxLength(64)
+            .width(300)
             .build()
 
         val displayNameInput = DialogInput.text("display_name", Component.text(TranslationManager.get("dialog.category.input_display_name")))
             .initial(defaultDisplay)
             .maxLength(128)
+            .width(300)
             .build()
 
         val dialogTitle = Component.text(TranslationManager.get("dialog.category.title"), NamedTextColor.AQUA)

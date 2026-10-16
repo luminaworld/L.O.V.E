@@ -100,19 +100,22 @@ object ItemDialogBuilder {
         val itemIdInput = DialogInput.text("item_id", Component.text(TranslationManager.get("dialog.item.input_id")))
             .initial(initialId)
             .maxLength(64)
+            .width(300)
             .build()
 
         // 2. Display Name
         val displayNameInput = DialogInput.text("display_name", Component.text(TranslationManager.get("dialog.item.input_display_name")))
             .initial(initialDisplayName)
             .maxLength(128)
+            .width(300)
             .build()
 
         // 3. Lore
         val loreInput = DialogInput.text("lore", Component.text(TranslationManager.get("dialog.item.input_lore")))
             .initial(initialLore)
-            .maxLength(512)
-            .multiline(TextDialogInput.MultilineOptions.create(10, 60))
+            .maxLength(1024)
+            .width(300)
+            .multiline(TextDialogInput.MultilineOptions.create(16, 100))
             .build()
 
         // 4. Rarity Selection Dropdown
@@ -128,12 +131,13 @@ object ItemDialogBuilder {
             "rarity",
             Component.text(TranslationManager.get("dialog.item.input_rarity")),
             rarityOptions
-        ).build()
+        ).width(300).build()
 
         // 5. Price
         val priceInput = DialogInput.text("price", Component.text(TranslationManager.get("dialog.item.input_price")))
             .initial(formatNumber(initialPrice))
             .maxLength(16)
+            .width(300)
             .build()
 
         // Build DialogBase
