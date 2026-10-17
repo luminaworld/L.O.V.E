@@ -126,8 +126,173 @@ object ContainerMarkerTool {
             material in DECORATED_POTS -> Sound.BLOCK_DECORATED_POT_INSERT
             material in BOOKSHELVES -> Sound.ITEM_BOOK_PAGE_TURN
             material in ARMOR_STANDS -> Sound.ITEM_ARMOR_EQUIP_GENERIC
+            material == Material.OXIDIZED_COPPER_CHEST || material == Material.WAXED_OXIDIZED_COPPER_CHEST -> Sound.BLOCK_COPPER_CHEST_OXIDIZED_OPEN
+            material == Material.WEATHERED_COPPER_CHEST || material == Material.WAXED_WEATHERED_COPPER_CHEST -> Sound.BLOCK_COPPER_CHEST_WEATHERED_OPEN
+            material in COPPER_CHESTS -> Sound.BLOCK_COPPER_CHEST_OPEN
             else -> Sound.BLOCK_CHEST_OPEN
         }
+    }
+
+    /**
+     * Checks if the material is a wooden chest variant.
+     */
+    fun isWoodenChest(material: Material): Boolean = material in WOODEN_CHESTS
+
+    /**
+     * Checks if the material is a copper chest variant.
+     */
+    fun isCopperChest(material: Material): Boolean = material in COPPER_CHESTS
+
+    /**
+     * Checks if the material is any chest type eligible to connect as a double chest.
+     */
+    fun isChest(material: Material): Boolean = isWoodenChest(material) || isCopperChest(material)
+
+    /**
+     * Checks if two chest materials are compatible to connect together into a double chest.
+     * Wooden chests connect with matching wooden chests, and copper chests with matching copper chests.
+     */
+    fun areChestMaterialsCompatible(m1: Material, m2: Material): Boolean {
+        if (!isChest(m1) || !isChest(m2)) return false
+        return m1 == m2
+    }
+
+    /**
+     * Resolves the 90-degree clockwise horizontal direction.
+     */
+    fun getClockwise(face: org.bukkit.block.BlockFace): org.bukkit.block.BlockFace = when (face) {
+        org.bukkit.block.BlockFace.NORTH -> org.bukkit.block.BlockFace.EAST
+        org.bukkit.block.BlockFace.EAST -> org.bukkit.block.BlockFace.SOUTH
+        org.bukkit.block.BlockFace.SOUTH -> org.bukkit.block.BlockFace.WEST
+        org.bukkit.block.BlockFace.WEST -> org.bukkit.block.BlockFace.NORTH
+        else -> face
+    }
+
+    /**
+     * Resolves the 90-degree counter-clockwise horizontal direction.
+     */
+    fun getCounterClockwise(face: org.bukkit.block.BlockFace): org.bukkit.block.BlockFace = when (face) {
+        org.bukkit.block.BlockFace.NORTH -> org.bukkit.block.BlockFace.WEST
+        org.bukkit.block.BlockFace.WEST -> org.bukkit.block.BlockFace.SOUTH
+        org.bukkit.block.BlockFace.SOUTH -> org.bukkit.block.BlockFace.EAST
+        org.bukkit.block.BlockFace.EAST -> org.bukkit.block.BlockFace.NORTH
+        else -> face
+    }
+
+    /**
+     * Locates the paired connected double chest block, if any.
+     * Complies with Minecraft's standard:
+     * - ChestType.LEFT connects in the clockwise direction of facing.
+     * - ChestType.RIGHT connects in the counter-clockwise direction of facing.
+     */
+    fun getConnectedDoubleChestBlock(block: org.bukkit.block.Block): org.bukkit.block.Block? {
+        val blockData = block.blockData
+        if (blockData is org.bukkit.block.data.type.Chest) {
+            if (blockData.type != org.bukkit.block.data.type.Chest.Type.SINGLE) {
+                // 1. DoubleChest inventory holder check
+                val state = runCatching { block.state }.getOrNull()
+                if (state is org.bukkit.block.Chest) {
+                    val holder = runCatching { state.inventory.holder }.getOrNull()
+                    if (holder is org.bukkit.block.DoubleChest) {
+                        val left = (holder.leftSide as? org.bukkit.block.Chest)?.block
+                        val right = (holder.rightSide as? org.bukkit.block.Chest)?.block
+                        if (left != null && right != null) {
+                            return if (block == left) right else left
+                        }
+                    }
+                }
+                // 2. Direct Minecraft directional relation check
+                val partnerFace = if (blockData.type == org.bukkit.block.data.type.Chest.Type.LEFT) {
+                    getClockwise(blockData.facing)
+                } else {
+                    getCounterClockwise(blockData.facing)
+                }
+                val partner = block.getRelative(partnerFace)
+                if (areChestMaterialsCompatible(block.type, partner.type) && partner.blockData is org.bukkit.block.data.type.Chest) {
+                    val partnerData = partner.blockData as org.bukkit.block.data.type.Chest
+                    if (partnerData.facing == blockData.facing &&
+                        partnerData.type != org.bukkit.block.data.type.Chest.Type.SINGLE &&
+                        partnerData.type != blockData.type
+                    ) {
+                        return partner
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    /**
+     * Finds an adjacent horizontally placed compatible chest or connected partner block.
+     */
+    fun getAdjacentOrConnectedChest(block: org.bukkit.block.Block): org.bukkit.block.Block? {
+        getConnectedDoubleChestBlock(block)?.let { return it }
+        if (!isChest(block.type)) return null
+
+        val horizontalFaces = listOf(
+            org.bukkit.block.BlockFace.NORTH,
+            org.bukkit.block.BlockFace.SOUTH,
+            org.bukkit.block.BlockFace.EAST,
+            org.bukkit.block.BlockFace.WEST
+        )
+        for (face in horizontalFaces) {
+            val rel = block.getRelative(face)
+            if (areChestMaterialsCompatible(block.type, rel.type)) {
+                return rel
+            }
+        }
+        return null
+    }
+
+    /**
+     * Connects two adjacent compatible chests so that they form a double chest.
+     * Complies with Minecraft's standard:
+     * - ChestType.LEFT has its connected partner clockwise from facing.
+     * - ChestType.RIGHT has its connected partner counter-clockwise from facing.
+     */
+    fun connectChests(existingBlock: org.bukkit.block.Block, newBlock: org.bukkit.block.Block): Boolean {
+        if (!areChestMaterialsCompatible(existingBlock.type, newBlock.type)) return false
+        val existData = existingBlock.blockData as? org.bukkit.block.data.type.Chest ?: return false
+        val newData = newBlock.blockData as? org.bukkit.block.data.type.Chest ?: return false
+
+        val facing = existData.facing
+        newData.facing = facing
+
+        val dx = newBlock.x - existingBlock.x
+        val dz = newBlock.z - existingBlock.z
+
+        val dirToNew = when {
+            dx > 0 && dz == 0 -> org.bukkit.block.BlockFace.EAST
+            dx < 0 && dz == 0 -> org.bukkit.block.BlockFace.WEST
+            dz > 0 && dx == 0 -> org.bukkit.block.BlockFace.SOUTH
+            dz < 0 && dx == 0 -> org.bukkit.block.BlockFace.NORTH
+            else -> return false
+        }
+
+        val cw = getClockwise(facing)
+        val ccw = getCounterClockwise(facing)
+
+        when (dirToNew) {
+            cw -> {
+                // newBlock is clockwise from existingBlock:
+                // existingBlock connects clockwise -> existingBlock is LEFT
+                // newBlock connects counter-clockwise -> newBlock is RIGHT
+                existData.type = org.bukkit.block.data.type.Chest.Type.LEFT
+                newData.type = org.bukkit.block.data.type.Chest.Type.RIGHT
+            }
+            ccw -> {
+                // newBlock is counter-clockwise from existingBlock:
+                // existingBlock connects counter-clockwise -> existingBlock is RIGHT
+                // newBlock connects clockwise -> newBlock is LEFT
+                existData.type = org.bukkit.block.data.type.Chest.Type.RIGHT
+                newData.type = org.bukkit.block.data.type.Chest.Type.LEFT
+            }
+            else -> return false
+        }
+
+        existingBlock.setBlockData(existData, true)
+        newBlock.setBlockData(newData, true)
+        return true
     }
 
     /**

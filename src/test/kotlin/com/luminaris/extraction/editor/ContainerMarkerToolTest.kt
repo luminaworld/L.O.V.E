@@ -71,4 +71,45 @@ class ContainerMarkerToolTest {
         kotlin.test.assertFalse(ContainerMarkerTool.isSupportedMaterial(org.bukkit.Material.DIRT))
         kotlin.test.assertFalse(ContainerMarkerTool.isSupportedMaterial(org.bukkit.Material.DIAMOND))
     }
+
+    @Test
+    fun testWoodenAndCopperChestHelpers() {
+        // Wooden chests
+        kotlin.test.assertTrue(ContainerMarkerTool.isWoodenChest(org.bukkit.Material.CHEST))
+        kotlin.test.assertTrue(ContainerMarkerTool.isWoodenChest(org.bukkit.Material.TRAPPED_CHEST))
+        kotlin.test.assertFalse(ContainerMarkerTool.isWoodenChest(org.bukkit.Material.BARREL))
+        kotlin.test.assertFalse(ContainerMarkerTool.isWoodenChest(org.bukkit.Material.COPPER_CHEST))
+
+        // Copper chests
+        ContainerMarkerTool.COPPER_CHESTS.forEach {
+            kotlin.test.assertTrue(ContainerMarkerTool.isCopperChest(it), "$it must be recognized as copper chest")
+            kotlin.test.assertTrue(ContainerMarkerTool.isChest(it), "$it must be recognized as chest")
+        }
+        kotlin.test.assertFalse(ContainerMarkerTool.isCopperChest(org.bukkit.Material.CHEST))
+        kotlin.test.assertFalse(ContainerMarkerTool.isCopperChest(org.bukkit.Material.ARMOR_STAND))
+
+        // Chest classification
+        kotlin.test.assertTrue(ContainerMarkerTool.isChest(org.bukkit.Material.CHEST))
+        kotlin.test.assertTrue(ContainerMarkerTool.isChest(org.bukkit.Material.COPPER_CHEST))
+        kotlin.test.assertFalse(ContainerMarkerTool.isChest(org.bukkit.Material.ARMOR_STAND))
+        kotlin.test.assertFalse(ContainerMarkerTool.isChest(org.bukkit.Material.BARREL))
+    }
+
+    @Test
+    fun testChestCompatibility() {
+        // Matching wooden chests
+        kotlin.test.assertTrue(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.CHEST, org.bukkit.Material.CHEST))
+        kotlin.test.assertTrue(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.TRAPPED_CHEST, org.bukkit.Material.TRAPPED_CHEST))
+        // Mixed wooden chests cannot double chest
+        kotlin.test.assertFalse(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.CHEST, org.bukkit.Material.TRAPPED_CHEST))
+
+        // Matching copper chests
+        kotlin.test.assertTrue(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.COPPER_CHEST, org.bukkit.Material.COPPER_CHEST))
+        kotlin.test.assertTrue(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.WAXED_OXIDIZED_COPPER_CHEST, org.bukkit.Material.WAXED_OXIDIZED_COPPER_CHEST))
+
+        // Incompatible types
+        kotlin.test.assertFalse(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.CHEST, org.bukkit.Material.COPPER_CHEST))
+        kotlin.test.assertFalse(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.COPPER_CHEST, org.bukkit.Material.BARREL))
+        kotlin.test.assertFalse(ContainerMarkerTool.areChestMaterialsCompatible(org.bukkit.Material.ARMOR_STAND, org.bukkit.Material.ARMOR_STAND))
+    }
 }

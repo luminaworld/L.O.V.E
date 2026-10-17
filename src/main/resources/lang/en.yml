@@ -401,6 +401,10 @@ listener:
     actionbar_denied: "<color:#FF5555>Permission denied: Registered container marker</color>"
     chat_removed: "<color:#FF5555>✖ Removed registered container <color:#FFFF55>{category}</color> at <color:#55FFFF>{x}, {y}, {z}</color> from template <color:#FFFF55>{template}</color>.</color>"
     actionbar_removed: "<color:#FF5555>Removed container: <color:#FFFF55>{category}</color> at <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    actionbar_connected: "<color:#55FF55>Connected double chest: <color:#FFFF55>{category}</color> (counted as 1 chest)</color>"
+    chat_connected: "<gradient:#00FFA3:#00B8FF><bold>✔ [L.O.V.E Marker]</bold></gradient> <color:#55FF55>Connected drop chest <color:#FFFF55>{category}</color> as double chest (counted as 1 container) in template <color:#FFFF55>{template}</color>.</color>"
+    actionbar_separated: "<color:#FFAA00>Separated double chest into single chest: <color:#FFFF55>{category}</color></color>"
+    armor_stand_equipped: "<color:#55FF55>Equipped item onto armor stand.</color>"
     hint_sneak_click: "<color:#FFFF55>💡 Sneak + Right-Click to simulate opening this drop box in-game.</color>"
 
 # -------------------------------------------------------------------------

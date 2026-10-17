@@ -49,25 +49,60 @@ class ContainerMarkerListener(
 
     /**
      * Handles container marker placement.
+     * When wooden or copper chests are placed adjacent to an existing registered chest,
+     * they are linked as a double chest and counted as a single container.
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockPlace(event: BlockPlaceEvent) {
-        val item = event.itemInHand
-        val categoryId = ContainerMarkerTool.getCategoryId(item) ?: return
-
-        val player = event.player
         val block = event.blockPlaced
         val world = block.world
+        val player = event.player
+        val item = event.itemInHand
+        val categoryId = ContainerMarkerTool.getCategoryId(item)
 
         // Check if placed inside a template world
         if (!templateStorage.isTemplateWorld(world)) {
-            event.isCancelled = true
-            TranslationManager.send(player, "listener.marker.only_template_world")
-            TranslationManager.send(player, "listener.marker.template_hint")
+            if (categoryId != null) {
+                event.isCancelled = true
+                TranslationManager.send(player, "listener.marker.only_template_world")
+                TranslationManager.send(player, "listener.marker.template_hint")
+            }
             return
         }
 
         val templateId = templateStorage.resolveTemplateId(world) ?: world.name.lowercase()
+
+        // Check if placed block is a wooden chest or copper chest adjacent to an existing container chest
+        if (ContainerMarkerTool.isChest(block.type)) {
+            val adjacentBlock = ContainerMarkerTool.getAdjacentOrConnectedChest(block)
+            if (adjacentBlock != null) {
+                val existingContainer = templateStorage.getContainerAt(templateId, adjacentBlock.x, adjacentBlock.y, adjacentBlock.z)
+                if (existingContainer != null) {
+                    // Connect the two chests into a double chest
+                    ContainerMarkerTool.connectChests(adjacentBlock, block)
+
+                    // Spawns particle and audio feedback; counted as the existing container (no duplicate entry added)
+                    val centerLoc = block.location.clone().add(0.5, 0.6, 0.5)
+                    world.spawnParticle(villagerHappyParticle, centerLoc, 25, 0.35, 0.35, 0.35, 0.05)
+                    world.playSound(centerLoc, Sound.BLOCK_CHEST_LOCKED, 1.0f, 1.2f)
+
+                    TranslationManager.sendActionBar(
+                        player,
+                        "listener.marker.actionbar_connected",
+                        "category" to existingContainer.categoryId
+                    )
+                    TranslationManager.send(
+                        player,
+                        "listener.marker.chat_connected",
+                        "category" to existingContainer.categoryId,
+                        "template" to templateId
+                    )
+                    return
+                }
+            }
+        }
+
+        if (categoryId == null) return
 
         // Calculate coordinate vector (X, Y, Z) relative to world origin / absolute vector
         val x = block.x
@@ -116,6 +151,8 @@ class ContainerMarkerListener(
 
     /**
      * Handles container marker destruction.
+     * Breaking one half of a double chest separates it back into a single chest while preserving
+     * the container registration on the remaining half.
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onBlockBreak(event: BlockBreakEvent) {
@@ -125,12 +162,17 @@ class ContainerMarkerListener(
         // Check if inside template world
         val templateId = templateStorage.resolveTemplateId(world) ?: return
 
-        // Check if block at (x, y, z) is a registered container block
-        val container = templateStorage.getContainerAt(templateId, block.x, block.y, block.z) ?: return
+        // Check if block at (x, y, z) or its connected partner is a registered container block
+        val directContainer = templateStorage.getContainerAt(templateId, block.x, block.y, block.z)
+        val partnerBlock = ContainerMarkerTool.getAdjacentOrConnectedChest(block)
+        val partnerContainer = if (directContainer == null && partnerBlock != null) {
+            templateStorage.getContainerAt(templateId, partnerBlock.x, partnerBlock.y, partnerBlock.z)
+        } else null
 
+        val container = directContainer ?: partnerContainer ?: return
         val player = event.player
 
-        // If an admin with editor permission breaks a registered container block, remove it from TemplateStorage
+        // If an admin with editor permission breaks a registered container block, proceed
         val hasPermission = player.hasPermission("luminaris.editor") || player.hasPermission("luminaris.admin")
         if (!hasPermission) {
             event.isCancelled = true
@@ -139,8 +181,38 @@ class ContainerMarkerListener(
             return
         }
 
+        // If part of a double chest and partner block is still in the world:
+        if (partnerBlock != null && ContainerMarkerTool.areChestMaterialsCompatible(block.type, partnerBlock.type)) {
+            val partnerData = partnerBlock.blockData as? org.bukkit.block.data.type.Chest
+            if (partnerData != null) {
+                partnerData.type = org.bukkit.block.data.type.Chest.Type.SINGLE
+                partnerBlock.setBlockData(partnerData, true)
+            }
+
+            if (directContainer != null) {
+                // Transfer registered container coordinates to remaining chest
+                templateStorage.removeContainer(templateId, block.x, block.y, block.z, saveToDisk = false)
+                val transferred = PlacedContainer(
+                    id = directContainer.id,
+                    categoryId = directContainer.categoryId,
+                    x = partnerBlock.x,
+                    y = partnerBlock.y,
+                    z = partnerBlock.z
+                )
+                templateStorage.addContainer(templateId, transferred, saveToDisk = true)
+            }
+
+            TranslationManager.sendActionBar(
+                player,
+                "listener.marker.actionbar_separated",
+                "category" to container.categoryId
+            )
+            world.playSound(block.location.clone().add(0.5, 0.5, 0.5), Sound.BLOCK_CHEST_CLOSE, 1.0f, 0.8f)
+            return
+        }
+
         // Remove from TemplateStorage
-        val removed = templateStorage.removeContainer(templateId, block.x, block.y, block.z, saveToDisk = true)
+        templateStorage.removeContainer(templateId, block.x, block.y, block.z, saveToDisk = true)
 
         // Send message notifying deletion
         TranslationManager.send(
@@ -173,6 +245,12 @@ class ContainerMarkerListener(
         }
     }
 
+    private fun isContainerBlock(templateId: String, b: Block): Boolean {
+        if (templateStorage.getContainerAt(templateId, b.x, b.y, b.z) != null) return true
+        val partner = ContainerMarkerTool.getAdjacentOrConnectedChest(b)
+        return partner != null && templateStorage.getContainerAt(templateId, partner.x, partner.y, partner.z) != null
+    }
+
     /**
      * Prevents explosion damage from destroying registered template containers.
      */
@@ -194,9 +272,7 @@ class ContainerMarkerListener(
         val world = blocks[0].world
         val templateId = templateStorage.resolveTemplateId(world) ?: return
 
-        blocks.removeIf { b ->
-            templateStorage.getContainerAt(templateId, b.x, b.y, b.z) != null
-        }
+        blocks.removeIf { b -> isContainerBlock(templateId, b) }
     }
 
     /**
@@ -207,7 +283,7 @@ class ContainerMarkerListener(
         val world = event.block.world
         val templateId = templateStorage.resolveTemplateId(world) ?: return
         for (b in event.blocks) {
-            if (templateStorage.getContainerAt(templateId, b.x, b.y, b.z) != null) {
+            if (isContainerBlock(templateId, b)) {
                 event.isCancelled = true
                 return
             }
@@ -222,7 +298,7 @@ class ContainerMarkerListener(
         val world = event.block.world
         val templateId = templateStorage.resolveTemplateId(world) ?: return
         for (b in event.blocks) {
-            if (templateStorage.getContainerAt(templateId, b.x, b.y, b.z) != null) {
+            if (isContainerBlock(templateId, b)) {
                 event.isCancelled = true
                 return
             }
@@ -231,6 +307,7 @@ class ContainerMarkerListener(
 
     /**
      * Handles ArmorStand container marker placement.
+     * Enables arms and base plate so that armor and hand items can be equipped.
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onEntityPlace(event: EntityPlaceEvent) {
@@ -276,6 +353,8 @@ class ContainerMarkerListener(
         entity.persistentDataContainer.set(ContainerMarkerTool.KEY_CONTAINER_ID, PersistentDataType.STRING, containerId)
         entity.customName(TranslationManager.render("tool.marker.display_name", "label" to categoryId))
         entity.isCustomNameVisible = true
+        entity.setArms(true)
+        entity.setBasePlate(true)
 
         val centerLoc = entity.location.clone().add(0.0, 1.0, 0.0)
         world.spawnParticle(villagerHappyParticle, centerLoc, 25, 0.35, 0.35, 0.35, 0.05)
@@ -302,6 +381,7 @@ class ContainerMarkerListener(
 
     /**
      * Handles ArmorStand container marker destruction.
+     * Safely returns any equipped armor and hand items to the editor upon removal.
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
@@ -333,6 +413,20 @@ class ContainerMarkerListener(
             templateStorage.removeContainer(templateId, entity.location.blockX, entity.location.blockY, entity.location.blockZ, saveToDisk = true)
         }
 
+        // Return equipped armor and held items to the damager
+        val eq = entity.equipment
+        val equippedItems = listOf(
+            eq.helmet, eq.chestplate, eq.leggings, eq.boots,
+            eq.itemInMainHand, eq.itemInOffHand
+        ).filterNotNull().filter { !it.isEmpty }
+
+        for (item in equippedItems) {
+            val left = damager.inventory.addItem(item)
+            for (dropped in left.values) {
+                world.dropItemNaturally(entity.location, dropped)
+            }
+        }
+
         entity.remove()
 
         val markerTool = ContainerMarkerTool.createContainerMarker(categoryId, Material.ARMOR_STAND)
@@ -362,12 +456,24 @@ class ContainerMarkerListener(
     }
 
     /**
-     * Prevents players from manipulating or stealing items from ArmorStand container markers.
+     * Allows editors in template worlds to equip armor and held items onto ArmorStand container markers,
+     * while protecting the armor stands from being manipulated in matches.
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onArmorStandManipulate(event: PlayerArmorStandManipulateEvent) {
         val entity = event.rightClicked
         if (entity.persistentDataContainer.has(ContainerMarkerTool.KEY_CONTAINER_CATEGORY, PersistentDataType.STRING)) {
+            val player = event.player
+            val world = entity.world
+            val isAdmin = player.hasPermission("luminaris.admin") || player.hasPermission("luminaris.editor")
+            if (templateStorage.isTemplateWorld(world) && isAdmin) {
+                if (!entity.hasArms()) {
+                    entity.setArms(true)
+                }
+                // Allow manipulating armor and hand items in editor/template worlds
+                return
+            }
+            // In matches or non-editor worlds, protect the armor stand from being stripped
             event.isCancelled = true
         }
     }
@@ -386,8 +492,34 @@ class ContainerMarkerListener(
     }
 
     /**
+     * Resolves a PlacedContainer for a block by checking direct coordinates or connected double chest partner.
+     */
+    fun findContainerForBlock(
+        world: org.bukkit.World,
+        templateId: String?,
+        match: com.luminaris.extraction.core.match.MatchInstance?,
+        block: Block
+    ): PlacedContainer? {
+        if (templateId != null) {
+            templateStorage.getContainerAt(templateId, block.x, block.y, block.z)?.let { return it }
+            val partner = ContainerMarkerTool.getAdjacentOrConnectedChest(block)
+            if (partner != null) {
+                templateStorage.getContainerAt(templateId, partner.x, partner.y, partner.z)?.let { return it }
+            }
+        } else if (match != null) {
+            match.templateData.containers.find { it.x == block.x && it.y == block.y && it.z == block.z }?.let { return it }
+            val partner = ContainerMarkerTool.getAdjacentOrConnectedChest(block)
+            if (partner != null) {
+                match.templateData.containers.find { it.x == partner.x && it.y == partner.y && it.z == partner.z }?.let { return it }
+            }
+        }
+        return null
+    }
+
+    /**
      * Intercepts player interaction on registered drop box container blocks.
      * Prevents default vanilla block interfaces and routes to DropBoxGui (or drop test simulation).
+     * Double chest partners resolve to the same container instance.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerInteract(event: PlayerInteractEvent) {
@@ -407,13 +539,7 @@ class ContainerMarkerListener(
         val templateId = templateStorage.resolveTemplateId(world)
         val match = plugin.matchManager.getMatchByWorld(world)
 
-        val container = (if (templateId != null) {
-            templateStorage.getContainerAt(templateId, block.x, block.y, block.z)
-        } else if (match != null) {
-            match.templateData.containers.find { it.x == block.x && it.y == block.y && it.z == block.z }
-        } else {
-            null
-        }) ?: return
+        val container = findContainerForBlock(world, templateId, match, block) ?: return
 
         // Intercept vanilla block interaction
         event.isCancelled = true
@@ -446,6 +572,7 @@ class ContainerMarkerListener(
 
     /**
      * Intercepts player interaction on registered ArmorStand container markers.
+     * In template worlds, non-sneaking right clicks allow equipping armor and hand items.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerInteractEntity(event: PlayerInteractAtEntityEvent) {
@@ -464,10 +591,9 @@ class ContainerMarkerListener(
                 } else null
             } ?: return
 
-        event.isCancelled = true
-
         val category = plugin.containerRegistry.getCategory(categoryId)
         if (category == null) {
+            event.isCancelled = true
             TranslationManager.send(player, "editor.gui.container_not_found", "id" to categoryId)
             return
         }
@@ -475,12 +601,16 @@ class ContainerMarkerListener(
         val isAdmin = player.hasPermission("luminaris.admin") || player.hasPermission("luminaris.editor")
         val match = plugin.matchManager.getMatchByWorld(world)
 
+        // Sneak + click: simulate real game drop opening
         if (player.isSneaking && isAdmin) {
+            event.isCancelled = true
             plugin.dropBoxManager.openSimulation(player, category, Material.ARMOR_STAND)
             return
         }
 
+        // Live match container opening
         if (match != null) {
+            event.isCancelled = true
             val placedContainer = match.templateData.containers.find {
                 it.x == entity.location.blockX && it.y == entity.location.blockY && it.z == entity.location.blockZ
             } ?: PlacedContainer("c_as", categoryId, entity.location.blockX, entity.location.blockY, entity.location.blockZ)
@@ -488,6 +618,16 @@ class ContainerMarkerListener(
             return
         }
 
+        // In template world without sneaking: Allow manipulating armor stand equipment!
+        if (templateStorage.isTemplateWorld(world) && isAdmin) {
+            if (!entity.hasArms()) {
+                entity.setArms(true)
+            }
+            // Do NOT cancel the event, allowing PlayerArmorStandManipulateEvent to execute
+            return
+        }
+
+        event.isCancelled = true
         if (isAdmin) {
             TranslationManager.sendActionBar(player, "listener.marker.hint_sneak_click")
         }

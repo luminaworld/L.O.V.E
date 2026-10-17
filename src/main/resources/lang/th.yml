@@ -396,6 +396,10 @@ listener:
     actionbar_denied: "<color:#FF5555>ปฏิเสธการเข้าถึง: มาร์กเกอร์กล่องดรอปที่ลงทะเบียนแล้ว</color>"
     chat_removed: "<color:#FF5555>✖ ลบกล่องดรอป <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color> ออกจากเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
     actionbar_removed: "<color:#FF5555>ลบกล่องดรอป: <color:#FFFF55>{category}</color> ที่พิกัด <color:#55FFFF>{x}, {y}, {z}</color></color>"
+    actionbar_connected: "<color:#55FF55>เชื่อมต่อกล่องคู่: <color:#FFFF55>{category}</color> (นับเป็น 1 กล่อง)</color>"
+    chat_connected: "<gradient:#00FFA3:#00B8FF><bold>✔ [มาร์กเกอร์ L.O.V.E]</bold></gradient> <color:#55FF55>เชื่อมต่อกล่องดรอป <color:#FFFF55>{category}</color> เป็นกล่องคู่ (นับเป็น 1 กล่อง) ในเทมเพลต <color:#FFFF55>{template}</color> แล้ว</color>"
+    actionbar_separated: "<color:#FFAA00>แยกกล่องคู่ออกเป็นกล่องเดี่ยว: <color:#FFFF55>{category}</color></color>"
+    armor_stand_equipped: "<color:#55FF55>ติดตั้งอุปกรณ์บนแท่นวางชุดเกราะเรียบร้อย</color>"
     hint_sneak_click: "<color:#FFFF55>💡 ย่อ + คลิกขวา เพื่อจำลองการเปิดกล่องดรอปนี้ในเกมจริง</color>"
 
 # -------------------------------------------------------------------------
