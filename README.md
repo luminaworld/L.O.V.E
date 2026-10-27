@@ -1,11 +1,10 @@
-# Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+# Luminaris: Operation Vanilla Extraction (L.O.V.E)
 
-[![Paper 1.21](https://img.shields.io/badge/Paper-1.21-00d2ff.svg)](https://papermc.io)
+[![Paper 26.2](https://img.shields.io/badge/Paper-26.2-d6a3ff.svg)](https://papermc.io)
 [![Folia Supported](https://img.shields.io/badge/Folia-Supported-5a9eec.svg)](https://github.com/PaperMC/Folia)
-[![Kotlin 2.3](https://img.shields.io/badge/Kotlin-2.3-7f52ff.svg)](https://kotlinlang.org)
 [![Java 25](https://img.shields.io/badge/Java-25-orange.svg)](https://adoptium.net)
 
-แกนหลักระบบเกมเพลย์แนว **Extraction Shooter / Looter Extraction** สำหรับเซิร์ฟเวอร์ Minecraft (Paper / Folia 1.21+) ขับเคลื่อนด้วยภาษา Kotlin ที่ออกแบบมาเพื่อประสิทธิภาพสูงสุด และมีความยืดหยุ่นในการตั้งค่าผ่านระบบ Web Configuration ในตัว
+แกนหลักระบบเกมเพลย์แนว **Extraction Shooter / Looter Extraction** สำหรับเซิร์ฟเวอร์ Minecraft (Paper / Folia 26.2+) ขับเคลื่อนด้วยภาษา Kotlin ที่ออกแบบมาเพื่อประสิทธิภาพสูงสุด และมีความยืดหยุ่นในการตั้งค่าผ่านระบบ Web Configuration ในตัว
 
 ---
 
@@ -32,7 +31,7 @@
 ## 📋 ความต้องการของระบบ (Requirements)
 
 - **Java Runtime Environment (JRE)**: เวอร์ชัน **25** หรือใหม่กว่า (แนะนำ Eclipse Temurin หรือ GraalVM)
-- **Minecraft Server**: **Paper**, **Purpur**, หรือ **Folia** เวอร์ชัน **1.21+**
+- **Minecraft Server**: **Paper**, **Purpur**, หรือ **Folia** เวอร์ชัน **26.2+**
 
 ---
 
@@ -104,4 +103,4 @@ build/libs/LuminaExtractionCore-1.0.0-SNAPSHOT.jar
 ## 📄 License & Credits
 
 พัฒนาโดยทีมงาน **LuminarisTeam**  
-สงวนลิขสิทธิ์สำหรับโปรเจกต์ Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+สงวนลิขสิทธิ์สำหรับโปรเจกต์ Luminaris: Operation Vanilla Extraction (L.O.V.E)
