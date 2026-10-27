@@ -28,6 +28,24 @@
 #   - EPIC
 #   - LEGENDARY
 #
+# search_time_min:
+#   เวลาสุ่มค้นหาทั้งกล่องขั้นต่ำ (หน่วย: วินาที) ในช่วงที่ทุกช่องถูกปิดด้วยกระจกดำ
+#
+# search_time_max:
+#   เวลาสุ่มค้นหาทั้งกล่องสูงสุด (หน่วย: วินาที)
+#
+# covered_material:
+#   บล็อก/ไอเทมที่จะนำมาปิดทุกช่องในกล่องระหว่างค้นหากล่อง (ค่าเริ่มต้น: BLACK_STAINED_GLASS_PANE)
+#
+# searching_material:
+#   บล็อก/ไอเทมที่จะเปลี่ยนแทนที่กระจกดำในช่องที่มีไอเทมดรอป ก่อนจะเริ่มค้นหาไอเทมทีละชิ้น (ค่าเริ่มต้น: STONE)
+#
+# search_sound:
+#   เสียงที่จะเล่นขณะกำลังค้นหา (เช่น BLOCK_STONE_HIT)
+#
+# reveal_sound:
+#   เสียงเริ่มต้นที่จะเล่นเมื่อค้นหาไอเทมเจอ หากไอเทมนั้นไม่ได้กำหนดเสียงเฉพาะไว้ (เช่น ENTITY_ITEM_PICKUP)
+#
 # คำสั่งจัดการในเกม:
 #   - /ext editor : เปิดหน้าต่าง GUI จัดการกล่องดรอปและไอเทมทั้งหมดในคำสั่งเดียว
 # =========================================================================
@@ -39,6 +57,12 @@ categories:
     color: "#AAAAAA"
     min_rolls: 2
     max_rolls: 4
+    search_time_min: 2
+    search_time_max: 4
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "STONE"
+    search_sound: "BLOCK_STONE_HIT"
+    reveal_sound: "ENTITY_ITEM_PICKUP"
     rarity_chances:
       COMMON: 70.0
       UNCOMMON: 25.0
@@ -52,6 +76,12 @@ categories:
     color: "#00D2FF"
     min_rolls: 3
     max_rolls: 6
+    search_time_min: 3
+    search_time_max: 5
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "IRON_BLOCK"
+    search_sound: "BLOCK_IRON_TRAPDOOR_OPEN"
+    reveal_sound: "ENTITY_PLAYER_LEVELUP"
     rarity_chances:
       COMMON: 5.0
       UNCOMMON: 20.0
@@ -65,6 +95,12 @@ categories:
     color: "#FFAA00"
     min_rolls: 1
     max_rolls: 3
+    search_time_min: 4
+    search_time_max: 7
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "OBSIDIAN"
+    search_sound: "BLOCK_ANVIL_LAND"
+    reveal_sound: "UI_TOAST_CHALLENGE_COMPLETE"
     rarity_chances:
       COMMON: 0.0
       UNCOMMON: 5.0
@@ -78,6 +114,10 @@ categories:
     color: "#AAAAAA"
     min_rolls: 2
     max_rolls: 4
+    search_time_min: 2
+    search_time_max: 4
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "STONE"
     rarity_chances:
       COMMON: 70.0
       UNCOMMON: 25.0
@@ -91,6 +131,10 @@ categories:
     color: "#55FF55"
     min_rolls: 2
     max_rolls: 5
+    search_time_min: 2
+    search_time_max: 4
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "STONE"
     rarity_chances:
       COMMON: 40.0
       UNCOMMON: 40.0
@@ -104,6 +148,10 @@ categories:
     color: "#55FFFF"
     min_rolls: 3
     max_rolls: 5
+    search_time_min: 3
+    search_time_max: 5
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "LAPIS_BLOCK"
     rarity_chances:
       COMMON: 15.0
       UNCOMMON: 35.0
@@ -117,6 +165,10 @@ categories:
     color: "#AA00AA"
     min_rolls: 3
     max_rolls: 6
+    search_time_min: 3
+    search_time_max: 6
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "AMETHYST_BLOCK"
     rarity_chances:
       COMMON: 5.0
       UNCOMMON: 20.0
@@ -130,6 +182,10 @@ categories:
     color: "#FFAA00"
     min_rolls: 4
     max_rolls: 7
+    search_time_min: 4
+    search_time_max: 7
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "GOLD_BLOCK"
     rarity_chances:
       COMMON: 0.0
       UNCOMMON: 5.0

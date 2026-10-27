@@ -2,6 +2,7 @@ package com.luminaris.extraction.core.container
 
 import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
 import java.io.File
@@ -100,6 +101,25 @@ class ContainerRegistry(private val plugin: Plugin) {
                     val minRolls = catSec.getInt("min_rolls", 1)
                     val maxRolls = catSec.getInt("max_rolls", maxOf(minRolls, 3))
 
+                    val defaultSearchMin = runCatching { plugin.config.getInt("drop_box.default_search_time_min", 2) }.getOrDefault(2)
+                    val defaultSearchMax = runCatching { plugin.config.getInt("drop_box.default_search_time_max", 4) }.getOrDefault(4)
+                    val defaultCovered = runCatching { plugin.config.getString("drop_box.default_covered_material", "BLACK_STAINED_GLASS_PANE") }.getOrNull() ?: "BLACK_STAINED_GLASS_PANE"
+                    val defaultSearching = runCatching { plugin.config.getString("drop_box.default_searching_material", "STONE") }.getOrNull() ?: "STONE"
+                    val defaultSearchSound = runCatching { plugin.config.getString("drop_box.default_search_sound") }.getOrNull()
+                    val defaultRevealSound = runCatching { plugin.config.getString("drop_box.default_reveal_sound") }.getOrNull()
+
+                    val searchTimeMin = catSec.getInt("search_time_min", defaultSearchMin)
+                    val searchTimeMax = catSec.getInt("search_time_max", maxOf(searchTimeMin, defaultSearchMax))
+
+                    val rawCovered = catSec.getString("covered_material", defaultCovered) ?: defaultCovered
+                    val coveredMaterial = Material.matchMaterial(rawCovered) ?: Material.matchMaterial(defaultCovered) ?: Material.BLACK_STAINED_GLASS_PANE
+
+                    val rawSearching = catSec.getString("searching_material", defaultSearching) ?: defaultSearching
+                    val searchingMaterial = Material.matchMaterial(rawSearching) ?: Material.matchMaterial(defaultSearching) ?: Material.STONE
+
+                    val searchSound = catSec.getString("search_sound", defaultSearchSound) ?: defaultSearchSound
+                    val revealSound = catSec.getString("reveal_sound", defaultRevealSound) ?: defaultRevealSound
+
                     val rarityWeights = ContainerCategory.defaultRarityWeights(key)
                     val raritySection = catSec.getConfigurationSection("rarity_chances")
                         ?: catSec.getConfigurationSection("rarity_weights")
@@ -116,7 +136,13 @@ class ContainerRegistry(private val plugin: Plugin) {
                         displayName = displayName,
                         minRolls = minRolls,
                         maxRolls = maxRolls,
-                        rarityWeights = rarityWeights
+                        rarityWeights = rarityWeights,
+                        searchTimeMin = searchTimeMin,
+                        searchTimeMax = searchTimeMax,
+                        coveredMaterial = coveredMaterial,
+                        searchingMaterial = searchingMaterial,
+                        searchSound = searchSound,
+                        revealSound = revealSound
                     )
                     categories[category.id] = category
                 }
@@ -137,6 +163,16 @@ class ContainerRegistry(private val plugin: Plugin) {
                 catSec.set("display_name", miniMessage.serialize(category.displayName))
                 catSec.set("min_rolls", category.minRolls)
                 catSec.set("max_rolls", category.maxRolls)
+                catSec.set("search_time_min", category.searchTimeMin)
+                catSec.set("search_time_max", category.searchTimeMax)
+                catSec.set("covered_material", category.coveredMaterial.name)
+                catSec.set("searching_material", category.searchingMaterial.name)
+                if (category.searchSound != null) {
+                    catSec.set("search_sound", category.searchSound)
+                }
+                if (category.revealSound != null) {
+                    catSec.set("reveal_sound", category.revealSound)
+                }
                 val raritySec = catSec.createSection("rarity_chances")
                 for ((rarity, weight) in category.rarityWeights) {
                     raritySec.set(rarity.name, weight)

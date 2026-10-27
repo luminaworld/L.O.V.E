@@ -442,9 +442,20 @@ class ExtractionManager(
     }
 
     /**
-     * Handles player taking damage: interrupts active extraction countdown.
+     * Handles player taking damage: interrupts active extraction countdown if enabled in config.
      */
-    fun handlePlayerDamage(player: Player) {
+    fun handlePlayerDamage(player: Player, damage: Double = 0.0) {
+        val interruptEnabled = runCatching {
+            (plugin as? LuminarisCorePlugin)?.config?.getBoolean("extraction.interrupt_on_damage", true) ?: true
+        }.getOrDefault(true)
+        if (!interruptEnabled) return
+
+        val threshold = runCatching {
+            (plugin as? LuminarisCorePlugin)?.config?.getDouble("extraction.damage_threshold", 0.0) ?: 0.0
+        }.getOrDefault(0.0)
+
+        if (damage < threshold) return
+
         val task = activeTasks[player.uniqueId]
         task?.onDamage()
     }
@@ -467,6 +478,19 @@ class ExtractionManager(
         val service = (plugin as? LuminarisCorePlugin)?.instanceWorldService
         if (service != null) {
             runCatching { return service.getEffectiveLobbyLocation() }
+        }
+        val cfg = (plugin as? LuminarisCorePlugin)?.config
+        val cfgWorldName = cfg?.getString("lobby.world")
+        if (!cfgWorldName.isNullOrBlank()) {
+            val targetWorld = Bukkit.getWorld(cfgWorldName)
+            if (targetWorld != null) {
+                val x = cfg.getDouble("lobby.x", 0.5)
+                val y = cfg.getDouble("lobby.y", 64.0)
+                val z = cfg.getDouble("lobby.z", 0.5)
+                val yaw = cfg.getDouble("lobby.yaw", 0.0).toFloat()
+                val pitch = cfg.getDouble("lobby.pitch", 0.0).toFloat()
+                return Location(targetWorld, x, y, z, yaw, pitch)
+            }
         }
         val defaultWorld = runCatching { Bukkit.getWorlds().firstOrNull() }.getOrNull()
         return defaultWorld?.spawnLocation ?: Location(defaultWorld, 0.0, 64.0, 0.0)

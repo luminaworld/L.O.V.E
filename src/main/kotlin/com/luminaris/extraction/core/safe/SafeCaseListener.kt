@@ -70,22 +70,25 @@ class SafeCaseListener(
             }
         }
 
-        // 2. Anti-Nesting: Block placing any Safe Case into the open top inventory via cursor
-        if (clickedInventory == topInventory) {
-            if (safeCaseManager.isSafeCase(event.cursor)) {
-                event.isCancelled = true
-                TranslationManager.send(player, "safe_case.error_nesting_cursor")
-                return
+        val antiNesting = runCatching { plugin.config.getBoolean("safe_cases_settings.anti_nesting", true) }.getOrDefault(true)
+        if (antiNesting) {
+            // 2. Anti-Nesting: Block placing any Safe Case into the open top inventory via cursor
+            if (clickedInventory == topInventory) {
+                if (safeCaseManager.isSafeCase(event.cursor)) {
+                    event.isCancelled = true
+                    TranslationManager.send(player, "safe_case.error_nesting_cursor")
+                    return
+                }
             }
-        }
 
-        // 3. Anti-Nesting: Block shift-clicking any Safe Case from player inventory into the open Safe Case
-        if (event.isShiftClick) {
-            val clickedItem = event.currentItem
-            if (safeCaseManager.isSafeCase(clickedItem)) {
-                event.isCancelled = true
-                TranslationManager.send(player, "safe_case.error_nesting_shift")
-                return
+            // 3. Anti-Nesting: Block shift-clicking any Safe Case from player inventory into the open Safe Case
+            if (event.isShiftClick) {
+                val clickedItem = event.currentItem
+                if (safeCaseManager.isSafeCase(clickedItem)) {
+                    event.isCancelled = true
+                    TranslationManager.send(player, "safe_case.error_nesting_shift")
+                    return
+                }
             }
         }
 
@@ -97,7 +100,7 @@ class SafeCaseListener(
 
                 // If hotbar swapping into top inventory
                 if (clickedInventory == topInventory) {
-                    if (safeCaseManager.isSafeCase(hotbarItem)) {
+                    if (antiNesting && safeCaseManager.isSafeCase(hotbarItem)) {
                         event.isCancelled = true
                         TranslationManager.send(player, "safe_case.error_hotbar_swap")
                         return
@@ -178,17 +181,20 @@ class SafeCaseListener(
         val holder = topInventory.holder as? SafeCaseHolder ?: return
         val player = event.whoClicked as? Player ?: return
 
-        // Anti-Nesting: Block dragging a Safe Case across the top inventory
-        val isDraggingSafeCase = safeCaseManager.isSafeCase(event.oldCursor) ||
-            safeCaseManager.isSafeCase(event.cursor) ||
-            event.newItems.values.any { safeCaseManager.isSafeCase(it) }
+        val antiNesting = runCatching { plugin.config.getBoolean("safe_cases_settings.anti_nesting", true) }.getOrDefault(true)
+        if (antiNesting) {
+            // Anti-Nesting: Block dragging a Safe Case across the top inventory
+            val isDraggingSafeCase = safeCaseManager.isSafeCase(event.oldCursor) ||
+                safeCaseManager.isSafeCase(event.cursor) ||
+                event.newItems.values.any { safeCaseManager.isSafeCase(it) }
 
-        if (isDraggingSafeCase) {
-            val touchesTop = event.rawSlots.any { it < topInventory.size }
-            if (touchesTop) {
-                event.isCancelled = true
-                TranslationManager.send(player, "safe_case.error_nesting_drag")
-                return
+            if (isDraggingSafeCase) {
+                val touchesTop = event.rawSlots.any { it < topInventory.size }
+                if (touchesTop) {
+                    event.isCancelled = true
+                    TranslationManager.send(player, "safe_case.error_nesting_drag")
+                    return
+                }
             }
         }
 

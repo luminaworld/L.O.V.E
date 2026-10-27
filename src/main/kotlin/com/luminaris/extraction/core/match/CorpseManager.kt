@@ -79,8 +79,12 @@ class CorpseManager(
                     }
                 }
 
-                // Place Corpse Block (Chest)
-                block.type = Material.CHEST
+                // Place Corpse Block
+                val corpseMatName = runCatching {
+                    plugin.config.getString("corpse.material", "CHEST")
+                }.getOrNull() ?: "CHEST"
+                val corpseMaterial = Material.matchMaterial(corpseMatName) ?: Material.CHEST
+                block.type = corpseMaterial
 
                 val state = block.state
                 if (state is Container) {
@@ -108,7 +112,11 @@ class CorpseManager(
                     // Keep overflow within the same vertical column (UP) to strictly avoid crossing Folia region chunk boundaries
                     if (leftoverItems.isNotEmpty()) {
                         val overflowBlock = block.getRelative(org.bukkit.block.BlockFace.UP)
-                        overflowBlock.type = Material.CHEST
+                        val overflowMatName = runCatching {
+                            plugin.config.getString("corpse.overflow_material", "CHEST")
+                        }.getOrNull() ?: "CHEST"
+                        val overflowMaterial = Material.matchMaterial(overflowMatName) ?: Material.CHEST
+                        overflowBlock.type = overflowMaterial
                         val overflowState = overflowBlock.state
                         if (overflowState is Container) {
                             overflowState.customName(

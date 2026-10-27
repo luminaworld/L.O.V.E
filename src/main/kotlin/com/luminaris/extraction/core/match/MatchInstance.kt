@@ -62,6 +62,20 @@ class MatchInstance(
     private val isTeardownInitiated = AtomicBoolean(false)
     private var timerTask: ScheduledTask? = null
 
+    val isBossBarEnabled: Boolean = runCatching {
+        activePlugin?.config?.getBoolean("match.bossbar.enabled", true) ?: true
+    }.getOrDefault(true)
+
+    val bossBarColor: BossBar.Color = runCatching {
+        val name = activePlugin?.config?.getString("match.bossbar.color", "RED") ?: "RED"
+        BossBar.Color.valueOf(name.uppercase())
+    }.getOrDefault(BossBar.Color.RED)
+
+    val bossBarOverlay: BossBar.Overlay = runCatching {
+        val name = activePlugin?.config?.getString("match.bossbar.overlay", "PROGRESS") ?: "PROGRESS"
+        BossBar.Overlay.valueOf(name.uppercase())
+    }.getOrDefault(BossBar.Overlay.PROGRESS)
+
     /**
      * Adventure BossBar broadcast displaying raid time to participating operatives:
      * `<red>RAID TIME: <yellow>{mm:ss}</yellow></red>`
@@ -69,8 +83,8 @@ class MatchInstance(
     val bossBar: BossBar = BossBar.bossBar(
         formatBossBarTitle(maxOf(0L, raidDurationSeconds - elapsedSeconds)),
         1.0f,
-        BossBar.Color.RED,
-        BossBar.Overlay.PROGRESS
+        bossBarColor,
+        bossBarOverlay
     )
 
     /**
@@ -91,6 +105,9 @@ class MatchInstance(
             tick()
         }
 
+        // Register extraction drop box highlights for line-of-sight glowing
+        activePlugin?.containerHighlightService?.registerContainers(world, templateData.containers)
+
         logInfo(
             "match.log_started",
             "match_id" to matchId,
@@ -110,7 +127,11 @@ class MatchInstance(
         updateBossBar()
 
         // Check if all players have reached a terminal state (extracted, killed, or MIA)
-        if (players.isNotEmpty() && players.values.all { it.isTerminal }) {
+        val earlyTeardown = runCatching {
+            activePlugin?.config?.getBoolean("match.early_teardown_when_all_terminal", true) ?: true
+        }.getOrDefault(true)
+
+        if (earlyTeardown && players.isNotEmpty() && players.values.all { it.isTerminal }) {
             logInfo("match.log_early_teardown", "match_id" to matchId)
             teardown()
             return
@@ -135,6 +156,10 @@ class MatchInstance(
         timerTask?.cancel()
         timerTask = null
 
+        val timeoutDamage = runCatching {
+            activePlugin?.config?.getDouble("match.timeout.damage_amount", 100000.0) ?: 100000.0
+        }.getOrDefault(100000.0)
+
         val miaFutures = mutableListOf<java.util.concurrent.CompletableFuture<Void>>()
 
         // Identify all players who failed to extract
@@ -153,7 +178,7 @@ class MatchInstance(
                         runnable = {
                             try {
                                 if (player.isOnline && !player.isDead) {
-                                    player.damage(100000.0)
+                                    player.damage(timeoutDamage)
                                     TranslationManager.send(player, "match.player_mia")
                                 }
                             } finally {
@@ -221,8 +246,9 @@ class MatchInstance(
         // 4. Notify match manager callback
         runCatching { onComplete(this) }
 
-        // 5. Clean up cached match drop containers and decommission world asynchronously
+        // 5. Clean up cached match drop containers, glowing highlights, and decommission world asynchronously
         activePlugin?.dropBoxManager?.clearWorld(world.name)
+        activePlugin?.containerHighlightService?.clearWorld(world.name)
         activeInstanceWorldService?.deleteInstance(world)?.whenComplete { _, ex ->
             if (ex != null) {
                 logWarning("match.log_world_deletion_error", "world" to world.name, "error" to (ex.message ?: "unknown"))
@@ -238,7 +264,7 @@ class MatchInstance(
     fun addPlayer(player: Player, initialState: PlayerRaidState = PlayerRaidState.IN_RAID) {
         players[player.uniqueId] = initialState
         activeScheduler?.runAtEntity(player) {
-            if (player.isOnline) {
+            if (player.isOnline && isBossBarEnabled) {
                 player.showBossBar(bossBar)
             }
         }

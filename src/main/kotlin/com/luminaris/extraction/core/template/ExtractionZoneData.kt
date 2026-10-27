@@ -56,6 +56,10 @@ data class ExtractionZoneData(
             maxOf(minY, maxY),
             maxOf(minZ, maxZ)
         )
+        val defaultSec = runCatching {
+            com.luminaris.extraction.LuminarisCorePlugin.instanceOrNull?.config?.getInt("extraction.default_countdown_seconds", 10) ?: 10
+        }.getOrDefault(10)
+        val finalCountdown = if (countdownSeconds > 0) countdownSeconds else defaultSec
         val parsedType = runCatching { ExtractionType.valueOf(type.uppercase()) }.getOrDefault(ExtractionType.ALWAYS_OPEN)
         return ExtractionZone(
             id = id,
@@ -65,7 +69,7 @@ data class ExtractionZoneData(
             requiredItemId = requiredItemId,
             timeStartSeconds = timeStartSeconds,
             timeEndSeconds = timeEndSeconds,
-            countdownSeconds = countdownSeconds,
+            countdownSeconds = finalCountdown,
             allowedTeamIds = allowedTeamIds.toMutableSet()
         )
     }

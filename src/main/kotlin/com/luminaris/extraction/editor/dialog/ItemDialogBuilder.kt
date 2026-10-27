@@ -63,6 +63,8 @@ object ItemDialogBuilder {
         existingItem: ExtractionItem? = null,
         plugin: LuminarisCorePlugin? = null,
         currentAllowedContainers: Set<String>? = null,
+        initialSearchTime: Int? = null,
+        initialRevealSound: String? = null,
         onComplete: ((ExtractionItem) -> Unit)? = null
     ) {
         val baseStack = existingItem?.itemStack ?: itemStack ?: player.inventory.itemInMainHand
@@ -94,6 +96,8 @@ object ItemDialogBuilder {
         // 4. Initial Price & Rarity
         val initialPrice = existingItem?.price ?: 100.0
         val initialRarity = existingItem?.rarity ?: Rarity.fromPrice(initialPrice)
+        val defaultTime = initialSearchTime ?: existingItem?.searchTime ?: ExtractionItem.defaultSearchTime(initialRarity)
+        val defaultSound = initialRevealSound ?: existingItem?.revealSound ?: ""
 
         // Build Dialog Inputs:
         // 1. Item ID
@@ -140,6 +144,20 @@ object ItemDialogBuilder {
             .width(300)
             .build()
 
+        // 6. Search Duration
+        val searchTimeInput = DialogInput.text("search_time", Component.text(TranslationManager.get("dialog.item.input_search_time")))
+            .initial(defaultTime.toString())
+            .maxLength(8)
+            .width(300)
+            .build()
+
+        // 7. Reveal Sound
+        val revealSoundInput = DialogInput.text("reveal_sound", Component.text(TranslationManager.get("dialog.item.input_reveal_sound")))
+            .initial(defaultSound)
+            .maxLength(64)
+            .width(300)
+            .build()
+
         // Build DialogBase
         val dialogTitle = Component.text(TranslationManager.get("dialog.item.title"), NamedTextColor.GOLD)
         val rawBody = TranslationManager.get("dialog.item.body", "material" to capturedStack.type.name)
@@ -158,7 +176,9 @@ object ItemDialogBuilder {
                     displayNameInput,
                     loreInput,
                     rarityInput,
-                    priceInput
+                    priceInput,
+                    searchTimeInput,
+                    revealSoundInput
                 )
             )
             .canCloseWithEscape(true)
@@ -218,6 +238,12 @@ object ItemDialogBuilder {
                 Rarity.fromPrice(price)
             }
 
+            // Resolve search duration and reveal sound
+            val rawSearchTime = responseView.getText("search_time")?.trim()
+            val searchTime = rawSearchTime?.toIntOrNull()?.coerceAtLeast(0) ?: (initialSearchTime ?: existingItem?.searchTime ?: ExtractionItem.defaultSearchTime(rarity))
+            val rawRevealSound = responseView.getText("reveal_sound")?.trim()
+            val revealSound = if (!rawRevealSound.isNullOrBlank()) rawRevealSound else null
+
             // Preserve allowed containers
             val preservedAllowedContainers = when {
                 currentAllowedContainers != null -> currentAllowedContainers.toMutableSet()
@@ -237,7 +263,9 @@ object ItemDialogBuilder {
                 price = price,
                 rarity = rarity,
                 weight = existingItem?.weight ?: 1.0,
-                allowedContainers = preservedAllowedContainers
+                allowedContainers = preservedAllowedContainers,
+                searchTime = searchTime,
+                revealSound = revealSound
             )
 
             itemRegistry.register(extractionItem, saveToDisk = true)
@@ -282,7 +310,9 @@ object ItemDialogBuilder {
                         initialRarity = initialRarity,
                         initialPrice = initialPrice,
                         initialAllowedContainers = currentAllowedContainers?.toMutableSet(),
-                        initialItemId = existingItem?.id
+                        initialItemId = existingItem?.id,
+                        initialSearchTime = initialSearchTime,
+                        initialRevealSound = initialRevealSound
                     ).open(p)
                 }
             }

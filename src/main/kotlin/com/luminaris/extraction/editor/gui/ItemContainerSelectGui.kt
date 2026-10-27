@@ -25,7 +25,9 @@ class ItemContainerSelectGui(
     private val currentRarity: Rarity,
     private val currentPrice: Double,
     private val allowedContainers: MutableSet<String>,
-    private val currentItemId: String? = null
+    private val currentItemId: String? = null,
+    private val currentSearchTime: Int? = null,
+    private val currentRevealSound: String? = null
 ) : EditorGuiHolder {
 
     private lateinit var inventory: Inventory
@@ -186,7 +188,9 @@ class ItemContainerSelectGui(
                     initialRarity = currentRarity,
                     initialPrice = currentPrice,
                     initialAllowedContainers = sanitizedAllowed,
-                    initialItemId = currentItemId
+                    initialItemId = currentItemId,
+                    initialSearchTime = currentSearchTime,
+                    initialRevealSound = currentRevealSound
                 ).open(player)
                 return
             }

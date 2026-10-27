@@ -19,6 +19,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import java.time.Duration
 
@@ -63,6 +64,30 @@ object CategoryDialogBuilder {
             .width(300)
             .build()
 
+        val searchMinInput = DialogInput.text("search_time_min", Component.text(TranslationManager.get("dialog.category.input_search_time_min")))
+            .initial((existingCategory?.searchTimeMin ?: 2).toString())
+            .maxLength(8)
+            .width(300)
+            .build()
+
+        val searchMaxInput = DialogInput.text("search_time_max", Component.text(TranslationManager.get("dialog.category.input_search_time_max")))
+            .initial((existingCategory?.searchTimeMax ?: 4).toString())
+            .maxLength(8)
+            .width(300)
+            .build()
+
+        val coveredMatInput = DialogInput.text("covered_material", Component.text(TranslationManager.get("dialog.category.input_covered_material")))
+            .initial(existingCategory?.coveredMaterial?.name ?: "BLACK_STAINED_GLASS_PANE")
+            .maxLength(64)
+            .width(300)
+            .build()
+
+        val searchingMatInput = DialogInput.text("searching_material", Component.text(TranslationManager.get("dialog.category.input_searching_material")))
+            .initial(existingCategory?.searchingMaterial?.name ?: "STONE")
+            .maxLength(64)
+            .width(300)
+            .build()
+
         val dialogTitle = Component.text(TranslationManager.get("dialog.category.title"), NamedTextColor.AQUA)
         val descriptionBody = DialogBody.plainMessage(
             TranslationManager.render("dialog.category.body")
@@ -70,7 +95,7 @@ object CategoryDialogBuilder {
 
         val dialogBase = DialogBase.builder(dialogTitle)
             .body(listOf(descriptionBody))
-            .inputs(listOf(idInput, displayNameInput))
+            .inputs(listOf(idInput, displayNameInput, searchMinInput, searchMaxInput, coveredMatInput, searchingMatInput))
             .canCloseWithEscape(true)
             .pause(false)
             .build()
@@ -105,6 +130,25 @@ object CategoryDialogBuilder {
                 TranslationManager.parseComponent("<gold>${sanitizedId.replace("_", " ").uppercase()}</gold>")
             }
 
+            val rawMin = responseView.getText("search_time_min")?.trim()
+            val rawMax = responseView.getText("search_time_max")?.trim()
+            val searchTimeMin = rawMin?.toIntOrNull()?.coerceAtLeast(0) ?: (existingCategory?.searchTimeMin ?: 2)
+            val searchTimeMax = rawMax?.toIntOrNull()?.coerceAtLeast(searchTimeMin) ?: (existingCategory?.searchTimeMax ?: maxOf(searchTimeMin, 4))
+
+            val rawCovered = responseView.getText("covered_material")?.trim()?.uppercase()
+            val coveredMaterial = if (!rawCovered.isNullOrBlank()) {
+                Material.matchMaterial(rawCovered) ?: (existingCategory?.coveredMaterial ?: Material.BLACK_STAINED_GLASS_PANE)
+            } else {
+                existingCategory?.coveredMaterial ?: Material.BLACK_STAINED_GLASS_PANE
+            }
+
+            val rawSearching = responseView.getText("searching_material")?.trim()?.uppercase()
+            val searchingMaterial = if (!rawSearching.isNullOrBlank()) {
+                Material.matchMaterial(rawSearching) ?: (existingCategory?.searchingMaterial ?: Material.STONE)
+            } else {
+                existingCategory?.searchingMaterial ?: Material.STONE
+            }
+
             // If ID was renamed, unregister the old category ID
             val oldId = existingCategory?.id
             val core = plugin ?: runCatching { LuminarisCorePlugin.instance }.getOrNull()
@@ -126,14 +170,24 @@ object CategoryDialogBuilder {
                     displayName = displayName,
                     minRolls = existingCategory.minRolls,
                     maxRolls = existingCategory.maxRolls,
-                    rarityWeights = existingCategory.rarityWeights
+                    rarityWeights = existingCategory.rarityWeights,
+                    searchTimeMin = searchTimeMin,
+                    searchTimeMax = searchTimeMax,
+                    coveredMaterial = coveredMaterial,
+                    searchingMaterial = searchingMaterial,
+                    searchSound = existingCategory.searchSound,
+                    revealSound = existingCategory.revealSound
                 )
             } else {
                 ContainerCategory(
                     id = sanitizedId,
                     displayName = displayName,
                     minRolls = 1,
-                    maxRolls = 4
+                    maxRolls = 4,
+                    searchTimeMin = searchTimeMin,
+                    searchTimeMax = searchTimeMax,
+                    coveredMaterial = coveredMaterial,
+                    searchingMaterial = searchingMaterial
                 )
             }
 

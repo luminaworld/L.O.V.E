@@ -40,6 +40,14 @@
 #   (ต้องตรงกับรหัสหมวดหมู่ใน categories.yml เช่น common, uncommon, rare, epic, legendary)
 #   - หากเว้นว่างไว้หรือไม่ใส่คีย์นี้ ไอเทมจะสามารถสุ่มเกิดได้ในคอนเทนเนอร์ทุกหมวดหมู่
 #
+# search_time:
+#   ระยะเวลาที่ใช้ในการค้นหาไอเทมชิ้นนี้ (หน่วย: วินาที)
+#   ระบบจะใช้วินาทีนี้ในการนับถอยหลังจากบล็อกหิน (searchingMaterial) จนกว่าจะเปิดเผยไอเทมจริง
+#
+# reveal_sound:
+#   เสียงเอฟเฟกต์เฉพาะที่จะเล่นเมื่อค้นหาไอเทมชิ้นนี้สำเร็จ (เช่น ENTITY_ITEM_PICKUP, BLOCK_NOTE_BLOCK_CHIME, UI_TOAST_CHALLENGE_COMPLETE)
+#   หากไม่กำหนด ระบบจะใช้เสียงเปิดเผยเริ่มต้นของกล่องหมวดหมู่นั้นๆ
+#
 # lore:
 #   รายการคำอธิบายคุณสมบัติใต้ไอเทม (Lore List)
 #   ใช้รูปแบบแท็กสีเดี่ยว <color:#HEX>ข้อความ</color> หรือ <gradient:#HEX1:#HEX2>ข้อความ</gradient>
@@ -48,7 +56,7 @@
 #   - คุณสามารถเพิ่มไอเทมใหม่ได้ง่ายๆ ผ่านคำสั่ง:
 #     /ext editor
 #     แล้วกดช่องเพิ่มในหน้า GUI และเลือกไอเทมที่มีในตัวมาเพิ่มได้เลย
-#     หลังเพิ่มเสร็จสามารถกำหนดระดับความหายาก และกล่องที่จะให้ดรอปได้ทันที
+#     หลังเพิ่มเสร็จสามารถกำหนดระดับความหายาก, เวลาค้นหา, เสียงดรอป และกล่องที่จะให้ดรอปได้ทันที
 # =========================================================================
 
 items:
@@ -60,6 +68,8 @@ items:
     price: 750.0
     value: 750.0
     weight: 20.0
+    search_time: 3
+    reveal_sound: "BLOCK_NOTE_BLOCK_CHIME"
     allowed_containers:
       - "rare"
       - "epic"
@@ -77,6 +87,8 @@ items:
     price: 3500.0
     value: 3500.0
     weight: 5.0
+    search_time: 6
+    reveal_sound: "UI_TOAST_CHALLENGE_COMPLETE"
     allowed_containers:
       - "epic"
       - "legendary"
@@ -95,6 +107,8 @@ items:
     price: 50.0
     value: 50.0
     weight: 60.0
+    search_time: 1
+    reveal_sound: "ENTITY_ITEM_PICKUP"
     allowed_containers:
       - "common"
       - "uncommon"

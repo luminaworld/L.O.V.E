@@ -29,6 +29,9 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.persistence.PersistentDataType
+import com.luminaris.extraction.core.container.ContainerHighlightService
+import org.bukkit.event.player.PlayerChangedWorldEvent
+import org.bukkit.event.player.PlayerJoinEvent
 
 /**
  * Listener handling the placement, registration, and removal of extraction container markers.
@@ -45,6 +48,28 @@ class ContainerMarkerListener(
                 runCatching { Particle.valueOf("VILLAGER_HAPPY") }
                     .getOrDefault(Particle.FLAME)
             }
+    }
+
+    private fun getMarkerParticle(): Particle {
+        val cfgName = runCatching { plugin.config.getString("editor.marker_place_particle") }.getOrNull()
+        if (!cfgName.isNullOrBlank()) {
+            val p = runCatching { Particle.valueOf(cfgName.uppercase(java.util.Locale.ROOT)) }.getOrNull()
+            if (p != null) return p
+        }
+        return villagerHappyParticle
+    }
+
+    private fun getMarkerParticleCount(): Int =
+        runCatching { plugin.config.getInt("editor.marker_place_particle_count", 25) }.getOrDefault(25)
+
+    private fun playEditorSound(world: org.bukkit.World, loc: org.bukkit.Location, configPath: String, defaultSound: Sound, volume: Float, pitch: Float) {
+        val soundName = runCatching { plugin.config.getString(configPath) }.getOrNull()
+        val sound = if (!soundName.isNullOrBlank()) {
+            runCatching { Sound.valueOf(soundName.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull() ?: defaultSound
+        } else {
+            defaultSound
+        }
+        world.playSound(loc, sound, volume, pitch)
     }
 
     /**
@@ -80,11 +105,12 @@ class ContainerMarkerListener(
                 if (existingContainer != null) {
                     // Connect the two chests into a double chest
                     ContainerMarkerTool.connectChests(adjacentBlock, block)
+                    plugin.containerHighlightService.registerContainer(world, existingContainer)
 
-                    // Spawns particle and audio feedback; counted as the existing container (no duplicate entry added)
                     val centerLoc = block.location.clone().add(0.5, 0.6, 0.5)
-                    world.spawnParticle(villagerHappyParticle, centerLoc, 25, 0.35, 0.35, 0.35, 0.05)
-                    world.playSound(centerLoc, Sound.BLOCK_CHEST_LOCKED, 1.0f, 1.2f)
+                    val pCount = getMarkerParticleCount()
+                    world.spawnParticle(getMarkerParticle(), centerLoc, pCount, 0.35, 0.35, 0.35, 0.05)
+                    playEditorSound(world, centerLoc, "editor.marker_place_sound", Sound.BLOCK_CHEST_LOCKED, 1.0f, 1.2f)
 
                     TranslationManager.sendActionBar(
                         player,
@@ -119,13 +145,15 @@ class ContainerMarkerListener(
             z = z
         )
         templateStorage.addContainer(templateId, placedContainer, saveToDisk = true)
+        plugin.containerHighlightService.registerContainer(world, placedContainer)
 
-        // Spawn green particle effect VILLAGER_HAPPY
+        // Spawn particle effect
         val centerLoc = block.location.clone().add(0.5, 0.6, 0.5)
-        world.spawnParticle(villagerHappyParticle, centerLoc, 25, 0.35, 0.35, 0.35, 0.05)
+        val pCount = getMarkerParticleCount()
+        world.spawnParticle(getMarkerParticle(), centerLoc, pCount, 0.35, 0.35, 0.35, 0.05)
 
-        // Play sound BLOCK_CHEST_LOCKED
-        world.playSound(centerLoc, Sound.BLOCK_CHEST_LOCKED, 1.0f, 1.2f)
+        // Play feedback sound
+        playEditorSound(world, centerLoc, "editor.marker_place_sound", Sound.BLOCK_CHEST_LOCKED, 1.0f, 1.2f)
 
         // Send actionbar message
         TranslationManager.sendActionBar(
@@ -200,19 +228,25 @@ class ContainerMarkerListener(
                     z = partnerBlock.z
                 )
                 templateStorage.addContainer(templateId, transferred, saveToDisk = true)
+                plugin.containerHighlightService.unregisterContainer(world, block.x, block.y, block.z)
+                plugin.containerHighlightService.registerContainer(world, transferred)
+            } else {
+                plugin.containerHighlightService.registerContainer(world, container)
             }
+
 
             TranslationManager.sendActionBar(
                 player,
                 "listener.marker.actionbar_separated",
                 "category" to container.categoryId
             )
-            world.playSound(block.location.clone().add(0.5, 0.5, 0.5), Sound.BLOCK_CHEST_CLOSE, 1.0f, 0.8f)
+            playEditorSound(world, block.location.clone().add(0.5, 0.5, 0.5), "editor.marker_break_sound", Sound.BLOCK_CHEST_CLOSE, 1.0f, 0.8f)
             return
         }
 
         // Remove from TemplateStorage
         templateStorage.removeContainer(templateId, block.x, block.y, block.z, saveToDisk = true)
+        plugin.containerHighlightService.unregisterContainer(world, block.x, block.y, block.z)
 
         // Send message notifying deletion
         TranslationManager.send(
@@ -234,7 +268,7 @@ class ContainerMarkerListener(
         )
 
         // Play feedback sound
-        world.playSound(block.location.clone().add(0.5, 0.5, 0.5), Sound.BLOCK_CHEST_CLOSE, 1.0f, 0.8f)
+        playEditorSound(world, block.location.clone().add(0.5, 0.5, 0.5), "editor.marker_break_sound", Sound.BLOCK_CHEST_CLOSE, 1.0f, 0.8f)
 
         // Prevent vanilla drops and return custom marker tool item to the editor
         event.isDropItems = false
@@ -347,6 +381,7 @@ class ContainerMarkerListener(
             z = z
         )
         templateStorage.addContainer(templateId, placedContainer, saveToDisk = true)
+        plugin.containerHighlightService.registerContainer(world, placedContainer)
 
         // Tag entity with container marker PDC
         entity.persistentDataContainer.set(ContainerMarkerTool.KEY_CONTAINER_CATEGORY, PersistentDataType.STRING, categoryId)
@@ -386,6 +421,10 @@ class ContainerMarkerListener(
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         val entity = event.entity
+        if (entity.persistentDataContainer.has(ContainerHighlightService.KEY_HIGHLIGHT_HELPER, PersistentDataType.BYTE)) {
+            event.isCancelled = true
+            return
+        }
         if (entity !is ArmorStand) return
 
         val categoryId = entity.persistentDataContainer.get(ContainerMarkerTool.KEY_CONTAINER_CATEGORY, PersistentDataType.STRING)
@@ -412,6 +451,7 @@ class ContainerMarkerListener(
         if (templateId != null) {
             templateStorage.removeContainer(templateId, entity.location.blockX, entity.location.blockY, entity.location.blockZ, saveToDisk = true)
         }
+        plugin.containerHighlightService.unregisterContainer(world, entity.location.blockX, entity.location.blockY, entity.location.blockZ)
 
         // Return equipped armor and held items to the damager
         val eq = entity.equipment
@@ -484,6 +524,10 @@ class ContainerMarkerListener(
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onEntityDamage(event: EntityDamageEvent) {
         val entity = event.entity
+        if (entity.persistentDataContainer.has(ContainerHighlightService.KEY_HIGHLIGHT_HELPER, PersistentDataType.BYTE)) {
+            event.isCancelled = true
+            return
+        }
         if (entity is ArmorStand && entity.persistentDataContainer.has(ContainerMarkerTool.KEY_CONTAINER_CATEGORY, PersistentDataType.STRING)) {
             if (event.cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION || event.cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
                 event.isCancelled = true
@@ -578,6 +622,16 @@ class ContainerMarkerListener(
     fun onPlayerInteractEntity(event: PlayerInteractAtEntityEvent) {
         if (event.hand != EquipmentSlot.HAND) return
         val entity = event.rightClicked
+
+        if (entity.persistentDataContainer.has(ContainerHighlightService.KEY_HIGHLIGHT_HELPER, PersistentDataType.BYTE)) {
+            event.isCancelled = true
+            val player = event.player
+            val helperBlock = entity.location.block
+            val interactEvent = PlayerInteractEvent(player, Action.RIGHT_CLICK_BLOCK, player.inventory.itemInMainHand, helperBlock, org.bukkit.block.BlockFace.UP, EquipmentSlot.HAND)
+            onPlayerInteract(interactEvent)
+            return
+        }
+
         if (entity !is ArmorStand) return
 
         val player = event.player
@@ -632,4 +686,15 @@ class ContainerMarkerListener(
             TranslationManager.sendActionBar(player, "listener.marker.hint_sneak_click")
         }
     }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        plugin.containerHighlightService.handlePlayerJoinOrChangeWorld(event.player)
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    fun onPlayerChangedWorld(event: PlayerChangedWorldEvent) {
+        plugin.containerHighlightService.handlePlayerJoinOrChangeWorld(event.player)
+    }
 }
+

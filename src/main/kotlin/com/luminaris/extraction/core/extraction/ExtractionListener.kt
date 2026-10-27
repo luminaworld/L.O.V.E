@@ -20,7 +20,7 @@ class ExtractionListener(private val manager: ExtractionManager) : Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     fun onPlayerDamage(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
-        manager.handlePlayerDamage(player)
+        manager.handlePlayerDamage(player, event.finalDamage)
     }
 
     /**

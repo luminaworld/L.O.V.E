@@ -35,12 +35,20 @@ enum class Rarity(
         /**
          * Infers an appropriate rarity tier from an item's sell price.
          */
-        fun fromPrice(price: Double): Rarity = when {
-            price >= 2500.0 -> LEGENDARY
-            price >= 1000.0 -> EPIC
-            price >= 400.0 -> RARE
-            price >= 100.0 -> UNCOMMON
-            else -> COMMON
+        fun fromPrice(price: Double): Rarity {
+            val cfg = com.luminaris.extraction.LuminarisCorePlugin.instanceOrNull?.config
+            val legThresh = cfg?.getDouble("economy.rarity_price_thresholds.LEGENDARY", 2500.0) ?: 2500.0
+            val epicThresh = cfg?.getDouble("economy.rarity_price_thresholds.EPIC", 1000.0) ?: 1000.0
+            val rareThresh = cfg?.getDouble("economy.rarity_price_thresholds.RARE", 400.0) ?: 400.0
+            val uncThresh = cfg?.getDouble("economy.rarity_price_thresholds.UNCOMMON", 100.0) ?: 100.0
+
+            return when {
+                price >= legThresh -> LEGENDARY
+                price >= epicThresh -> EPIC
+                price >= rareThresh -> RARE
+                price >= uncThresh -> UNCOMMON
+                else -> COMMON
+            }
         }
     }
 }

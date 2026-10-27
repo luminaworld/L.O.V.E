@@ -76,6 +76,9 @@ class LuminarisCorePlugin : JavaPlugin() {
     lateinit var containerMarkerListener: com.luminaris.extraction.editor.listeners.ContainerMarkerListener
         private set
 
+    lateinit var containerHighlightService: com.luminaris.extraction.core.container.ContainerHighlightService
+        private set
+
     lateinit var instanceWorldService: com.luminaris.extraction.core.world.InstanceWorldService
         private set
 
@@ -100,6 +103,9 @@ class LuminarisCorePlugin : JavaPlugin() {
     lateinit var deathListener: com.luminaris.extraction.core.match.DeathListener
         private set
 
+    lateinit var webConfigServer: com.luminaris.extraction.web.WebConfigServer
+        private set
+
     override fun onLoad() {
         _instance = this
     }
@@ -117,12 +123,21 @@ class LuminarisCorePlugin : JavaPlugin() {
         // Register base command /ext (cleans up any previous stale mappings first)
         registerExtCommand()
 
+        // Start embedded web configuration server
+        webConfigServer = com.luminaris.extraction.web.WebConfigServer(this)
+        webConfigServer.start()
+
         // Output Cyberpunk / High-Tech MiniMessage banner
         renderStartupBanner()
     }
 
     override fun onDisable() {
         renderShutdownBanner()
+
+        // 0. Stop embedded web configuration server
+        if (::webConfigServer.isInitialized) {
+            runCatching { webConfigServer.stop() }
+        }
 
         // 1. Close all active custom inventories (Editor GUI, Drop Box, Safe Case)
         closeAllCustomInventories()
@@ -147,7 +162,10 @@ class LuminarisCorePlugin : JavaPlugin() {
             runCatching { corpseManager.clear() }
         }
 
-        // 6. Clean up drop box container states
+        // 6. Clean up drop box container states and container highlights
+        if (::containerHighlightService.isInitialized) {
+            runCatching { containerHighlightService.shutdown() }
+        }
         if (::dropBoxManager.isInitialized) {
             runCatching { dropBoxManager.shutdown() }
         }
@@ -173,6 +191,7 @@ class LuminarisCorePlugin : JavaPlugin() {
      * Initializes all storage adapters safely.
      */
     private fun initializeConfigurations() {
+        runCatching { saveDefaultConfig() }
         translationManager = TranslationManager(this)
         translationManager.initialize()
         TranslationManager.instance = translationManager
@@ -207,6 +226,9 @@ class LuminarisCorePlugin : JavaPlugin() {
         server.pluginManager.registerEvents(safeCaseListener, this)
 
         dropBoxManager = com.luminaris.extraction.core.container.DropBoxManager(this)
+
+        containerHighlightService = com.luminaris.extraction.core.container.ContainerHighlightService(this, scheduler)
+        containerHighlightService.start()
 
         containerMarkerListener = com.luminaris.extraction.editor.listeners.ContainerMarkerListener(this, templateStorage)
         server.pluginManager.registerEvents(containerMarkerListener, this)
@@ -250,6 +272,7 @@ class LuminarisCorePlugin : JavaPlugin() {
      * Reloads all configuration adapters and registries in memory.
      */
     fun reloadAllConfigurations() {
+        runCatching { reloadConfig() }
         translationManager.reload()
         itemsConfig.reload()
         categoriesConfig.reload()
@@ -258,6 +281,12 @@ class LuminarisCorePlugin : JavaPlugin() {
         containerRegistry.load()
         itemRegistry.load()
         safeCaseManager.load()
+        if (::containerHighlightService.isInitialized) {
+            containerHighlightService.reloadConfig()
+        }
+        if (::webConfigServer.isInitialized) {
+            webConfigServer.reloadConfig()
+        }
     }
 
     /**

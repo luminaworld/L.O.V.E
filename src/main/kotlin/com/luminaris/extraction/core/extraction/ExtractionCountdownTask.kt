@@ -81,6 +81,7 @@ class ExtractionCountdownTask(
             countdownTimer++
             val remaining = maxOf(0, currentZone.countdownSeconds - countdownTimer)
             TranslationManager.sendActionBar(player, "extraction.countdown_actionbar", "remaining" to remaining)
+            playTickSound()
             manager.setPlayerState(player, ExtractionState.EXTRACTING)
 
             // When timer hits 0: execute extraction
@@ -101,6 +102,7 @@ class ExtractionCountdownTask(
                 countdownTimer = 1
                 val remaining = maxOf(0, candidateZone.countdownSeconds - countdownTimer)
                 TranslationManager.sendActionBar(player, "extraction.countdown_actionbar", "remaining" to remaining)
+                playTickSound()
                 manager.setPlayerState(player, ExtractionState.EXTRACTING)
 
                 if (remaining <= 0) {
@@ -108,6 +110,16 @@ class ExtractionCountdownTask(
                 }
             } else if (reason != null) {
                 player.sendActionBar(reason)
+            }
+        }
+    }
+
+    private fun playTickSound() {
+        val soundName: String? = runCatching { plugin.config.getString("extraction.sounds.countdown_tick") }.getOrNull()
+        if (!soundName.isNullOrBlank()) {
+            val soundEnum = runCatching { org.bukkit.Sound.valueOf(soundName.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull()
+            if (soundEnum != null) {
+                player.playSound(player.location, soundEnum, 0.5f, 1.2f)
             }
         }
     }
@@ -175,6 +187,13 @@ class ExtractionCountdownTask(
                 TranslationManager.logWarning("extraction.log_teleport_error", "player" to player.name, "error" to (ex.message ?: "unknown"))
             } else {
                 TranslationManager.sendActionBar(player, "extraction.success_actionbar")
+                val successSoundName: String? = runCatching { plugin.config.getString("extraction.sounds.success", "UI_TOAST_CHALLENGE_COMPLETE") }.getOrNull()
+                if (!successSoundName.isNullOrBlank()) {
+                    val soundEnum = runCatching { org.bukkit.Sound.valueOf(successSoundName.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull()
+                    if (soundEnum != null) {
+                        player.playSound(player.location, soundEnum, 1.0f, 1.0f)
+                    }
+                }
             }
         }
     }

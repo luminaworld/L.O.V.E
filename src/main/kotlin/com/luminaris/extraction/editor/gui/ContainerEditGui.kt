@@ -94,6 +94,9 @@ class ContainerEditGui(
         val linkedItems = plugin.itemRegistry.getItemsForCategory(category.id).size
         previewLore.add(TranslationManager.render("editor.gui.container_card_linked", "count" to linkedItems))
         previewLore.add(Component.empty())
+        previewLore.add(TranslationManager.render("editor.gui.container_card_search_range", "min" to category.searchTimeMin, "max" to category.searchTimeMax))
+        previewLore.add(TranslationManager.render("editor.gui.container_card_blocks", "covered" to category.coveredMaterial.name, "searching" to category.searchingMaterial.name))
+        previewLore.add(Component.empty())
         previewLore.add(TranslationManager.render("editor.gui.container_card_rarity_header"))
 
         for (rarity in Rarity.entries) {
@@ -176,6 +179,40 @@ class ContainerEditGui(
         )
         inventory.setItem(17, testItem)
 
+        // Slot 19: Container Search Time Min Button
+        val searchMinLore = listOf(
+            TranslationManager.render("editor.gui.search_time_min_card", "time" to category.searchTimeMin),
+            Component.empty(),
+            TranslationManager.render("editor.gui.click_plus_1"),
+            TranslationManager.render("editor.gui.click_minus_1"),
+            TranslationManager.render("editor.gui.click_plus_5"),
+            TranslationManager.render("editor.gui.click_minus_5")
+        )
+        val searchMinItem = GuiUtils.createItem(
+            Material.CLOCK,
+            TranslationManager.render("editor.gui.btn_search_time_min"),
+            searchMinLore,
+            amount = maxOf(1, category.searchTimeMin.coerceIn(1, 64))
+        )
+        inventory.setItem(19, searchMinItem)
+
+        // Slot 20: Container Search Time Max Button
+        val searchMaxLore = listOf(
+            TranslationManager.render("editor.gui.search_time_max_card", "time" to category.searchTimeMax),
+            Component.empty(),
+            TranslationManager.render("editor.gui.click_plus_1"),
+            TranslationManager.render("editor.gui.click_minus_1"),
+            TranslationManager.render("editor.gui.click_plus_5"),
+            TranslationManager.render("editor.gui.click_minus_5")
+        )
+        val searchMaxItem = GuiUtils.createItem(
+            Material.COMPASS,
+            TranslationManager.render("editor.gui.btn_search_time_max"),
+            searchMaxLore,
+            amount = maxOf(1, category.searchTimeMax.coerceIn(1, 64))
+        )
+        inventory.setItem(20, searchMaxItem)
+
         // Slot 22: Header for Rarity Section
         val rarityHeader = GuiUtils.createItem(
             Material.COMPARATOR,
@@ -188,6 +225,34 @@ class ContainerEditGui(
             )
         )
         inventory.setItem(22, rarityHeader)
+
+        // Slot 24: Covered Block Selector Button
+        val coveredLore = listOf(
+            TranslationManager.render("editor.gui.covered_material_card", "material" to category.coveredMaterial.name),
+            Component.empty(),
+            TranslationManager.render("editor.gui.click_cycle_material")
+        )
+        val coveredItem = GuiUtils.createItem(
+            category.coveredMaterial,
+            TranslationManager.render("editor.gui.btn_covered_material"),
+            coveredLore,
+            glowing = true
+        )
+        inventory.setItem(24, coveredItem)
+
+        // Slot 25: Searching Block Selector Button
+        val searchingLore = listOf(
+            TranslationManager.render("editor.gui.searching_material_card", "material" to category.searchingMaterial.name),
+            Component.empty(),
+            TranslationManager.render("editor.gui.click_cycle_material")
+        )
+        val searchingItem = GuiUtils.createItem(
+            category.searchingMaterial,
+            TranslationManager.render("editor.gui.btn_searching_material"),
+            searchingLore,
+            glowing = true
+        )
+        inventory.setItem(25, searchingItem)
 
         // Slots 29..33: Rarity Tiers Drop Percentages (Managed via GUI with +/-1 and +/-5)
         for ((slot, rarity) in raritySlots) {
@@ -336,6 +401,60 @@ class ContainerEditGui(
                 plugin.dropBoxManager.openSimulation(player, category)
                 return
             }
+            19 -> {
+                // Adjust Min Search Time (+/-1s, +/-5s)
+                val delta = when (event.click) {
+                    ClickType.LEFT -> 1
+                    ClickType.RIGHT -> -1
+                    ClickType.SHIFT_LEFT -> 5
+                    ClickType.SHIFT_RIGHT -> -5
+                    else -> 0
+                }
+                if (delta != 0) {
+                    GuiUtils.playClickSound(player)
+                    category.searchTimeMin = (category.searchTimeMin + delta).coerceIn(0, category.searchTimeMax)
+                    plugin.containerRegistry.save()
+                    open(player)
+                }
+                return
+            }
+            20 -> {
+                // Adjust Max Search Time (+/-1s, +/-5s)
+                val delta = when (event.click) {
+                    ClickType.LEFT -> 1
+                    ClickType.RIGHT -> -1
+                    ClickType.SHIFT_LEFT -> 5
+                    ClickType.SHIFT_RIGHT -> -5
+                    else -> 0
+                }
+                if (delta != 0) {
+                    GuiUtils.playClickSound(player)
+                    category.searchTimeMax = (category.searchTimeMax + delta).coerceIn(category.searchTimeMin, 60)
+                    plugin.containerRegistry.save()
+                    open(player)
+                }
+                return
+            }
+            24 -> {
+                // Cycle Covered Material
+                GuiUtils.playClickSound(player)
+                val curIdx = COVERED_MATERIAL_PRESETS.indexOf(category.coveredMaterial)
+                val nextIdx = (curIdx + 1) % COVERED_MATERIAL_PRESETS.size
+                category.coveredMaterial = COVERED_MATERIAL_PRESETS[nextIdx]
+                plugin.containerRegistry.save()
+                open(player)
+                return
+            }
+            25 -> {
+                // Cycle Searching Material
+                GuiUtils.playClickSound(player)
+                val curIdx = SEARCHING_MATERIAL_PRESETS.indexOf(category.searchingMaterial)
+                val nextIdx = (curIdx + 1) % SEARCHING_MATERIAL_PRESETS.size
+                category.searchingMaterial = SEARCHING_MATERIAL_PRESETS[nextIdx]
+                plugin.containerRegistry.save()
+                open(player)
+                return
+            }
             45, 53 -> {
                 // Back or Save
                 GuiUtils.playSuccessSound(player)
@@ -379,5 +498,28 @@ class ContainerEditGui(
             lower.contains("uncommon") -> Material.LIME_SHULKER_BOX
             else -> Material.CHEST
         }
+    }
+
+    companion object {
+        val COVERED_MATERIAL_PRESETS = listOf(
+            Material.BLACK_STAINED_GLASS_PANE,
+            Material.BLACK_STAINED_GLASS,
+            Material.GRAY_STAINED_GLASS_PANE,
+            Material.BARRIER,
+            Material.IRON_BARS,
+            Material.OBSIDIAN,
+            Material.TINTED_GLASS,
+            Material.CRYING_OBSIDIAN
+        )
+
+        val SEARCHING_MATERIAL_PRESETS = listOf(
+            Material.STONE,
+            Material.COBBLESTONE,
+            Material.DEEPSLATE,
+            Material.CRACKED_STONE_BRICKS,
+            Material.IRON_BLOCK,
+            Material.GOLD_BLOCK,
+            Material.CHEST
+        )
     }
 }

@@ -87,6 +87,28 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                 plugin.matchManager.handleCommand(sender, label, args.drop(1).toTypedArray())
             }
 
+            "web" -> {
+                if (!sender.hasPermission("luminaris.admin")) {
+                    TranslationManager.send(sender, "general.no_permission")
+                    return
+                }
+                if (args.size > 1 && args[1].lowercase() == "reload") {
+                    plugin.webConfigServer.ensureWebAssets(force = true)
+                    plugin.webConfigServer.reloadConfig()
+                    val port = plugin.config.getInt("web_config.port", 8080)
+                    TranslationManager.send(sender, "web.reloaded", "port" to port)
+                    return
+                }
+                if (plugin.webConfigServer.isRunning) {
+                    val port = plugin.config.getInt("web_config.port", 8080)
+                    val bindAddr = plugin.config.getString("web_config.bind_address", "0.0.0.0") ?: "0.0.0.0"
+                    val host = if (bindAddr == "0.0.0.0") "localhost" else bindAddr
+                    TranslationManager.send(sender, "web.running", "host" to host, "port" to port)
+                } else {
+                    TranslationManager.send(sender, "web.disabled")
+                }
+            }
+
             "help" -> sendHelp(sender)
 
             else -> {
@@ -291,6 +313,7 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
         sb.append(TranslationManager.get("command.help.case_list")).append("\n")
         sb.append(TranslationManager.get("command.help.case_give")).append("\n")
         sb.append(TranslationManager.get("command.help.editor")).append("\n")
+        sb.append(TranslationManager.get("command.help.web")).append("\n")
         sb.append(TranslationManager.get("command.help.status")).append("\n")
         sb.append(TranslationManager.get("command.help.reload")).append("\n")
         sb.append(TranslationManager.get("command.help.help")).append("\n")
@@ -312,6 +335,7 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                 subcommands.add("editor")
                 subcommands.add("match")
                 subcommands.add("reload")
+                subcommands.add("web")
             }
             return subcommands.filter { it.startsWith(query, ignoreCase = true) }
         }
@@ -365,6 +389,14 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
 
         if (args.size > 1 && args[0].equals("editor", ignoreCase = true)) {
             return plugin.editorCommand.complete(sender, args.drop(1).toTypedArray())
+        }
+
+        if (args.size > 1 && args[0].equals("web", ignoreCase = true)) {
+            if (!sender.hasPermission("luminaris.admin")) return emptyList()
+            if (args.size == 2) {
+                return listOf("reload").filter { it.startsWith(args[1], ignoreCase = true) }
+            }
+            return emptyList()
         }
 
         return emptyList()

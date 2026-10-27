@@ -102,15 +102,16 @@ class SpawnAllocator {
     fun allocateSpawns(
         squads: Collection<String>,
         candidates: List<SpawnPoint>,
-        random: Random = Random.Default
+        random: Random = Random.Default,
+        allowReuse: Boolean = false
     ): Map<String, SpawnPoint> {
         if (squads.isEmpty() || candidates.isEmpty()) return emptyMap()
 
         val squadList = squads.distinct().toList()
         val numSquads = squadList.size
 
-        // Edge Case: When squads > available spawn points, throw a graceful exception to prevent opposing squads clumping
-        if (numSquads > candidates.size) {
+        // Edge Case: When squads > available spawn points and reuse is disallowed, throw exception
+        if (numSquads > candidates.size && !allowReuse) {
             throw IllegalStateException(
                 "Insufficient spawn points for Anti-Clumping: requested $numSquads squads but only ${candidates.size} spawn points exist."
             )
@@ -122,7 +123,12 @@ class SpawnAllocator {
         }
 
         // Select the optimal subset of spawns maximizing min pairwise Euclidean distance
-        val selectedSpawns = selectDispersedSpawns(candidates, numSquads, random)
+        val selectedSpawns = if (numSquads <= candidates.size) {
+            selectDispersedSpawns(candidates, numSquads, random)
+        } else {
+            val dispersedAll = selectDispersedSpawns(candidates, candidates.size, random)
+            (0 until numSquads).map { dispersedAll[it % dispersedAll.size] }
+        }
 
         val result = mutableMapOf<String, SpawnPoint>()
         for (i in squadList.indices) {
@@ -138,10 +144,11 @@ class SpawnAllocator {
     fun allocateSpawnsFromMapData(
         squads: Collection<String>,
         mapDataFile: File,
-        random: Random = Random.Default
+        random: Random = Random.Default,
+        allowReuse: Boolean = false
     ): Map<String, SpawnPoint> {
         val spawns = loadSpawnsFromMapData(mapDataFile)
-        return allocateSpawns(squads, spawns, random)
+        return allocateSpawns(squads, spawns, random, allowReuse)
     }
 
     /**

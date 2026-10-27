@@ -59,6 +59,12 @@ class MatchManager(
         val future = CompletableFuture<MatchInstance>()
         val cleanTemplateId = templateId.lowercase().trim()
 
+        val effectiveDuration = if (raidDurationSeconds != 1200L) {
+            raidDurationSeconds
+        } else {
+            runCatching { plugin.config.getLong("match.default_duration_seconds", 1200L) }.getOrDefault(1200L)
+        }
+
         val templateData = templateStorage.getTemplate(cleanTemplateId)
         if (templateData == null) {
             val ex = IllegalArgumentException("Template '$cleanTemplateId' not found in TemplateStorage.")
@@ -103,8 +109,9 @@ class MatchManager(
                 // Stage 3: Distribute squads via SpawnAllocator
                 val squadNames = players.map { it.name }
                 val spawnCandidates = templateData.spawns
+                val allowReuse = runCatching { plugin.config.getBoolean("spawn.allow_spawn_reuse", true) }.getOrDefault(true)
                 val allocatedSpawns = if (spawnCandidates.isNotEmpty()) {
-                    spawnAllocator.allocateSpawns(squadNames, spawnCandidates)
+                    spawnAllocator.allocateSpawns(squadNames, spawnCandidates, allowReuse = allowReuse)
                 } else {
                     emptyMap()
                 }
@@ -119,7 +126,7 @@ class MatchManager(
                     matchId = matchId,
                     world = world,
                     templateData = templateData,
-                    raidDurationSeconds = raidDurationSeconds,
+                    raidDurationSeconds = effectiveDuration,
                     plugin = plugin,
                     scheduler = scheduler,
                     instanceWorldService = instanceWorldService,
@@ -156,7 +163,9 @@ class MatchManager(
                             }
 
                             // Show BossBar to operative
-                            player.showBossBar(match.bossBar)
+                            if (match.isBossBarEnabled) {
+                                player.showBossBar(match.bossBar)
+                            }
 
                             // Start extraction countdown listener on player's EntityScheduler
                             extractionManager.startExtractionCountdown(

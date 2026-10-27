@@ -17,11 +17,30 @@ import org.bukkit.inventory.ItemStack
 data class ExtractionItem(
     val id: String,
     val itemStack: ItemStack,
-    var price: Double,
-    var rarity: Rarity,
-    var weight: Double,
-    val allowedContainers: MutableSet<String> = mutableSetOf()
+    var price: Double = 100.0,
+    var rarity: Rarity = Rarity.COMMON,
+    var weight: Double = 10.0,
+    val allowedContainers: MutableSet<String> = mutableSetOf(),
+    var searchTime: Int = defaultSearchTime(rarity),
+    var revealSound: String? = null
 ) {
+    companion object {
+        fun defaultSearchTime(rarity: Rarity): Int {
+            val cfgTime = runCatching {
+                com.luminaris.extraction.LuminarisCorePlugin.instanceOrNull?.config?.getInt("drop_box.rarity_search_times.${rarity.name}")
+            }.getOrNull()
+            if (cfgTime != null && cfgTime > 0) return cfgTime
+
+            return when (rarity) {
+                Rarity.COMMON -> 1
+                Rarity.UNCOMMON -> 2
+                Rarity.RARE -> 3
+                Rarity.EPIC -> 4
+                Rarity.LEGENDARY -> 5
+            }
+        }
+    }
+
     /**
      * Resolves the effective display name of this item.
      * Preserves custom item display name if present; otherwise falls back to the Bukkit type name.

@@ -80,12 +80,15 @@ class DeathListener(
             pendingList.addAll(preservedSafeCases)
         }
 
-        // 5) At death location, spawn a Corpse Block (Chest/Barrel) using the Region Scheduler
-        // 6) Deposit the remaining drops into the Corpse Container
-        corpseManager.spawnCorpse(player.location, player, dropsToStore)
+        val corpseEnabled = runCatching { plugin.config.getBoolean("corpse.enabled", true) }.getOrDefault(true)
+        if (corpseEnabled) {
+            // 5) At death location, spawn a Corpse Block (Chest/Barrel) using the Region Scheduler
+            // 6) Deposit the remaining drops into the Corpse Container
+            corpseManager.spawnCorpse(player.location, player, dropsToStore)
 
-        // 7) Clear event.drops completely so zero items scatter on the floor
-        event.drops.clear()
+            // 7) Clear event.drops completely so zero items scatter on the floor
+            event.drops.clear()
+        }
 
         // 8) Mark player state as KILLED_IN_ACTION
         match.setPlayerState(player.uniqueId, PlayerRaidState.KILLED_IN_ACTION)

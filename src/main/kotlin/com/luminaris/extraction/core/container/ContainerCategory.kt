@@ -3,6 +3,8 @@ package com.luminaris.extraction.core.container
 import com.luminaris.extraction.core.item.Rarity
 import net.kyori.adventure.text.Component
 
+import org.bukkit.Material
+
 /**
  * Core model representing a container category classification for extraction loot containers.
  *
@@ -11,13 +13,25 @@ import net.kyori.adventure.text.Component
  * @property minRolls Minimum number of item roll attempts when generating container loot.
  * @property maxRolls Maximum number of item roll attempts when generating container loot.
  * @property rarityWeights Relative weight / chance for each [Rarity] tier to drop in this container.
+ * @property searchTimeMin Minimum seconds for overall container search before revealing slots.
+ * @property searchTimeMax Maximum seconds for overall container search before revealing slots.
+ * @property coveredMaterial Block material shown covering all slots upon opening.
+ * @property searchingMaterial Block material shown while counting down item drops.
+ * @property searchSound Custom sound played during searching intervals.
+ * @property revealSound Custom fallback sound played when an item is revealed.
  */
 data class ContainerCategory(
     val id: String,
     val displayName: Component,
     var minRolls: Int,
     var maxRolls: Int,
-    val rarityWeights: MutableMap<Rarity, Double> = defaultRarityWeights(id)
+    val rarityWeights: MutableMap<Rarity, Double> = defaultRarityWeights(id),
+    var searchTimeMin: Int = 2,
+    var searchTimeMax: Int = 4,
+    var coveredMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
+    var searchingMaterial: Material = Material.STONE,
+    var searchSound: String? = null,
+    var revealSound: String? = null
 ) {
     /**
      * Retrieves the configured drop weight for a given [Rarity].

@@ -201,7 +201,9 @@ class SafeCaseManager(private val plugin: LuminarisCorePlugin) {
      * Creates a decorative, non-interactable item indicating a locked slot beyond the container's capacity.
      */
     fun createLockedSlotItem(): ItemStack {
-        val item = ItemStack(Material.GRAY_STAINED_GLASS_PANE)
+        val matName = runCatching { plugin.config.getString("safe_cases_settings.locked_slot_material") }.getOrNull() ?: "GRAY_STAINED_GLASS_PANE"
+        val material = Material.matchMaterial(matName) ?: Material.GRAY_STAINED_GLASS_PANE
+        val item = ItemStack(material)
         item.editMeta { meta ->
             meta.displayName(TranslationManager.render("safe_case.locked_slot_name"))
             meta.lore(

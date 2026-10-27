@@ -1,0 +1,145 @@
+/* =========================================================================
+ * Luminaris Extraction Core • Web Configuration Custom Utilities & Switches
+ * Clean Tailwind-friendly styles, active nav, custom toggles, and scrollbars
+ * ========================================================================= */
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Nav item active state */
+.nav-item.active {
+  background-color: #22222a !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  border-left: 2px solid #ffffff;
+}
+
+.nav-item.active svg {
+  color: #ffffff !important;
+}
+
+/* Toggle Switch Component */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #a1a1aa;
+  border-radius: 50%;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:checked + .slider {
+  background-color: #ffffff;
+  border-color: #ffffff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+  background-color: #09090b;
+}
+
+/* Toast Notification Styles */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 300px;
+  max-width: 460px;
+  padding: 12px 16px;
+  background-color: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  color: #f4f4f5;
+  font-size: 13px;
+  pointer-events: auto;
+  animation: toast-in 0.2s ease-out;
+  transition: all 0.2s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.toast-success {
+  border-left: 3px solid #10b981;
+}
+
+.toast-error {
+  border-left: 3px solid #ef4444;
+}
+
+.toast-warning {
+  border-left: 3px solid #f59e0b;
+}
+
+/* MiniMessage color preview simulation */
+.preview-gradient-rare {
+  background: linear-gradient(90deg, #00D2FF 0%, #3A7BD5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.preview-gradient-legendary {
+  background: linear-gradient(90deg, #FFAA00 0%, #FF0055 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.preview-gradient-epic {
+  background: linear-gradient(90deg, #d946ef 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.preview-gradient-common {
+  color: #a1a1aa;
+}
+
+.preview-gradient-uncommon {
+  color: #22c55e;
+}

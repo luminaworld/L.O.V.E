@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap
  * - Unloads world without saving chunks and asynchronously purges instance data with Windows/Linux retry logic.
  */
 class InstanceWorldService(
-    plugin: Plugin? = null,
+    private val plugin: Plugin? = null,
     scheduler: FoliaScheduler? = null
 ) {
 
@@ -61,7 +61,8 @@ class InstanceWorldService(
      * Defaults to `<server_root>/templates_worlds`.
      */
     var templatesWorldsFolder: File = runCatching {
-        File(Bukkit.getWorldContainer(), "templates_worlds")
+        val folderName = (plugin as? LuminarisCorePlugin)?.config?.getString("instance_world.templates_folder", "templates_worlds") ?: "templates_worlds"
+        File(Bukkit.getWorldContainer(), folderName)
     }.getOrNull() ?: File("templates_worlds")
 
     /**
@@ -69,7 +70,8 @@ class InstanceWorldService(
      * Defaults to `<server_root>/instances`.
      */
     var instancesFolder: File = runCatching {
-        File(Bukkit.getWorldContainer(), "instances")
+        val folderName = (plugin as? LuminarisCorePlugin)?.config?.getString("instance_world.instances_folder", "instances") ?: "instances"
+        File(Bukkit.getWorldContainer(), folderName)
     }.getOrNull() ?: File("instances")
 
     /**
@@ -137,13 +139,23 @@ class InstanceWorldService(
                             return@runGlobal
                         }
 
-                        // Apply mandatory match game rules
+                        // Apply match game rules from configuration
+                        val cfg = (plugin as? LuminarisCorePlugin)?.config ?: LuminarisCorePlugin.instanceOrNull?.config
+                        val keepInv = cfg?.getBoolean("instance_world.gamerules.keep_inventory", false) ?: false
+                        val daylight = cfg?.getBoolean("instance_world.gamerules.do_daylight_cycle", false) ?: false
+                        val mobSpawn = cfg?.getBoolean("instance_world.gamerules.do_mob_spawning", false) ?: false
+                        val weather = cfg?.getBoolean("instance_world.gamerules.do_weather_cycle", false) ?: false
+                        val fixedTime = cfg?.getLong("instance_world.gamerules.fixed_time", 6000L) ?: 6000L
+
                         @Suppress("DEPRECATION")
-                        world.setGameRule(GameRule.KEEP_INVENTORY, false)
+                        world.setGameRule(GameRule.KEEP_INVENTORY, keepInv)
                         @Suppress("DEPRECATION")
-                        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
+                        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, daylight)
                         @Suppress("DEPRECATION")
-                        world.setGameRule(GameRule.DO_MOB_SPAWNING, false)
+                        world.setGameRule(GameRule.DO_MOB_SPAWNING, mobSpawn)
+                        @Suppress("DEPRECATION")
+                        world.setGameRule(GameRule.DO_WEATHER_CYCLE, weather)
+                        world.time = fixedTime
                         world.isAutoSave = false // Ephemeral instance, chunks should never be committed to disk
 
                         activeInstances.add(instanceWorldName)
@@ -340,7 +352,8 @@ class InstanceWorldService(
      * to safely release Windows/Linux chunk file locks and memory-mapped buffers.
      */
     private fun deleteWorldFolderWithRetry(folder: File, future: CompletableFuture<Void>) {
-        val maxRetries = 10
+        val cfg = (plugin as? LuminarisCorePlugin)?.config ?: LuminarisCorePlugin.instanceOrNull?.config
+        val maxRetries = cfg?.getInt("instance_world.delete_retry_attempts", 10) ?: 10
         var attempt = 0
         var lastError: Exception? = null
 
@@ -432,6 +445,21 @@ class InstanceWorldService(
         lobbyLocation?.let { loc ->
             if (excludeWorld == null || loc.world != excludeWorld) {
                 return loc
+            }
+        }
+
+        // Try reading configured lobby location from config.yml
+        val cfg = (plugin as? LuminarisCorePlugin)?.config ?: LuminarisCorePlugin.instanceOrNull?.config
+        val cfgWorldName = cfg?.getString("lobby.world")
+        if (!cfgWorldName.isNullOrBlank()) {
+            val targetWorld = Bukkit.getWorld(cfgWorldName)
+            if (targetWorld != null && targetWorld != excludeWorld) {
+                val x = cfg.getDouble("lobby.x", 0.5)
+                val y = cfg.getDouble("lobby.y", 64.0)
+                val z = cfg.getDouble("lobby.z", 0.5)
+                val yaw = cfg.getDouble("lobby.yaw", 0.0).toFloat()
+                val pitch = cfg.getDouble("lobby.pitch", 0.0).toFloat()
+                return Location(targetWorld, x, y, z, yaw, pitch)
             }
         }
 

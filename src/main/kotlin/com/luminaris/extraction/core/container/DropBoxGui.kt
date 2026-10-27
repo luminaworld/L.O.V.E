@@ -15,37 +15,21 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.util.concurrent.ThreadLocalRandom
 
 /**
- * Interactive Drop Box Inventory GUI handling loot discovery, searching animation,
- * timed stone block reveal based on rarity tiers, and live test simulations.
+ * Interactive Drop Box Inventory GUI handling loot discovery, initial covered black glass phase,
+ * sequential timed stone block reveal based on item configuration, and session resumption.
  */
 class DropBoxGui(
     private val plugin: LuminarisCorePlugin,
     private val category: ContainerCategory,
+    private val session: ContainerSearchSession,
     private val isSimulation: Boolean = false,
-    private val containerMaterial: Material = Material.CHEST,
-    private val existingLoot: MutableMap<Int, ItemStack>? = null,
-    private val onSaveLoot: ((Map<Int, ItemStack>) -> Unit)? = null
+    private val onSessionUpdate: (() -> Unit)? = null
 ) : EditorGuiHolder {
 
     private lateinit var inventory: Inventory
     private var searchTask: ScheduledTask? = null
-    private var currentElapsedSeconds = 0
-    private var currentSearchingIndex = 0
-    private var isSearchComplete = false
-
-    data class SearchingSlot(
-        val slot: Int,
-        val item: ExtractionItem,
-        val targetRounds: Int,
-        var currentRound: Int = 0,
-        var isRevealed: Boolean = false
-    )
-
-    private val searchingSlots = mutableListOf<SearchingSlot>()
-    private val revealedItems = mutableMapOf<Int, ItemStack>()
 
     fun open(player: Player) {
         val title = if (isSimulation) {
@@ -63,150 +47,107 @@ class DropBoxGui(
         inventory = Bukkit.createInventory(this, 27, title)
 
         // Opening audio feedback based on container material
-        val openSound = ContainerMarkerTool.getOpenSound(containerMaterial)
+        val openSound = ContainerMarkerTool.getOpenSound(session.containerMaterial)
         player.playSound(player.location, openSound, 1.0f, 1.0f)
 
-        // Check if reopening an already searched container in match
-        if (existingLoot != null && existingLoot.isNotEmpty()) {
-            for ((slot, stack) in existingLoot) {
-                if (slot in 0..26) {
-                    inventory.setItem(slot, stack.clone())
-                    revealedItems[slot] = stack.clone()
-                }
+        // Case 1: Initial Covered Black Glass Phase (Container search not yet complete)
+        if (!session.isContainerSearchComplete) {
+            val coveredItem = createCoveredPlaceholder()
+            for (i in 0 until 27) {
+                inventory.setItem(i, coveredItem.clone())
             }
-            isSearchComplete = true
+
+            if (isSimulation && session.containerSearchElapsedSeconds == 0) {
+                TranslationManager.send(
+                    player,
+                    "drop.sim_started",
+                    "category" to category.id,
+                    "count" to session.slots.size
+                )
+            }
+
+            plugin.scheduler.runAtEntity(player) {
+                player.openInventory(inventory)
+            }
+
+            startSearchLoop(player)
+            return
+        }
+
+        // Case 2: Container Search already completed previously (reopening or direct phase 2)
+        // Immediately display already-revealed items, and show searching blocks for unrevealed ones
+        populatePostContainerSearchInventory()
+
+        // If the entire container search was already finished and all items were revealed
+        if (session.isOverallFinished) {
             plugin.scheduler.runAtEntity(player) {
                 player.openInventory(inventory)
             }
             return
         }
 
-        // Fresh roll of candidate items
-        val candidateItems = plugin.itemRegistry.getItemsForCategory(category.id).filter { it.weight > 0.0 }
-        val minRolls = maxOf(0, category.minRolls)
-        val maxRolls = maxOf(minRolls, category.maxRolls)
-        val rolls = if (maxRolls > minRolls) {
-            ThreadLocalRandom.current().nextInt(minRolls, maxRolls + 1)
-        } else {
-            minRolls
-        }
-
-        if (rolls <= 0 || candidateItems.isEmpty()) {
-            isSearchComplete = true
-            TranslationManager.sendActionBar(player, "drop.empty_container")
-            if (isSimulation) {
-                TranslationManager.send(player, "drop.empty_container")
-            }
-            plugin.scheduler.runAtEntity(player) {
-                player.openInventory(inventory)
-            }
-            return
-        }
-
-        // Roll candidate extraction items respecting category rarity drop rates
-        val rolledCandidates = plugin.lootPopulator.rollCategoryCandidateItems(category, candidateItems, rolls)
-        if (rolledCandidates.isEmpty()) {
-            isSearchComplete = true
-            TranslationManager.sendActionBar(player, "drop.empty_container")
-            plugin.scheduler.runAtEntity(player) {
-                player.openInventory(inventory)
-            }
-            return
-        }
-
-        // Randomize slot placements across 27 container slots
-        val availableSlots = (0 until 27).toMutableList()
-        availableSlots.shuffle()
-
-        for (candidate in rolledCandidates) {
-            if (availableSlots.isEmpty()) break
-            val slot = availableSlots.removeAt(0)
-
-            // Duration:
-            // common: 1 round (1s)
-            // uncommon: 2 rounds (2s)
-            // rare: 3 rounds (3s)
-            // epic: 4 rounds (4s)
-            // legendary: 5 rounds (5s)
-            val targetRounds = when (candidate.rarity) {
-                Rarity.COMMON -> 1
-                Rarity.UNCOMMON -> 2
-                Rarity.RARE -> 3
-                Rarity.EPIC -> 4
-                Rarity.LEGENDARY -> 5
-            }
-
-            val searchingSlot = SearchingSlot(
-                slot = slot,
-                item = candidate,
-                targetRounds = targetRounds
-            )
-            searchingSlots.add(searchingSlot)
-        }
-
-        // Sort searching sequence strictly by lowest slot index ascending ("เริ่มเปิดของจากช่องที่น้อยสุด")
-        searchingSlots.sortBy { it.slot }
-
-        // Place initial stone placeholders (active on first item, waiting on subsequent items)
-        for (i in searchingSlots.indices) {
-            val slotInfo = searchingSlots[i]
-            val stone = createStonePlaceholder(slotInfo, isActive = (i == 0))
-            inventory.setItem(slotInfo.slot, stone)
-        }
-
-        if (isSimulation) {
-            TranslationManager.send(
-                player,
-                "drop.sim_started",
-                "category" to category.id,
-                "count" to searchingSlots.size
-            )
-        }
-
+        // Reopening mid-search: Unrevealed items continue countdown
         plugin.scheduler.runAtEntity(player) {
             player.openInventory(inventory)
         }
 
-        // Start 1-second interval sequential searching animation loop
-        startSearchAnimation(player)
+        startSearchLoop(player)
     }
 
-    private fun createStonePlaceholder(slot: SearchingSlot, isActive: Boolean): ItemStack {
-        val stone = ItemStack(Material.STONE)
+    /**
+     * Populates the inventory with revealed items and unrevealed stone placeholders.
+     */
+    private fun populatePostContainerSearchInventory() {
+        // Clear all slots first
+        for (i in 0 until 27) {
+            inventory.setItem(i, null)
+        }
+
+        for (i in session.slots.indices) {
+            val slotState = session.slots[i]
+            if (slotState.isRevealed) {
+                if (!slotState.isTaken) {
+                    val stack = slotState.currentStack ?: slotState.item.itemStack.clone()
+                    inventory.setItem(slotState.slot, stack)
+                }
+            } else {
+                val isActive = (i == session.currentSearchingIndex)
+                val placeholder = createStonePlaceholder(slotState, isActive = isActive)
+                inventory.setItem(slotState.slot, placeholder)
+            }
+        }
+    }
+
+    private fun createCoveredPlaceholder(): ItemStack {
+        val mat = category.coveredMaterial
+        val stack = ItemStack(mat)
+        stack.editMeta { meta ->
+            meta.displayName(TranslationManager.render("drop.searching_title"))
+            meta.lore(listOf(TranslationManager.render("drop.searching_lore_desc")))
+            meta.setEnchantmentGlintOverride(true)
+        }
+        return stack
+    }
+
+    private fun createStonePlaceholder(slot: SearchSlotState, isActive: Boolean): ItemStack {
+        val mat = category.searchingMaterial
+        val stone = ItemStack(mat)
         stone.editMeta { meta ->
             if (isActive) {
                 meta.displayName(TranslationManager.render("drop.searching_title"))
-                meta.lore(
-                    listOf(
-                        TranslationManager.render("drop.searching_lore_desc"),
-                        TranslationManager.render(
-                            "drop.searching_lore_time",
-                            "current" to slot.currentRound,
-                            "time" to slot.targetRounds
-                        )
-                    )
-                )
+                meta.lore(listOf(TranslationManager.render("drop.searching_lore_desc")))
                 meta.setEnchantmentGlintOverride(true)
             } else {
                 meta.displayName(TranslationManager.render("drop.waiting_title"))
-                meta.lore(
-                    listOf(
-                        TranslationManager.render("drop.waiting_lore"),
-                        TranslationManager.render(
-                            "drop.searching_lore_time",
-                            "current" to 0,
-                            "time" to slot.targetRounds
-                        )
-                    )
-                )
+                meta.lore(listOf(TranslationManager.render("drop.waiting_lore")))
                 meta.setEnchantmentGlintOverride(false)
             }
         }
         return stone
     }
 
-    private fun startSearchAnimation(player: Player) {
-        if (searchingSlots.isEmpty()) return
+    private fun startSearchLoop(player: Player) {
+        searchTask?.cancel()
 
         searchTask = plugin.scheduler.runAtEntityRepeating(player, 20L, 20L, task = {
             if (!player.isOnline || player.openInventory.topInventory != inventory) {
@@ -215,8 +156,49 @@ class DropBoxGui(
                 return@runAtEntityRepeating
             }
 
-            if (currentSearchingIndex >= searchingSlots.size) {
-                isSearchComplete = true
+            // Phase 1: Container Search (All black glass)
+            if (!session.isContainerSearchComplete) {
+                session.containerSearchElapsedSeconds++
+
+                playSearchSound(player)
+                TranslationManager.sendActionBar(player, "drop.searching_actionbar")
+
+                if (session.containerSearchElapsedSeconds >= session.containerSearchTotalSeconds) {
+                    session.isContainerSearchComplete = true
+
+                    // Transition: clear black glass
+                    for (i in 0 until 27) {
+                        inventory.setItem(i, null)
+                    }
+
+                    if (session.slots.isEmpty()) {
+                        // Empty container
+                        session.isOverallFinished = true
+                        searchTask?.cancel()
+                        searchTask = null
+                        TranslationManager.sendActionBar(player, "drop.empty_container")
+                        if (isSimulation) {
+                            TranslationManager.send(player, "drop.empty_container")
+                        }
+                        return@runAtEntityRepeating
+                    }
+
+                    // Populate stone placeholders on loot slots
+                    populatePostContainerSearchInventory()
+
+                    // If all rolled items happen to have 0 search time, reveal immediately
+                    if (session.currentSearchingIndex < session.slots.size &&
+                        session.slots[session.currentSearchingIndex].targetRounds <= 0
+                    ) {
+                        revealCurrentSlot(player)
+                    }
+                }
+                return@runAtEntityRepeating
+            }
+
+            // Phase 2: Item by Item Sequential Countdown
+            if (session.currentSearchingIndex >= session.slots.size) {
+                session.isOverallFinished = true
                 searchTask?.cancel()
                 searchTask = null
                 TranslationManager.sendActionBar(player, "drop.search_complete")
@@ -224,80 +206,135 @@ class DropBoxGui(
                 return@runAtEntityRepeating
             }
 
-            val currentSlot = searchingSlots[currentSearchingIndex]
-            currentElapsedSeconds++
+            val currentSlot = session.slots[session.currentSearchingIndex]
             currentSlot.currentRound++
 
-            // Audio searching feedback: exactly 1 sound cycle per second
-            player.playSound(
-                player.location,
-                Sound.BLOCK_STONE_HIT,
-                0.85f,
-                1.0f + (currentSlot.currentRound * 0.08f).coerceAtMost(0.4f)
-            )
-            player.playSound(player.location, Sound.BLOCK_GRAVEL_HIT, 0.6f, 1.2f)
-
-            // Send action bar update
-            TranslationManager.sendActionBar(
-                player,
-                "drop.searching_actionbar",
-                "round" to currentElapsedSeconds,
-                "item_num" to (currentSearchingIndex + 1),
-                "total_items" to searchingSlots.size,
-                "current" to currentSlot.currentRound,
-                "duration" to currentSlot.targetRounds
-            )
+            playSearchSound(player, currentSlot.currentRound)
+            TranslationManager.sendActionBar(player, "drop.searching_actionbar")
 
             // Update active stone block visual state
             val updatedStone = createStonePlaceholder(currentSlot, isActive = true)
             inventory.setItem(currentSlot.slot, updatedStone)
 
-            // Check if current slot has completed its required search duration
             if (currentSlot.currentRound >= currentSlot.targetRounds) {
-                currentSlot.isRevealed = true
-
-                val stack = runCatching { currentSlot.item.itemStack.clone() }.getOrDefault(currentSlot.item.itemStack)
-                inventory.setItem(currentSlot.slot, stack)
-                revealedItems[currentSlot.slot] = stack
-
-                // Play reveal sound according to item rarity tier
-                playRevealSound(player, currentSlot.item.rarity)
-
-                val rarityName = TranslationManager.get("rarity.${currentSlot.item.rarity.name.lowercase()}")
-                val itemName = if (stack.hasItemMeta() && stack.itemMeta.hasDisplayName()) {
-                    TranslationManager.serializeComponent(stack.itemMeta.displayName()!!)
-                } else {
-                    stack.type.name
-                }
-                TranslationManager.sendActionBar(
-                    player,
-                    "drop.revealed_item",
-                    "tag" to currentSlot.item.rarity.miniMessageTag,
-                    "name" to itemName,
-                    "rarity" to rarityName
-                )
-
-                // Advance sequentially to next slot
-                currentSearchingIndex++
-
-                if (currentSearchingIndex < searchingSlots.size) {
-                    val nextSlot = searchingSlots[currentSearchingIndex]
-                    val nextStone = createStonePlaceholder(nextSlot, isActive = true)
-                    inventory.setItem(nextSlot.slot, nextStone)
-                } else {
-                    // All slots finished!
-                    isSearchComplete = true
-                    searchTask?.cancel()
-                    searchTask = null
-                    TranslationManager.sendActionBar(player, "drop.search_complete")
-                    player.playSound(player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.2f)
-                }
+                revealCurrentSlot(player)
             }
         })
     }
 
-    private fun playRevealSound(player: Player, rarity: Rarity) {
-        when (rarity) {
+    private fun revealCurrentSlot(player: Player) {
+        if (session.currentSearchingIndex >= session.slots.size) return
+        val currentSlot = session.slots[session.currentSearchingIndex]
+        currentSlot.isRevealed = true
+
+        val stack = runCatching { currentSlot.item.itemStack.clone() }.getOrDefault(currentSlot.item.itemStack)
+        currentSlot.currentStack = stack
+        inventory.setItem(currentSlot.slot, stack)
+
+        // Play reveal sound based on item configuration
+        playRevealSound(player, currentSlot.item)
+
+        val rarityName = TranslationManager.get("rarity.${currentSlot.item.rarity.name.lowercase()}")
+        val itemName = if (stack.hasItemMeta() && stack.itemMeta.hasDisplayName()) {
+            TranslationManager.serializeComponent(stack.itemMeta.displayName()!!)
+        } else {
+            stack.type.name
+        }
+        TranslationManager.sendActionBar(
+            player,
+            "drop.revealed_item",
+            "tag" to currentSlot.item.rarity.miniMessageTag,
+            "name" to itemName,
+            "rarity" to rarityName
+        )
+
+        // Advance to next unrevealed slot
+        session.currentSearchingIndex++
+
+        if (session.currentSearchingIndex < session.slots.size) {
+            val nextSlot = session.slots[session.currentSearchingIndex]
+            val nextStone = createStonePlaceholder(nextSlot, isActive = true)
+            inventory.setItem(nextSlot.slot, nextStone)
+        } else {
+            // All slots revealed!
+            session.isOverallFinished = true
+            searchTask?.cancel()
+            searchTask = null
+            TranslationManager.sendActionBar(player, "drop.search_complete")
+            playSoundFromConfig(player, "drop_box.sounds.complete", Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.2f)
+        }
+    }
+
+    private fun playSoundFromConfig(player: Player, configPath: String, defaultSound: Sound, volume: Float, pitch: Float) {
+        val soundName = runCatching {
+            plugin.config.getString(configPath)
+        }.getOrNull()
+        val sound = if (!soundName.isNullOrBlank()) {
+            runCatching { Sound.valueOf(soundName.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull() ?: defaultSound
+        } else {
+            defaultSound
+        }
+        player.playSound(player.location, sound, volume, pitch)
+    }
+
+    private fun playSearchSound(player: Player, round: Int = 0) {
+        val customSound = category.searchSound
+        if (!customSound.isNullOrBlank()) {
+            val soundEnum = runCatching { Sound.valueOf(customSound.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull()
+            if (soundEnum != null) {
+                player.playSound(player.location, soundEnum, 0.85f, 1.0f)
+                return
+            }
+        }
+        player.playSound(
+            player.location,
+            Sound.BLOCK_STONE_HIT,
+            0.85f,
+            1.0f + (round * 0.08f).coerceAtMost(0.4f)
+        )
+        player.playSound(player.location, Sound.BLOCK_GRAVEL_HIT, 0.6f, 1.2f)
+    }
+
+    private fun playRevealSound(player: Player, item: ExtractionItem) {
+        // 1. Check item-specific reveal sound
+        val itemSound = item.revealSound
+        if (!itemSound.isNullOrBlank()) {
+            val soundEnum = runCatching { Sound.valueOf(itemSound.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull()
+            if (soundEnum != null) {
+                player.playSound(player.location, soundEnum, 1.0f, 1.0f)
+                return
+            } else {
+                runCatching {
+                    player.playSound(player.location, itemSound.lowercase(java.util.Locale.ROOT), 1.0f, 1.0f)
+                    return
+                }
+            }
+        }
+
+        // 2. Check category-level fallback reveal sound
+        val catSound = category.revealSound
+        if (!catSound.isNullOrBlank()) {
+            val soundEnum = runCatching { Sound.valueOf(catSound.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull()
+            if (soundEnum != null) {
+                player.playSound(player.location, soundEnum, 1.0f, 1.0f)
+                return
+            }
+        }
+
+        // 3. Check config rarity reveal sound
+        val cfgRaritySound = runCatching {
+            plugin.config.getString("drop_box.rarity_reveal_sounds.${item.rarity.name}")
+        }.getOrNull()
+        if (!cfgRaritySound.isNullOrBlank()) {
+            val soundEnum = runCatching { Sound.valueOf(cfgRaritySound.uppercase(java.util.Locale.ROOT).replace(".", "_")) }.getOrNull()
+            if (soundEnum != null) {
+                player.playSound(player.location, soundEnum, 1.0f, 1.0f)
+                return
+            }
+        }
+
+        // 4. Default Rarity fallback
+        when (item.rarity) {
             Rarity.COMMON -> player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f)
             Rarity.UNCOMMON -> player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.2f)
             Rarity.RARE -> player.playSound(player.location, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1.0f, 1.4f)
@@ -315,29 +352,40 @@ class DropBoxGui(
             return
         }
 
+        // Prevent taking placeholder while container search is active
+        if (!session.isContainerSearchComplete) {
+            playSoundFromConfig(player, "drop_box.sounds.click_searching_error", Sound.UI_BUTTON_CLICK, 0.6f, 0.5f)
+            TranslationManager.sendActionBar(player, "drop.still_searching")
+            return
+        }
+
         // Prevent taking stone block while item is still searching
-        val searching = searchingSlots.find { it.slot == slot && !it.isRevealed }
+        val searching = session.slots.find { it.slot == slot && !it.isRevealed }
         if (searching != null) {
-            player.playSound(player.location, Sound.UI_BUTTON_CLICK, 0.6f, 0.5f)
+            playSoundFromConfig(player, "drop_box.sounds.click_searching_error", Sound.UI_BUTTON_CLICK, 0.6f, 0.5f)
             TranslationManager.sendActionBar(player, "drop.still_searching")
             return
         }
 
         // Allow taking revealed item
+        val revealedSlot = session.slots.find { it.slot == slot && it.isRevealed && !it.isTaken }
         val stack = inventory.getItem(slot)
-        if (stack != null && !stack.isEmpty && stack.type != Material.STONE) {
+        if (revealedSlot != null && stack != null && !stack.isEmpty &&
+            stack.type != category.searchingMaterial && stack.type != category.coveredMaterial
+        ) {
             val leftover = player.inventory.addItem(stack.clone())
             if (leftover.isEmpty()) {
                 inventory.setItem(slot, null)
-                revealedItems.remove(slot)
-                player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 0.8f, 1.2f)
+                revealedSlot.isTaken = true
+                revealedSlot.currentStack = null
+                playSoundFromConfig(player, "drop_box.sounds.take_item", Sound.ENTITY_ITEM_PICKUP, 0.8f, 1.2f)
             } else {
                 val addedAmount = stack.amount - leftover.values.sumOf { it.amount }
                 if (addedAmount > 0) {
                     stack.amount -= addedAmount
                     inventory.setItem(slot, stack)
-                    revealedItems[slot] = stack.clone()
-                    player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 0.8f, 1.2f)
+                    revealedSlot.currentStack = stack.clone()
+                    playSoundFromConfig(player, "drop_box.sounds.take_item", Sound.ENTITY_ITEM_PICKUP, 0.8f, 1.2f)
                 }
                 TranslationManager.sendActionBar(player, "drop.inventory_full")
             }
@@ -348,34 +396,12 @@ class DropBoxGui(
         searchTask?.cancel()
         searchTask = null
 
-        if (isSimulation) {
+        if (isSimulation && session.isOverallFinished) {
             TranslationManager.send(player, "drop.sim_closed")
-            return
         }
 
-        // In match mode: force reveal any remaining unrevealed items so no loot is lost
-        for (slot in searchingSlots) {
-            if (!slot.isRevealed) {
-                val stack = runCatching { slot.item.itemStack.clone() }.getOrDefault(slot.item.itemStack)
-                revealedItems[slot.slot] = stack
-            }
-        }
-
-        // Persist remaining items for this container in match memory
-        val remaining = mutableMapOf<Int, ItemStack>()
-        for (i in 0 until 27) {
-            val item = inventory.getItem(i)
-            if (item != null && !item.isEmpty && item.type != Material.STONE) {
-                remaining[i] = item.clone()
-            }
-        }
-        for ((s, stack) in revealedItems) {
-            if (!remaining.containsKey(s) && stack.type != Material.STONE) {
-                remaining[s] = stack.clone()
-            }
-        }
-
-        onSaveLoot?.invoke(remaining)
+        // Save session state (revealed items stay revealed, unfinished continue counting on reopen)
+        onSessionUpdate?.invoke()
     }
 
     override fun getInventory(): Inventory = inventory

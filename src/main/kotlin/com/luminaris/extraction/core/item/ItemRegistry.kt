@@ -48,6 +48,8 @@ class ItemRegistry(private val plugin: Plugin) {
         weight: Double,
         allowedContainers: MutableSet<String>,
         customDisplayName: String? = null,
+        searchTime: Int = ExtractionItem.defaultSearchTime(rarity),
+        revealSound: String? = null,
         saveToDisk: Boolean = true
     ): ExtractionItem {
         val held = player.inventory.itemInMainHand
@@ -66,7 +68,9 @@ class ItemRegistry(private val plugin: Plugin) {
             price = price,
             rarity = rarity,
             weight = weight,
-            allowedContainers = allowedContainers
+            allowedContainers = allowedContainers,
+            searchTime = searchTime,
+            revealSound = revealSound
         )
 
         register(item, saveToDisk)
@@ -172,13 +176,27 @@ class ItemRegistry(private val plugin: Plugin) {
                     .map { it.lowercase() }
                     .toMutableSet()
 
+                // 6. Resolve search duration (seconds)
+                val searchTime = if (itemSec.contains("search_time")) {
+                    itemSec.getInt("search_time")
+                } else if (itemSec.contains("search_duration")) {
+                    itemSec.getInt("search_duration")
+                } else {
+                    ExtractionItem.defaultSearchTime(rarity)
+                }
+
+                // 7. Resolve reveal sound
+                val revealSound = itemSec.getString("reveal_sound") ?: itemSec.getString("sound")
+
                 val item = ExtractionItem(
                     id = key.lowercase(),
                     itemStack = itemStack,
                     price = price,
                     rarity = rarity,
                     weight = weight,
-                    allowedContainers = allowedContainers
+                    allowedContainers = allowedContainers,
+                    searchTime = searchTime,
+                    revealSound = revealSound
                 )
 
                 items[item.id] = item
@@ -204,6 +222,10 @@ class ItemRegistry(private val plugin: Plugin) {
                 itemSec.set("rarity", item.rarity.name)
                 itemSec.set("weight", item.weight)
                 itemSec.set("allowed_containers", item.allowedContainers.toList())
+                itemSec.set("search_time", item.searchTime)
+                if (item.revealSound != null) {
+                    itemSec.set("reveal_sound", item.revealSound)
+                }
 
                 // Readable convenience fields for server administrators viewing items.yml
                 itemSec.set("material", item.itemStack.type.name)

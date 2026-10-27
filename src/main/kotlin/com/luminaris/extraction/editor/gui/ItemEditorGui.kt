@@ -8,6 +8,7 @@ import com.luminaris.extraction.localization.TranslationManager
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -29,18 +30,23 @@ class ItemEditorGui(
     initialRarity: Rarity? = null,
     initialPrice: Double? = null,
     initialAllowedContainers: MutableSet<String>? = null,
-    initialItemId: String? = null
+    initialItemId: String? = null,
+    initialSearchTime: Int? = null,
+    initialRevealSound: String? = null
 ) : EditorGuiHolder {
 
     private lateinit var inventory: Inventory
 
     private var currentRarity: Rarity = initialRarity ?: existingItem?.rarity ?: Rarity.fromPrice(existingItem?.price ?: 100.0)
-    private var currentPrice: Double = initialPrice ?: existingItem?.price ?: when (currentRarity) {
-        Rarity.COMMON -> 50.0
-        Rarity.UNCOMMON -> 150.0
-        Rarity.RARE -> 500.0
-        Rarity.EPIC -> 1500.0
-        Rarity.LEGENDARY -> 4000.0
+    private var currentPrice: Double = initialPrice ?: existingItem?.price ?: run {
+        val cfg = plugin.config
+        when (currentRarity) {
+            Rarity.COMMON -> cfg.getDouble("economy.default_prices.COMMON", 50.0)
+            Rarity.UNCOMMON -> cfg.getDouble("economy.default_prices.UNCOMMON", 150.0)
+            Rarity.RARE -> cfg.getDouble("economy.default_prices.RARE", 500.0)
+            Rarity.EPIC -> cfg.getDouble("economy.default_prices.EPIC", 1500.0)
+            Rarity.LEGENDARY -> cfg.getDouble("economy.default_prices.LEGENDARY", 4000.0)
+        }
     }
     private val allowedContainers: MutableSet<String> = initialAllowedContainers ?: existingItem?.allowedContainers?.toMutableSet() ?: mutableSetOf()
     private val currentItemId: String = initialItemId ?: existingItem?.id ?: run {
@@ -48,6 +54,19 @@ class ItemEditorGui(
         val hash = UUID.randomUUID().toString().substring(0, 5)
         "${baseName}_$hash"
     }
+    private var currentSearchTime: Int = initialSearchTime ?: existingItem?.searchTime ?: ExtractionItem.defaultSearchTime(currentRarity)
+    private var currentRevealSound: String? = initialRevealSound ?: existingItem?.revealSound
+
+    private val soundPresets = listOf(
+        "ENTITY_ITEM_PICKUP",
+        "BLOCK_NOTE_BLOCK_BELL",
+        "BLOCK_AMETHYST_BLOCK_CHIME",
+        "ENTITY_PLAYER_LEVELUP",
+        "UI_TOAST_CHALLENGE_COMPLETE",
+        "BLOCK_BEACON_ACTIVATE",
+        "ITEM_ARMOR_EQUIP_DIAMOND",
+        "ENTITY_EXPERIENCE_ORB_PICKUP"
+    )
 
     private val raritySlots = mapOf(
         29 to Rarity.COMMON,
@@ -112,6 +131,8 @@ class ItemEditorGui(
                 allowedContainers.joinToString(", ")
             }
             lore.add(TranslationManager.render("editor.gui.item_preview_containers", "containers" to catText))
+            lore.add(TranslationManager.render("editor.gui.item_card_search_time", "time" to currentSearchTime))
+            lore.add(TranslationManager.render("editor.gui.item_card_reveal_sound", "sound" to (currentRevealSound ?: "Default")))
             lore.add(TranslationManager.parseComponent("<color:#555555>----------------------------------------</color>"))
             meta.lore(lore)
         }
@@ -164,6 +185,23 @@ class ItemEditorGui(
         )
         inventory.setItem(22, headerItem)
 
+        // Slot 28: Search Duration Adjustment Button
+        val searchTimeLore = listOf(
+            TranslationManager.render("editor.gui.search_time_card_current", "time" to currentSearchTime),
+            Component.empty(),
+            TranslationManager.render("editor.gui.click_plus_1"),
+            TranslationManager.render("editor.gui.click_minus_1"),
+            TranslationManager.render("editor.gui.click_plus_5"),
+            TranslationManager.render("editor.gui.click_minus_5")
+        )
+        val searchTimeItem = GuiUtils.createItem(
+            Material.CLOCK,
+            TranslationManager.render("editor.gui.btn_adjust_search_time"),
+            searchTimeLore,
+            amount = maxOf(1, currentSearchTime.coerceIn(1, 64))
+        )
+        inventory.setItem(28, searchTimeItem)
+
         // Slots 29..33: Rarity Selection Buttons
         for ((slot, rarity) in raritySlots) {
             val isSelected = (rarity == currentRarity)
@@ -207,6 +245,21 @@ class ItemEditorGui(
         )
         inventory.setItem(34, priceItem)
 
+        // Slot 35: Reveal Sound Selector Button
+        val revealSoundLore = listOf(
+            TranslationManager.render("editor.gui.reveal_sound_card_current", "sound" to (currentRevealSound ?: "Default")),
+            Component.empty(),
+            TranslationManager.render("editor.gui.reveal_sound_click_cycle"),
+            TranslationManager.render("editor.gui.reveal_sound_click_dialog")
+        )
+        val revealSoundItem = GuiUtils.createItem(
+            Material.JUKEBOX,
+            TranslationManager.render("editor.gui.btn_adjust_reveal_sound"),
+            revealSoundLore,
+            glowing = (currentRevealSound != null)
+        )
+        inventory.setItem(35, revealSoundItem)
+
         // Slot 45: Back / Cancel
         inventory.setItem(45, GuiUtils.createItem(Material.ARROW, TranslationManager.render("editor.gui.btn_back")))
 
@@ -245,7 +298,7 @@ class ItemEditorGui(
                 return
             }
             11 -> {
-                // Open Item Dialog to edit ID, name, lore, rarity, price
+                // Open Item Dialog to edit ID, name, lore, rarity, price, search duration, reveal sound
                 GuiUtils.playClickSound(player)
                 player.closeInventory()
                 ItemDialogBuilder.open(
@@ -254,7 +307,9 @@ class ItemEditorGui(
                     itemStack = targetStack,
                     existingItem = existingItem,
                     plugin = plugin,
-                    currentAllowedContainers = if (allowedContainers.contains("__none__")) emptySet() else allowedContainers
+                    currentAllowedContainers = if (allowedContainers.contains("__none__")) emptySet() else allowedContainers,
+                    initialSearchTime = currentSearchTime,
+                    initialRevealSound = currentRevealSound
                 ) { savedItem ->
                     ItemEditorGui(plugin, savedItem.itemStack, savedItem).open(player)
                 }
@@ -270,7 +325,9 @@ class ItemEditorGui(
                     currentRarity = currentRarity,
                     currentPrice = currentPrice,
                     allowedContainers = allowedContainers,
-                    currentItemId = currentItemId
+                    currentItemId = currentItemId,
+                    currentSearchTime = currentSearchTime,
+                    currentRevealSound = currentRevealSound
                 ).open(player, 0)
                 return
             }
@@ -286,6 +343,22 @@ class ItemEditorGui(
                 }
                 return
             }
+            28 -> {
+                // Adjust Search Duration (+/-1s, +/-5s)
+                val delta = when (event.click) {
+                    ClickType.LEFT -> 1
+                    ClickType.RIGHT -> -1
+                    ClickType.SHIFT_LEFT -> 5
+                    ClickType.SHIFT_RIGHT -> -5
+                    else -> 0
+                }
+                if (delta != 0) {
+                    GuiUtils.playClickSound(player)
+                    currentSearchTime = maxOf(0, minOf(60, currentSearchTime + delta))
+                    open(player)
+                }
+                return
+            }
             34 -> {
                 // Adjust Price
                 val delta = when (event.click) {
@@ -298,6 +371,35 @@ class ItemEditorGui(
                 if (delta != 0.0) {
                     GuiUtils.playClickSound(player)
                     currentPrice = maxOf(0.0, currentPrice + delta)
+                    open(player)
+                }
+                return
+            }
+            35 -> {
+                // Adjust Reveal Sound
+                if (event.isShiftClick) {
+                    GuiUtils.playClickSound(player)
+                    player.closeInventory()
+                    ItemDialogBuilder.open(
+                        player = player,
+                        itemRegistry = plugin.itemRegistry,
+                        itemStack = targetStack,
+                        existingItem = existingItem,
+                        plugin = plugin,
+                        currentAllowedContainers = if (allowedContainers.contains("__none__")) emptySet() else allowedContainers,
+                        initialSearchTime = currentSearchTime,
+                        initialRevealSound = currentRevealSound
+                    ) { savedItem ->
+                        ItemEditorGui(plugin, savedItem.itemStack, savedItem).open(player)
+                    }
+                } else {
+                    val currentIndex = soundPresets.indexOf(currentRevealSound)
+                    val nextIndex = (currentIndex + 1) % soundPresets.size
+                    currentRevealSound = soundPresets[nextIndex]
+                    val soundEnum = runCatching { Sound.valueOf(currentRevealSound!!) }.getOrNull()
+                    if (soundEnum != null) {
+                        player.playSound(player.location, soundEnum, 1.0f, 1.0f)
+                    }
                     open(player)
                 }
                 return
@@ -324,7 +426,9 @@ class ItemEditorGui(
                     price = currentPrice,
                     rarity = currentRarity,
                     weight = existingItem?.weight ?: 1.0,
-                    allowedContainers = finalAllowed
+                    allowedContainers = finalAllowed,
+                    searchTime = currentSearchTime,
+                    revealSound = currentRevealSound
                 )
 
                 plugin.itemRegistry.register(finalItem, saveToDisk = true)

@@ -48,16 +48,30 @@ object GuiUtils {
     }
 
     /**
+     * Resolves default border material from configuration.
+     */
+    fun defaultBorderMaterial(): Material {
+        val matName = runCatching {
+            com.luminaris.extraction.LuminarisCorePlugin.instanceOrNull?.config?.getString("editor.gui_border_material")
+        }.getOrNull()
+        return if (!matName.isNullOrBlank()) {
+            Material.matchMaterial(matName) ?: Material.GRAY_STAINED_GLASS_PANE
+        } else {
+            Material.GRAY_STAINED_GLASS_PANE
+        }
+    }
+
+    /**
      * Builds a decorative background border glass pane.
      */
-    fun createBorderPane(material: Material = Material.GRAY_STAINED_GLASS_PANE): ItemStack {
+    fun createBorderPane(material: Material = defaultBorderMaterial()): ItemStack {
         return createItem(material, Component.empty())
     }
 
     /**
      * Fills the edges of a 54-slot inventory with border panes.
      */
-    fun fill54Border(inventory: org.bukkit.inventory.Inventory, material: Material = Material.GRAY_STAINED_GLASS_PANE) {
+    fun fill54Border(inventory: org.bukkit.inventory.Inventory, material: Material = defaultBorderMaterial()) {
         val border = createBorderPane(material)
         // Top and bottom rows
         for (i in 0..8) {
@@ -74,7 +88,7 @@ object GuiUtils {
     /**
      * Fills the edges of a 27-slot inventory with border panes.
      */
-    fun fill27Border(inventory: org.bukkit.inventory.Inventory, material: Material = Material.GRAY_STAINED_GLASS_PANE) {
+    fun fill27Border(inventory: org.bukkit.inventory.Inventory, material: Material = defaultBorderMaterial()) {
         val border = createBorderPane(material)
         for (i in 0..8) {
             inventory.setItem(i, border)
