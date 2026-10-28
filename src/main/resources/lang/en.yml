@@ -597,11 +597,17 @@ serializer:
 # ส่วนที่ 18: ระดับความหายากของไอเทม (Item Rarity)
 # -------------------------------------------------------------------------
 rarity:
-  common: "COMMON"
-  uncommon: "UNCOMMON"
-  rare: "RARE"
-  epic: "EPIC"
-  legendary: "LEGENDARY"
+  f: "F"
+  d: "D"
+  c: "C"
+  b: "B"
+  a: "A"
+  s: "S"
+  common: "F"
+  uncommon: "D"
+  rare: "C"
+  epic: "B"
+  legendary: "A"
 
 # -------------------------------------------------------------------------
 # ส่วนที่ 19: ระบบกล่องดรอปไอเทมและการจำลอง (Drop Box System & Simulation)

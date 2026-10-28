@@ -335,13 +335,17 @@ class DropBoxGui(
 
         // 4. Default Rarity fallback
         when (item.rarity) {
-            Rarity.COMMON -> player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f)
-            Rarity.UNCOMMON -> player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.2f)
-            Rarity.RARE -> player.playSound(player.location, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1.0f, 1.4f)
-            Rarity.EPIC -> player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.6f)
-            Rarity.LEGENDARY -> {
+            Rarity.F -> player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 1.0f, 1.0f)
+            Rarity.D -> player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.2f)
+            Rarity.C -> player.playSound(player.location, Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1.0f, 1.4f)
+            Rarity.B -> player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1.6f)
+            Rarity.A -> {
                 player.playSound(player.location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f)
                 player.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 0.8f, 1.5f)
+            }
+            Rarity.S -> {
+                player.playSound(player.location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.2f, 1.2f)
+                player.playSound(player.location, Sound.BLOCK_BEACON_ACTIVATE, 1.0f, 1.8f)
             }
         }
     }

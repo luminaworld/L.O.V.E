@@ -19,31 +19,32 @@ class DropBoxSimulationTest {
 
     @Test
     fun testDefaultSearchTimes() {
-        assertEquals(1, ExtractionItem.defaultSearchTime(Rarity.COMMON))
-        assertEquals(2, ExtractionItem.defaultSearchTime(Rarity.UNCOMMON))
-        assertEquals(3, ExtractionItem.defaultSearchTime(Rarity.RARE))
-        assertEquals(4, ExtractionItem.defaultSearchTime(Rarity.EPIC))
-        assertEquals(5, ExtractionItem.defaultSearchTime(Rarity.LEGENDARY))
+        assertEquals(1, ExtractionItem.defaultSearchTime(Rarity.F))
+        assertEquals(2, ExtractionItem.defaultSearchTime(Rarity.D))
+        assertEquals(3, ExtractionItem.defaultSearchTime(Rarity.C))
+        assertEquals(4, ExtractionItem.defaultSearchTime(Rarity.B))
+        assertEquals(5, ExtractionItem.defaultSearchTime(Rarity.A))
+        assertEquals(6, ExtractionItem.defaultSearchTime(Rarity.S))
     }
 
     @Test
     fun testItemSearchTimeOverridesRarity() {
         val dummyStack = createBareItem()
-        // Legendary item configured to search in only 2 seconds instead of default 5
+        // Rank A item configured to search in only 2 seconds instead of default 5
         val fastLegendary = ExtractionItem(
             id = "fast_gem",
             itemStack = dummyStack,
-            rarity = Rarity.LEGENDARY,
+            rarity = Rarity.A,
             searchTime = 2,
             revealSound = "BLOCK_AMETHYST_BLOCK_CHIME"
         )
         assertEquals(2, fastLegendary.searchTime)
 
-        // Common item configured to search in 4 seconds
+        // Rank F item configured to search in 4 seconds
         val slowCommon = ExtractionItem(
             id = "heavy_junk",
             itemStack = dummyStack,
-            rarity = Rarity.COMMON,
+            rarity = Rarity.F,
             searchTime = 4
         )
         assertEquals(4, slowCommon.searchTime)
@@ -52,9 +53,9 @@ class DropBoxSimulationTest {
     @Test
     fun testTwoPhaseContainerSearchWithItemTimes() {
         val dummyStack = createBareItem()
-        val item1 = ExtractionItem(id = "rare_item", itemStack = dummyStack, rarity = Rarity.RARE, searchTime = 3)
-        val item2 = ExtractionItem(id = "common_item", itemStack = dummyStack, rarity = Rarity.COMMON, searchTime = 1)
-        val item3 = ExtractionItem(id = "epic_item", itemStack = dummyStack, rarity = Rarity.EPIC, searchTime = 4)
+        val item1 = ExtractionItem(id = "rare_item", itemStack = dummyStack, rarity = Rarity.C, searchTime = 3)
+        val item2 = ExtractionItem(id = "common_item", itemStack = dummyStack, rarity = Rarity.F, searchTime = 1)
+        val item3 = ExtractionItem(id = "epic_item", itemStack = dummyStack, rarity = Rarity.B, searchTime = 4)
 
         val slot1 = SearchSlotState(slot = 2, item = item1, targetRounds = item1.searchTime)
         val slot2 = SearchSlotState(slot = 10, item = item2, targetRounds = item2.searchTime)

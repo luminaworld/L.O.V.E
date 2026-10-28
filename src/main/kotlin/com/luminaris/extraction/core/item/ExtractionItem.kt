@@ -18,7 +18,7 @@ data class ExtractionItem(
     val id: String,
     val itemStack: ItemStack,
     var price: Double = 100.0,
-    var rarity: Rarity = Rarity.COMMON,
+    var rarity: Rarity = Rarity.F,
     var weight: Double = 10.0,
     val allowedContainers: MutableSet<String> = mutableSetOf(),
     var searchTime: Int = defaultSearchTime(rarity),
@@ -32,11 +32,12 @@ data class ExtractionItem(
             if (cfgTime != null && cfgTime > 0) return cfgTime
 
             return when (rarity) {
-                Rarity.COMMON -> 1
-                Rarity.UNCOMMON -> 2
-                Rarity.RARE -> 3
-                Rarity.EPIC -> 4
-                Rarity.LEGENDARY -> 5
+                Rarity.F -> 1
+                Rarity.D -> 2
+                Rarity.C -> 3
+                Rarity.B -> 4
+                Rarity.A -> 5
+                Rarity.S -> 6
             }
         }
     }

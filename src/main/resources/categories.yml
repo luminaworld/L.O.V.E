@@ -64,11 +64,12 @@ categories:
     search_sound: "BLOCK_STONE_HIT"
     reveal_sound: "ENTITY_ITEM_PICKUP"
     rarity_chances:
-      COMMON: 70.0
-      UNCOMMON: 25.0
-      RARE: 5.0
-      EPIC: 0.0
-      LEGENDARY: 0.0
+      F: 70.0
+      D: 25.0
+      C: 5.0
+      B: 0.0
+      A: 0.0
+      S: 0.0
 
   airdrop:
     display_name: "<gradient:#00D2FF:#3A7BD5><bold>กล่องแอร์ดรอป (Supply Airdrop)</bold></gradient>"
@@ -83,11 +84,12 @@ categories:
     search_sound: "BLOCK_IRON_TRAPDOOR_OPEN"
     reveal_sound: "ENTITY_PLAYER_LEVELUP"
     rarity_chances:
-      COMMON: 5.0
-      UNCOMMON: 20.0
-      RARE: 45.0
-      EPIC: 20.0
-      LEGENDARY: 10.0
+      F: 5.0
+      D: 15.0
+      C: 25.0
+      B: 30.0
+      A: 17.0
+      S: 8.0
 
   safe_box:
     display_name: "<gradient:#FFAA00:#FF5500><bold>กล่องตู้เซฟ (Armored Safe)</bold></gradient>"
@@ -102,15 +104,16 @@ categories:
     search_sound: "BLOCK_ANVIL_LAND"
     reveal_sound: "UI_TOAST_CHALLENGE_COMPLETE"
     rarity_chances:
-      COMMON: 0.0
-      UNCOMMON: 5.0
-      RARE: 25.0
-      EPIC: 45.0
-      LEGENDARY: 25.0
+      F: 10.0
+      D: 20.0
+      C: 35.0
+      B: 20.0
+      A: 10.0
+      S: 5.0
 
-  COMMON:
-    display_name: "<gradient:#9E9E9E:#E0E0E0><bold>Common Grade</bold></gradient>"
-    name: "<color:#AAAAAA>Common Grade</color>"
+  F:
+    display_name: "<gradient:#9E9E9E:#E0E0E0><bold>Rank F</bold></gradient>"
+    name: "<color:#AAAAAA>Rank F</color>"
     color: "#AAAAAA"
     min_rolls: 2
     max_rolls: 4
@@ -119,15 +122,16 @@ categories:
     covered_material: "BLACK_STAINED_GLASS_PANE"
     searching_material: "STONE"
     rarity_chances:
-      COMMON: 70.0
-      UNCOMMON: 25.0
-      RARE: 5.0
-      EPIC: 0.0
-      LEGENDARY: 0.0
+      F: 70.0
+      D: 25.0
+      C: 5.0
+      B: 0.0
+      A: 0.0
+      S: 0.0
 
-  UNCOMMON:
-    display_name: "<gradient:#55FF55:#2E7D32><bold>Uncommon Grade</bold></gradient>"
-    name: "<color:#55FF55>Uncommon Grade</color>"
+  D:
+    display_name: "<gradient:#55FF55:#2E7D32><bold>Rank D</bold></gradient>"
+    name: "<color:#55FF55>Rank D</color>"
     color: "#55FF55"
     min_rolls: 2
     max_rolls: 5
@@ -136,15 +140,16 @@ categories:
     covered_material: "BLACK_STAINED_GLASS_PANE"
     searching_material: "STONE"
     rarity_chances:
-      COMMON: 40.0
-      UNCOMMON: 40.0
-      RARE: 18.0
-      EPIC: 2.0
-      LEGENDARY: 0.0
+      F: 40.0
+      D: 40.0
+      C: 18.0
+      B: 2.0
+      A: 0.0
+      S: 0.0
 
-  RARE:
-    display_name: "<gradient:#00D2FF:#3A7BD5><bold>Rare Tech</bold></gradient>"
-    name: "<color:#55FFFF>Rare Tech</color>"
+  C:
+    display_name: "<gradient:#00D2FF:#3A7BD5><bold>Rank C</bold></gradient>"
+    name: "<color:#55FFFF>Rank C</color>"
     color: "#55FFFF"
     min_rolls: 3
     max_rolls: 5
@@ -153,15 +158,16 @@ categories:
     covered_material: "BLACK_STAINED_GLASS_PANE"
     searching_material: "LAPIS_BLOCK"
     rarity_chances:
-      COMMON: 15.0
-      UNCOMMON: 35.0
-      RARE: 35.0
-      EPIC: 15.0
-      LEGENDARY: 0.0
+      F: 15.0
+      D: 35.0
+      C: 35.0
+      B: 14.0
+      A: 1.0
+      S: 0.0
 
-  EPIC:
-    display_name: "<gradient:#AA00AA:#E040FB><bold>Epic Prototype</bold></gradient>"
-    name: "<color:#AA00AA>Epic Prototype</color>"
+  B:
+    display_name: "<gradient:#AA00AA:#E040FB><bold>Rank B</bold></gradient>"
+    name: "<color:#AA00AA>Rank B</color>"
     color: "#AA00AA"
     min_rolls: 3
     max_rolls: 6
@@ -170,15 +176,16 @@ categories:
     covered_material: "BLACK_STAINED_GLASS_PANE"
     searching_material: "AMETHYST_BLOCK"
     rarity_chances:
-      COMMON: 5.0
-      UNCOMMON: 20.0
-      RARE: 40.0
-      EPIC: 25.0
-      LEGENDARY: 10.0
+      F: 5.0
+      D: 20.0
+      C: 35.0
+      B: 25.0
+      A: 15.0
+      S: 0.0
 
-  LEGENDARY:
-    display_name: "<gradient:#FFAA00:#FF5500><bold>Legendary Relic</bold></gradient>"
-    name: "<color:#FFAA00>Legendary Relic</color>"
+  A:
+    display_name: "<gradient:#FFAA00:#FF5500><bold>Rank A</bold></gradient>"
+    name: "<color:#FFAA00>Rank A</color>"
     color: "#FFAA00"
     min_rolls: 4
     max_rolls: 7
@@ -187,8 +194,27 @@ categories:
     covered_material: "BLACK_STAINED_GLASS_PANE"
     searching_material: "GOLD_BLOCK"
     rarity_chances:
-      COMMON: 0.0
-      UNCOMMON: 5.0
-      RARE: 25.0
-      EPIC: 45.0
-      LEGENDARY: 25.0
+      F: 10.0
+      D: 20.0
+      C: 35.0
+      B: 20.0
+      A: 10.0
+      S: 5.0
+
+  S:
+    display_name: "<gradient:#FF0055:#FF5555><bold>Rank S</bold></gradient>"
+    name: "<color:#FF5555>Rank S</color>"
+    color: "#FF5555"
+    min_rolls: 4
+    max_rolls: 8
+    search_time_min: 5
+    search_time_max: 8
+    covered_material: "BLACK_STAINED_GLASS_PANE"
+    searching_material: "NETHERITE_BLOCK"
+    rarity_chances:
+      F: 0.0
+      D: 10.0
+      C: 20.0
+      B: 35.0
+      A: 25.0
+      S: 10.0

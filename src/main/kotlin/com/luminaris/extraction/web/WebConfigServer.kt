@@ -7,6 +7,7 @@ import com.luminaris.extraction.util.FoliaScheduler
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
+import org.bukkit.Material
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
@@ -64,13 +65,14 @@ class WebConfigServer(private val plugin: LuminarisCorePlugin) {
         if (!jsDir.exists()) jsDir.mkdirs()
 
         val versionFile = File(webDir, ".version")
-        val versionTag = plugin.pluginMeta.version + "-v3"
+        val versionTag = plugin.pluginMeta.version + "-v10"
         val needsUpdate = force || !versionFile.exists() || versionFile.readText().trim() != versionTag
 
         if (needsUpdate) {
             extractAsset("web/index.html", File(webDir, "index.html"), true)
             extractAsset("web/css/style.css", File(cssDir, "style.css"), true)
             extractAsset("web/js/app.js", File(jsDir, "app.js"), true)
+            extractAsset("web/items_textures.json", File(webDir, "items_textures.json"), true)
             runCatching { versionFile.writeText(versionTag) }
         }
     }
@@ -151,6 +153,7 @@ class WebConfigServer(private val plugin: LuminarisCorePlugin) {
             server.createContext("/api/status", StatusHandler())
             server.createContext("/api/files", FilesHandler())
             server.createContext("/api/config", ConfigHandler())
+            server.createContext("/api/materials", MaterialsHandler())
             server.createContext("/api/reload", ReloadHandler())
 
             // Register static web assets route
@@ -580,6 +583,51 @@ class WebConfigServer(private val plugin: LuminarisCorePlugin) {
                 )
             } catch (t: Throwable) {
                 plugin.logger.log(Level.SEVERE, "[WebConfig] ReloadHandler exception: ${t.message}", t)
+                sendError(exchange, 500, "Internal Server Error: ${t.message}")
+            }
+        }
+    }
+
+    /**
+     * /api/materials - Returns all valid in-game Minecraft materials from Bukkit.
+     */
+    private inner class MaterialsHandler : HttpHandler {
+        override fun handle(exchange: HttpExchange) {
+            try {
+                if (handleCors(exchange)) return
+                if (!checkAuth(exchange)) {
+                    sendError(exchange, 401, "จำเป็นต้องเข้าสู่ระบบ / Unauthorized: Authentication required.")
+                    return
+                }
+
+                val materialsList = Material.entries
+                    .filter { !it.name.startsWith("LEGACY_") }
+                    .map { mat ->
+                        val clean = mat.name.lowercase()
+                        val isItem = runCatching { mat.isItem }.getOrDefault(true)
+                        val isBlock = runCatching { mat.isBlock }.getOrDefault(false)
+                        val maxStack = runCatching { mat.maxStackSize }.getOrDefault(64)
+                        mapOf(
+                            "name" to mat.name,
+                            "id" to "minecraft:$clean",
+                            "isItem" to isItem,
+                            "isBlock" to isBlock,
+                            "maxStackSize" to maxStack
+                        )
+                    }
+
+                sendJson(
+                    exchange,
+                    200,
+                    mapOf(
+                        "success" to true,
+                        "version" to "26.3",
+                        "count" to materialsList.size,
+                        "materials" to materialsList
+                    )
+                )
+            } catch (t: Throwable) {
+                plugin.logger.log(Level.SEVERE, "[WebConfig] MaterialsHandler exception: ${t.message}", t)
                 sendError(exchange, 500, "Internal Server Error: ${t.message}")
             }
         }

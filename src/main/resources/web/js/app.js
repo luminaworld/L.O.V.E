@@ -123,11 +123,12 @@
         { key: 'drop_box.default_searching_material', label: 'บล็อกที่แสดงระหว่างค้นหาทีละช่อง', desc: 'เช่น STONE', type: 'text', default: 'STONE' },
         { key: 'drop_box.default_search_sound', label: 'เสียงจังหวะค้นหาทีละช่อง', desc: 'เช่น BLOCK_STONE_HIT', type: 'text', default: 'BLOCK_STONE_HIT' },
         { key: 'drop_box.default_reveal_sound', label: 'เสียงเริ่มต้นเมื่อเปิดพบไอเทม', desc: 'เช่น ENTITY_ITEM_PICKUP', type: 'text', default: 'ENTITY_ITEM_PICKUP' },
-        { key: 'drop_box.rarity_search_times.COMMON', label: 'เวลาค้นหาไอเทม Common (วินาที)', desc: 'ไอเทมทั่วไป', type: 'number', min: 1, default: 1 },
-        { key: 'drop_box.rarity_search_times.UNCOMMON', label: 'เวลาค้นหาไอเทม Uncommon (วินาที)', desc: 'ไอเทมคุณภาพปานกลาง', type: 'number', min: 1, default: 2 },
-        { key: 'drop_box.rarity_search_times.RARE', label: 'เวลาค้นหาไอเทม Rare (วินาที)', desc: 'ไอเทมหายาก', type: 'number', min: 1, default: 3 },
-        { key: 'drop_box.rarity_search_times.EPIC', label: 'เวลาค้นหาไอเทม Epic (วินาที)', desc: 'ไอเทมมหากาพย์', type: 'number', min: 1, default: 4 },
-        { key: 'drop_box.rarity_search_times.LEGENDARY', label: 'เวลาค้นหาไอเทม Legendary (วินาที)', desc: 'ไอเทมตำนาน', type: 'number', min: 1, default: 5 },
+        { key: 'drop_box.rarity_search_times.F', label: 'เวลาค้นหาไอเทมแรงค์ F (วินาที)', desc: 'ไอเทมทั่วไป (สีเทา)', type: 'number', min: 1, default: 1 },
+        { key: 'drop_box.rarity_search_times.D', label: 'เวลาค้นหาไอเทมแรงค์ D (วินาที)', desc: 'ไอเทมคุณภาพปานกลาง (สีเขียว)', type: 'number', min: 1, default: 2 },
+        { key: 'drop_box.rarity_search_times.C', label: 'เวลาค้นหาไอเทมแรงค์ C (วินาที)', desc: 'ไอเทมหายาก (สีฟ้า)', type: 'number', min: 1, default: 3 },
+        { key: 'drop_box.rarity_search_times.B', label: 'เวลาค้นหาไอเทมแรงค์ B (วินาที)', desc: 'ไอเทมมหากาพย์ (สีม่วง)', type: 'number', min: 1, default: 4 },
+        { key: 'drop_box.rarity_search_times.A', label: 'เวลาค้นหาไอเทมแรงค์ A (วินาที)', desc: 'ไอเทมตำนาน (สีทอง)', type: 'number', min: 1, default: 5 },
+        { key: 'drop_box.rarity_search_times.S', label: 'เวลาค้นหาไอเทมแรงค์ S (วินาที)', desc: 'ไอเทมระดับสูงสุด (สีแดง)', type: 'number', min: 1, default: 6 },
         { key: 'drop_box.sounds.complete', label: 'เสียงเมื่อค้นหากล่องครบทุกช่อง', desc: 'เช่น ENTITY_EXPERIENCE_ORB_PICKUP', type: 'text', default: 'ENTITY_EXPERIENCE_ORB_PICKUP' },
         { key: 'drop_box.sounds.take_item', label: 'เสียงเมื่อหยิบไอเทมเข้ากระเป๋า', desc: 'เช่น ENTITY_ITEM_PICKUP', type: 'text', default: 'ENTITY_ITEM_PICKUP' },
         { key: 'drop_box.sounds.click_searching_error', label: 'เสียงแจ้งเตือนเมื่อคลิกช่องที่ยังหาไม่เสร็จ', desc: 'เช่น UI_BUTTON_CLICK', type: 'text', default: 'UI_BUTTON_CLICK' }
@@ -152,15 +153,17 @@
       title: 'เศรษฐกิจและเกณฑ์ราคาไอเทม (Economy & Prices)',
       desc: 'เกณฑ์ราคาสำหรับจัดเกรดความหายากอัตโนมัติ และราคาเริ่มต้นเมื่อสร้างไอเทมใหม่',
       fields: [
-        { key: 'economy.rarity_price_thresholds.LEGENDARY', label: 'เกณฑ์ราคาขั้นต่ำ: Legendary', desc: 'เช่น 2500.0', type: 'number', step: 100.0, default: 2500.0 },
-        { key: 'economy.rarity_price_thresholds.EPIC', label: 'เกณฑ์ราคาขั้นต่ำ: Epic', desc: 'เช่น 1000.0', type: 'number', step: 50.0, default: 1000.0 },
-        { key: 'economy.rarity_price_thresholds.RARE', label: 'เกณฑ์ราคาขั้นต่ำ: Rare', desc: 'เช่น 400.0', type: 'number', step: 25.0, default: 400.0 },
-        { key: 'economy.rarity_price_thresholds.UNCOMMON', label: 'เกณฑ์ราคาขั้นต่ำ: Uncommon', desc: 'เช่น 100.0', type: 'number', step: 10.0, default: 100.0 },
-        { key: 'economy.default_prices.COMMON', label: 'ราคาเริ่มต้นไอเทมใหม่: Common', desc: 'ราคาเริ่มต้น', type: 'number', default: 50.0 },
-        { key: 'economy.default_prices.UNCOMMON', label: 'ราคาเริ่มต้นไอเทมใหม่: Uncommon', desc: 'ราคาเริ่มต้น', type: 'number', default: 150.0 },
-        { key: 'economy.default_prices.RARE', label: 'ราคาเริ่มต้นไอเทมใหม่: Rare', desc: 'ราคาเริ่มต้น', type: 'number', default: 500.0 },
-        { key: 'economy.default_prices.EPIC', label: 'ราคาเริ่มต้นไอเทมใหม่: Epic', desc: 'ราคาเริ่มต้น', type: 'number', default: 1500.0 },
-        { key: 'economy.default_prices.LEGENDARY', label: 'ราคาเริ่มต้นไอเทมใหม่: Legendary', desc: 'ราคาเริ่มต้น', type: 'number', default: 4000.0 }
+        { key: 'economy.rarity_price_thresholds.S', label: 'เกณฑ์ราคาขั้นต่ำ: แรงค์ S (สีแดง)', desc: 'เช่น 5000.0', type: 'number', step: 500.0, default: 5000.0 },
+        { key: 'economy.rarity_price_thresholds.A', label: 'เกณฑ์ราคาขั้นต่ำ: แรงค์ A (สีทอง)', desc: 'เช่น 2500.0', type: 'number', step: 100.0, default: 2500.0 },
+        { key: 'economy.rarity_price_thresholds.B', label: 'เกณฑ์ราคาขั้นต่ำ: แรงค์ B (สีม่วง)', desc: 'เช่น 1000.0', type: 'number', step: 50.0, default: 1000.0 },
+        { key: 'economy.rarity_price_thresholds.C', label: 'เกณฑ์ราคาขั้นต่ำ: แรงค์ C (สีฟ้า)', desc: 'เช่น 400.0', type: 'number', step: 25.0, default: 400.0 },
+        { key: 'economy.rarity_price_thresholds.D', label: 'เกณฑ์ราคาขั้นต่ำ: แรงค์ D (สีเขียว)', desc: 'เช่น 100.0', type: 'number', step: 10.0, default: 100.0 },
+        { key: 'economy.default_prices.F', label: 'ราคาเริ่มต้นไอเทมใหม่: แรงค์ F', desc: 'ราคาเริ่มต้น', type: 'number', default: 50.0 },
+        { key: 'economy.default_prices.D', label: 'ราคาเริ่มต้นไอเทมใหม่: แรงค์ D', desc: 'ราคาเริ่มต้น', type: 'number', default: 150.0 },
+        { key: 'economy.default_prices.C', label: 'ราคาเริ่มต้นไอเทมใหม่: แรงค์ C', desc: 'ราคาเริ่มต้น', type: 'number', default: 500.0 },
+        { key: 'economy.default_prices.B', label: 'ราคาเริ่มต้นไอเทมใหม่: แรงค์ B', desc: 'ราคาเริ่มต้น', type: 'number', default: 1200.0 },
+        { key: 'economy.default_prices.A', label: 'ราคาเริ่มต้นไอเทมใหม่: แรงค์ A', desc: 'ราคาเริ่มต้น', type: 'number', default: 3000.0 },
+        { key: 'economy.default_prices.S', label: 'ราคาเริ่มต้นไอเทมใหม่: แรงค์ S', desc: 'ราคาเริ่มต้น', type: 'number', default: 6000.0 }
       ]
     },
     editor: {
@@ -251,7 +254,15 @@
     closeCreateFileModalBtn: document.getElementById('closeCreateFileModalBtn'),
     cancelCreateFileModalBtn: document.getElementById('cancelCreateFileModalBtn'),
     confirmCreateFileModalBtn: document.getElementById('confirmCreateFileModalBtn'),
-    newConfigFileNameInput: document.getElementById('newConfigFileNameInput')
+    newConfigFileNameInput: document.getElementById('newConfigFileNameInput'),
+    materialPickerModal: document.getElementById('materialPickerModal'),
+    materialPickerTitle: document.getElementById('materialPickerTitle'),
+    closeMaterialPickerBtn: document.getElementById('closeMaterialPickerBtn'),
+    cancelMaterialPickerBtn: document.getElementById('cancelMaterialPickerBtn'),
+    materialSearchInput: document.getElementById('materialSearchInput'),
+    materialCategoryFilters: document.getElementById('materialCategoryFilters'),
+    materialGridContainer: document.getElementById('materialGridContainer'),
+    materialCountDisplay: document.getElementById('materialCountDisplay')
   };
 
   // --- API Client ---
@@ -371,6 +382,9 @@
     if (res && res.success) {
       state.originalRawYaml = state.rawYaml;
       setDirty(false);
+      if (state.activeFile === 'categories.yml') {
+        preloadCategories();
+      }
       showToast('บันทึกและรีโหลดการตั้งค่าในเกมเรียบร้อยแล้ว!', 'success');
       const reloadRes = await apiFetch(`/api/config?file=${encodeURIComponent(state.activeFile)}`);
       if (reloadRes && reloadRes.success) {
@@ -395,6 +409,439 @@
       showToast('รีโหลดการตั้งค่าทั้งหมดในเกมสำเร็จแล้ว!', 'success');
     } else {
       showToast('เกิดข้อผิดพลาดในการรีโหลด: ' + (res.error || 'Server error'), 'error');
+    }
+  }
+
+  // --- Minecraft Material & Texture Manager ---
+  let mcItemsList = [];
+  let mcTexturesMap = {};
+  let mcMaterialsList = [];
+  let isMcAssetsLoaded = false;
+  let currentPickerCallback = null;
+  let currentPickerFilter = 'ALL';
+  let currentPickerQuery = '';
+  let currentPickerSelected = '';
+  let currentFilteredPickerItems = [];
+  let currentPickerBatchIndex = 0;
+  const PICKER_BATCH_SIZE = 120;
+
+  async function loadMinecraftAssets() {
+    try {
+      // 1. Try local items_textures.json
+      let data = null;
+      try {
+        const localRes = await fetch('items_textures.json');
+        if (localRes.ok) {
+          data = await localRes.json();
+        }
+      } catch (e) {
+        console.warn('[MinecraftAssets] Local items_textures.json not found, falling back to CDN...', e);
+      }
+
+      // 2. Fallback to CDN
+      if (!data || !data.items || data.items.length === 0) {
+        try {
+          const cdnRes = await fetch('https://unpkg.com/minecraft-textures/dist/textures/json/26.3.json');
+          if (cdnRes.ok) {
+            data = await cdnRes.json();
+          }
+        } catch (cdnErr) {
+          console.warn('[MinecraftAssets] CDN textures fetch failed:', cdnErr);
+        }
+      }
+
+      if (data && data.items) {
+        mcItemsList = data.items;
+        mcTexturesMap = {};
+        for (let i = 0; i < mcItemsList.length; i++) {
+          const item = mcItemsList[i];
+          const rawId = item.id || '';
+          const clean = rawId.replace(/^minecraft:/, '').toLowerCase();
+          mcTexturesMap[clean] = item;
+          mcTexturesMap['minecraft:' + clean] = item;
+          mcTexturesMap[clean.toUpperCase()] = item;
+        }
+        isMcAssetsLoaded = true;
+      }
+
+      // 3. Query server for Bukkit materials list
+      try {
+        const matRes = await apiFetch('/api/materials');
+        if (matRes && matRes.success && Array.isArray(matRes.materials)) {
+          mcMaterialsList = matRes.materials;
+          for (let i = 0; i < mcMaterialsList.length; i++) {
+            const m = mcMaterialsList[i];
+            const clean = m.name.toLowerCase();
+            if (!mcTexturesMap[clean]) {
+              const readable = m.name.toLowerCase().split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+              const newItem = {
+                readable: readable,
+                id: m.id || ('minecraft:' + clean),
+                texture: `https://assets.mcasset.cloud/1.21/assets/minecraft/textures/item/${clean}.png`
+              };
+              mcItemsList.push(newItem);
+              mcTexturesMap[clean] = newItem;
+              mcTexturesMap['minecraft:' + clean] = newItem;
+              mcTexturesMap[m.name] = newItem;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[MinecraftAssets] Failed to query /api/materials:', err);
+      }
+    } catch (err) {
+      console.error('[MinecraftAssets] Failed to initialize Minecraft assets:', err);
+    }
+  }
+
+  function getMinecraftItemTexture(matName) {
+    if (!matName) return 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%2371717a" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>';
+    const clean = matName.toLowerCase().trim().replace(/^minecraft:/, '');
+    const entry = mcTexturesMap[clean] || mcTexturesMap['minecraft:' + clean] || mcTexturesMap[clean.toUpperCase()];
+    if (entry && entry.texture) {
+      return entry.texture;
+    }
+    return `https://assets.mcasset.cloud/1.21/assets/minecraft/textures/item/${clean}.png`;
+  }
+
+  function getMinecraftItemReadableName(matName) {
+    if (!matName) return 'Unknown Item';
+    const clean = matName.toLowerCase().trim().replace(/^minecraft:/, '');
+    const entry = mcTexturesMap[clean] || mcTexturesMap['minecraft:' + clean] || mcTexturesMap[clean.toUpperCase()];
+    if (entry && entry.readable) {
+      return entry.readable;
+    }
+    return matName.toLowerCase().split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  }
+
+  const THAI_ITEM_ALIASES = [
+    ['ทองแดง', ['copper']],
+    ['โต๊ะคราฟต์', ['crafting_table']],
+    ['โต๊ะคราฟ', ['crafting_table']],
+    ['เนเธอไรต์', ['netherite']],
+    ['เนเธอไรท์', ['netherite']],
+    ['ลูกธนู', ['arrow']],
+    ['หน้าไม้', ['crossbow']],
+    ['คบเพลิง', ['torch']],
+    ['แผ่นเสียง', ['music_disc', 'disc']],
+    ['ดาบ', ['sword']],
+    ['ขวาน', ['axe']],
+    ['พลั่ว', ['shovel']],
+    ['จอบ', ['hoe']],
+    ['อีเตอร์', ['pickaxe']],
+    ['ที่ขุด', ['pickaxe']],
+    ['ธนู', ['bow', 'crossbow']],
+    ['โล่', ['shield']],
+    ['หมวก', ['helmet', 'cap']],
+    ['เสื้อ', ['chestplate', 'tunic']],
+    ['เกราะ', ['helmet', 'chestplate', 'leggings', 'boots', 'armor', 'shield']],
+    ['กางเกง', ['leggings', 'pants']],
+    ['รองเท้า', ['boots']],
+    ['ปีก', ['elytra']],
+    ['กล่อง', ['chest', 'shulker_box', 'barrel', 'box']],
+    ['หีบ', ['chest', 'ender_chest', 'trapped_chest']],
+    ['เตา', ['furnace', 'smoker', 'blast_furnace']],
+    ['เพชร', ['diamond']],
+    ['ทอง', ['gold', 'golden']],
+    ['เหล็ก', ['iron']],
+    ['หิน', ['stone', 'cobblestone', 'deepslate']],
+    ['ไม้', ['wood', 'log', 'planks', 'plank']],
+    ['แร่', ['ore', 'raw_']],
+    ['แอปเปิ้ล', ['apple']],
+    ['ขนมปัง', ['bread']],
+    ['เนื้อ', ['beef', 'porkchop', 'mutton', 'chicken', 'rabbit']],
+    ['ปลา', ['cod', 'salmon']],
+    ['ยา', ['potion']],
+    ['สมุด', ['book']],
+    ['หนังสือ', ['book']],
+    ['โคมไฟ', ['lantern', 'lamp']],
+    ['ระเบิด', ['tnt']],
+    ['เตียง', ['bed']],
+    ['กระจก', ['glass']],
+    ['มรกต', ['emerald']],
+    ['เนเธอร์', ['nether']],
+    ['ลาพิส', ['lapis']],
+    ['เรดสโตน', ['redstone']],
+    ['เข็มทิศ', ['compass']],
+    ['นาฬิกา', ['clock']],
+    ['แตร', ['goat_horn']],
+    ['กระเป๋า', ['bundle']],
+    ['ถุง', ['bundle']],
+    ['กุญแจ', ['trial_key', 'key']],
+    ['พลุ', ['firework']],
+    ['ไข่', ['egg']],
+    ['กระดูก', ['bone']],
+    ['หอก', ['spear']],
+    ['กระบอง', ['mace']],
+    ['พรม', ['carpet']],
+    ['ขนแกะ', ['wool']],
+    ['คอนกรีต', ['concrete']],
+    ['ดิน', ['dirt', 'mud']],
+    ['ทราย', ['sand']]
+  ];
+
+  const MC_COLORS = ['white', 'orange', 'magenta', 'light_blue', 'yellow', 'lime', 'pink', 'gray', 'light_gray', 'cyan', 'purple', 'blue', 'brown', 'green', 'red', 'black'];
+
+  // Categorize Minecraft items exactly like Java Edition Creative Inventory tabs
+  function categorizeMinecraftItem(item) {
+    const id = (item.id || '').toLowerCase().replace(/^minecraft:/, '');
+
+    // 1. SPAWN_EGGS (Mob spawn eggs)
+    if (id.endsWith('_spawn_egg')) {
+      return 'SPAWN_EGGS';
+    }
+
+    // 2. OPERATOR (Command blocks, Barrier, Light, Structure blocks)
+    if (/^(command_block|chain_command_block|repeating_command_block|command_block_minecart|barrier|structure_block|structure_void|jigsaw|light|debug_stick)$/.test(id)) {
+      return 'OPERATOR';
+    }
+
+    // 3. COLORED_BLOCKS (16 colors of wool, carpet, concrete, stained glass, beds, candles, banners, shulkers, cushions, harnesses)
+    for (let i = 0; i < MC_COLORS.length; i++) {
+      const col = MC_COLORS[i];
+      if (id.startsWith(col + '_')) {
+        const rest = id.slice(col.length + 1);
+        if (/^(wool|carpet|terracotta|glazed_terracotta|concrete|stained_glass|bed|candle|banner|shulker_box|cushion|harness)/.test(rest)) {
+          return 'COLORED_BLOCKS';
+        }
+      }
+    }
+
+    // 4. COMBAT (Swords, Spears, Mace, Trident, Bow, Crossbow, Arrows, Shields, Armor, Totem)
+    if (/(_sword|_spear|mace|trident|bow|crossbow|arrow|shield|_helmet|_chestplate|_leggings|_boots|turtle_helmet|elytra|horse_armor|wolf_armor|nautilus_armor|totem_of_undying|wind_charge)/.test(id)) {
+      if (!id.endsWith('_banner_pattern') && !id.endsWith('_template')) {
+        return 'COMBAT';
+      }
+    }
+
+    // 5. TOOLS_UTILITIES (Pickaxes, Shovels, Axes, Hoes, Utilities, Buckets, Rides, Music Discs, Bundles)
+    if (/(_pickaxe|_shovel|_axe|_hoe|fishing_rod|flint_and_steel|shears|brush|lead|name_tag|compass|clock|spyglass|_bucket|saddle|minecart|_boat|carrot_on_a_stick|warped_fungus_on_a_stick|firework_rocket|music_disc_|goat_horn|bundle)/.test(id)) {
+      if (!/furnace|crafting/.test(id)) {
+        return 'TOOLS_UTILITIES';
+      }
+    }
+
+    // 6. FOOD_DRINKS (Food, Drinks, Soups, Potions)
+    if (/(apple|bread|porkchop|beef|chicken|mutton|rabbit|cod|salmon|tropical_fish|pufferfish|carrot|potato|beetroot|soup|stew|melon_slice|sweet_berries|glow_berries|chorus_fruit|cookie|cake|pie|honey_bottle|rotten_flesh|spider_eye|milk_bucket|potion|ominous_bottle)/.test(id)) {
+      if (!/candle_cake|potted/.test(id)) {
+        return 'FOOD_DRINKS';
+      }
+    }
+
+    // 7. REDSTONE_BLOCKS (Redstone circuitry, doors, trapdoors, mechanisms, bulbs)
+    if (/(redstone|repeater|comparator|target|lever|_button|_pressure_plate|lightning_rod|daylight_detector|sculk_sensor|tripwire|trapped_chest|tnt|note_block|piston|dispenser|dropper|hopper|observer|crafter|_door|_trapdoor|_fence_gate|_copper_bulb|copper_bulb)/.test(id)) {
+      if (!/redstone_ore/.test(id)) {
+        return 'REDSTONE_BLOCKS';
+      }
+    }
+
+    // 8. FUNCTIONAL_BLOCKS (Workstations, Containers, Lighting, Signs, Utility blocks)
+    if (/(torch|lantern|campfire|crafting_table|furnace|smoker|blast_furnace|brewing_stand|cauldron|anvil|smithing_table|grindstone|cartography_table|loom|stonecutter|fletching_table|enchanting_table|chest|barrel|shulker_box|decorated_pot|chiseled_bookshelf|bell|beacon|conduit|lodestone|respawn_anchor|jukebox|lectern|flower_pot|composter|_sign|spawner|vault|end_rod|froglight|sea_lantern)/.test(id)) {
+      if (!/chestplate|horse_armor/.test(id)) {
+        return 'FUNCTIONAL_BLOCKS';
+      }
+    }
+
+    // 9. NATURAL_BLOCKS (Ores, Dirt, Stone, Trees, Foliage, Nether/End natural blocks)
+    if (/(_ore|raw_iron_block|raw_copper_block|raw_gold_block|ancient_debris|amethyst_block|budding_amethyst|amethyst_cluster|_amethyst_bud|dirt|grass_block|mud|sand|gravel|ice|snow|moss|obsidian|netherrack|soul_sand|soul_soil|basalt|blackstone|end_stone|purpur|magma_block|_log|_wood|_stem|_hyphae|_leaves|_sapling|_fungus|_mushroom|cactus|sugar_cane|bamboo|vine|flower|rose|tulip|daisy|orchid|poppy|dandelion|blossom|roots|dripleaf|grass|fern|kelp|sculk|creaking_heart|coral|podzol|mycelium)/.test(id)) {
+      return 'NATURAL_BLOCKS';
+    }
+
+    // 10. INGREDIENTS (Ingots, Nuggets, Gems, Drops, Dyes, Templates, Sherds)
+    if (/(ingot|nugget|raw_|diamond|emerald|lapis_lazuli|quartz|amethyst_shard|netherite_scrap|stick|flint|string|feather|gunpowder|_seeds|wheat|bone|slime_ball|clay_ball|brick|resin_|paper|book|leather|hide|foot|glowstone_dust|blaze_rod|blaze_powder|magma_cream|ghast_tear|pearl|eye_of_ender|shell|membrane|scute|breeze_rod|heavy_core|trial_key|breath|fire_charge|nether_star|echo_shard|disc_fragment|_dye|_sherd|_template|_banner_pattern|copper_bulb)/.test(id)) {
+      return 'INGREDIENTS';
+    }
+
+    // 11. BUILDING_BLOCKS (Default: Construction blocks, planks, stones, bricks, slabs, stairs, copper blocks)
+    return 'BUILDING_BLOCKS';
+  }
+
+  function openMaterialPicker(options = {}) {
+    const {
+      currentMaterial = 'STONE',
+      title = 'เลือกไอเทมหรือบล็อกในเกม Minecraft',
+      onSelect = null,
+      filterType = 'ALL'
+    } = options;
+
+    let normFilter = filterType;
+    if (normFilter === 'BLOCKS') normFilter = 'BUILDING_BLOCKS';
+    else if (normFilter === 'WEAPON_ARMOR') normFilter = 'COMBAT';
+    else if (normFilter === 'TOOLS') normFilter = 'TOOLS_UTILITIES';
+    else if (normFilter === 'CONSUMABLE') normFilter = 'FOOD_DRINKS';
+    else if (normFilter === 'MATERIALS') normFilter = 'INGREDIENTS';
+    else if (normFilter === 'CONTAINERS') normFilter = 'FUNCTIONAL_BLOCKS';
+
+    currentPickerCallback = onSelect;
+    currentPickerSelected = currentMaterial.toUpperCase().trim().replace(/^MINECRAFT:/, '');
+    currentPickerFilter = normFilter;
+    currentPickerQuery = '';
+
+    if (elements.materialPickerTitle) {
+      elements.materialPickerTitle.textContent = title;
+    }
+    if (elements.materialSearchInput) {
+      elements.materialSearchInput.value = '';
+    }
+    if (elements.materialPickerModal) {
+      elements.materialPickerModal.classList.remove('hidden');
+      elements.materialPickerModal.classList.add('flex');
+    }
+
+    if (elements.materialCategoryFilters) {
+      const filterBtns = elements.materialCategoryFilters.querySelectorAll('.mat-filter-btn');
+      filterBtns.forEach(btn => {
+        const cat = btn.getAttribute('data-cat');
+        if (cat === currentPickerFilter) {
+          btn.className = 'mat-filter-btn px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-indigo-600 text-white transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shadow-sm';
+        } else {
+          btn.className = 'mat-filter-btn px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition whitespace-nowrap cursor-pointer flex items-center gap-1.5';
+        }
+      });
+    }
+
+    renderMaterialPickerGrid();
+    setTimeout(() => {
+      if (elements.materialSearchInput) elements.materialSearchInput.focus();
+    }, 50);
+  }
+
+  function closeMaterialPicker() {
+    if (elements.materialPickerModal) {
+      elements.materialPickerModal.classList.add('hidden');
+      elements.materialPickerModal.classList.remove('flex');
+    }
+    currentPickerCallback = null;
+  }
+
+  function renderMaterialPickerGrid() {
+    if (!elements.materialGridContainer) return;
+    elements.materialGridContainer.innerHTML = '';
+    const query = currentPickerQuery.toLowerCase().trim();
+
+    // Collect matched Thai alias English keywords
+    const matchedEnKeywords = new Set();
+    if (query) {
+      let tempQ = query;
+      for (let i = 0; i < THAI_ITEM_ALIASES.length; i++) {
+        const [thWord, enList] = THAI_ITEM_ALIASES[i];
+        if (tempQ.includes(thWord)) {
+          enList.forEach(w => matchedEnKeywords.add(w));
+          tempQ = tempQ.split(thWord).join('');
+        }
+      }
+    }
+
+    currentFilteredPickerItems = mcItemsList.filter(item => {
+      const rawId = (item.id || '').toLowerCase();
+      const cleanId = rawId.replace(/^minecraft:/, '');
+      const readable = (item.readable || '').toLowerCase();
+
+      if (currentPickerFilter !== 'ALL') {
+        const cat = categorizeMinecraftItem(item);
+        if (cat !== currentPickerFilter) return false;
+      }
+
+      if (query) {
+        if (cleanId.includes(query) || readable.includes(query) || rawId.includes(query)) {
+          return true;
+        }
+        if (matchedEnKeywords.size > 0) {
+          for (const enWord of matchedEnKeywords) {
+            if (cleanId.includes(enWord)) {
+              if (enWord === 'bow' && cleanId.includes('bowl')) continue;
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+      return true;
+    });
+
+    currentPickerBatchIndex = 0;
+    elements.materialGridContainer.scrollTop = 0;
+
+    if (currentFilteredPickerItems.length === 0) {
+      if (elements.materialCountDisplay) {
+        elements.materialCountDisplay.innerHTML = `พบ <span class="font-bold text-rose-400">0</span> รายการ (จากทั้งหมด ${mcItemsList.length} รายการใน Paper 26.3)`;
+      }
+      elements.materialGridContainer.innerHTML = `
+        <div class="col-span-full py-12 text-center text-zinc-500 text-xs">
+          ไม่พบไอเทมที่ตรงกับคำค้นหา "${escapeHtml(query)}"
+        </div>
+      `;
+      return;
+    }
+
+    renderNextPickerBatch();
+  }
+
+  function renderNextPickerBatch() {
+    if (!elements.materialGridContainer) return;
+    if (currentPickerBatchIndex >= currentFilteredPickerItems.length) return;
+
+    // Remove any previous load indicator
+    const existingIndicator = document.getElementById('pickerScrollIndicator');
+    if (existingIndicator) existingIndicator.remove();
+
+    const batch = currentFilteredPickerItems.slice(currentPickerBatchIndex, currentPickerBatchIndex + PICKER_BATCH_SIZE);
+    currentPickerBatchIndex += batch.length;
+
+    const fragment = document.createDocumentFragment();
+
+    batch.forEach(item => {
+      const rawId = item.id || '';
+      const clean = rawId.replace(/^minecraft:/, '').toLowerCase();
+      const bukkitMat = clean.toUpperCase();
+      const isSelected = (currentPickerSelected === bukkitMat);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `group flex flex-col items-center justify-center p-2 rounded-xl bg-zinc-900/90 border ${
+        isSelected ? 'border-indigo-500 ring-2 ring-indigo-500/50 bg-indigo-950/20' : 'border-zinc-800 hover:border-indigo-500 hover:bg-zinc-850'
+      } transition cursor-pointer text-center relative select-none`;
+      btn.title = `${item.readable || clean} (${bukkitMat})`;
+
+      const tex = item.texture || getMinecraftItemTexture(clean);
+
+      btn.innerHTML = `
+        <div class="w-10 h-10 flex items-center justify-center p-1 rounded-lg bg-zinc-950/80 border border-zinc-800/80 group-hover:border-indigo-500/40 transition">
+          <img src="${tex}" class="w-8 h-8 mc-icon object-contain group-hover:scale-110 transition-transform" alt="${clean}" loading="lazy" onerror="this.onerror=null; this.src='https://assets.mcasset.cloud/1.21/assets/minecraft/textures/block/${clean}.png';">
+        </div>
+        <span class="text-[10px] font-semibold text-zinc-300 group-hover:text-white mt-1.5 line-clamp-1 w-full truncate">${escapeHtml(item.readable || clean)}</span>
+        <span class="text-[8px] font-mono text-zinc-500 group-hover:text-zinc-400 w-full truncate">${escapeHtml(bukkitMat)}</span>
+      `;
+
+      btn.addEventListener('click', () => {
+        if (currentPickerCallback) {
+          currentPickerCallback(bukkitMat, item);
+        }
+        closeMaterialPicker();
+      });
+
+      fragment.appendChild(btn);
+    });
+
+    elements.materialGridContainer.appendChild(fragment);
+
+    // Indicator & count display
+    if (elements.materialCountDisplay) {
+      elements.materialCountDisplay.innerHTML = `แสดง <span class="font-bold text-white">${currentPickerBatchIndex}</span> / <span class="font-bold text-indigo-400">${currentFilteredPickerItems.length}</span> รายการ (จากทั้งหมด ${mcItemsList.length} รายการใน Paper 26.3)`;
+    }
+
+    if (currentPickerBatchIndex < currentFilteredPickerItems.length) {
+      const moreInfo = document.createElement('div');
+      moreInfo.id = 'pickerScrollIndicator';
+      moreInfo.className = 'col-span-full py-3 text-center text-zinc-500 text-[11px] flex items-center justify-center gap-1.5';
+      moreInfo.innerHTML = `<span>เลื่อนลงเพื่อดูไอเทมเพิ่มเติม... (${currentPickerBatchIndex}/${currentFilteredPickerItems.length})</span>`;
+      elements.materialGridContainer.appendChild(moreInfo);
+    } else if (currentFilteredPickerItems.length > PICKER_BATCH_SIZE) {
+      const doneInfo = document.createElement('div');
+      doneInfo.id = 'pickerScrollIndicator';
+      doneInfo.className = 'col-span-full py-2.5 text-center text-zinc-600 text-[11px]';
+      doneInfo.textContent = `แสดงครบทั้งหมด ${currentFilteredPickerItems.length} รายการแล้ว`;
+      elements.materialGridContainer.appendChild(doneInfo);
     }
   }
 
@@ -430,12 +877,12 @@
         const li = document.createElement('li');
         li.className = 'group flex items-center justify-between rounded-lg hover:bg-zinc-800/80 pr-2';
         li.innerHTML = `
-          <a href="#file-${f.path}" class="nav-item flex-1 flex items-center justify-between px-3 py-2 text-xs font-medium text-zinc-400 group-hover:text-white transition" data-file="${f.path}">
-            <div class="flex items-center gap-2.5 truncate mr-2">
+          <a href="#file-${f.path}" class="nav-item flex-1 flex items-center justify-between px-3 py-2 text-xs font-medium text-zinc-400 group-hover:text-white transition min-w-0" data-file="${f.path}">
+            <div class="flex items-center gap-2 truncate mr-2 min-w-0">
               ${SVG_ICONS.box}
               <span class="truncate">${escapeHtml(f.name)}</span>
             </div>
-            <span class="font-mono text-[10px] text-zinc-500 flex-shrink-0">${escapeHtml(f.path)}</span>
+            <span class="font-mono text-[10px] text-zinc-500 truncate max-w-[85px] text-right flex-shrink-0" title="${escapeHtml(f.path)}">${escapeHtml(f.path)}</span>
           </a>
           <button class="delete-file-btn p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition flex-shrink-0 cursor-pointer" title="ลบไฟล์นี้">
             ${SVG_ICONS.trash}
@@ -659,6 +1106,499 @@
   }
 
   /**
+   * Rarity ranks and styling helpers (F, D, C, B, A, S)
+   */
+  const RARITY_RANKS = ['F', 'D', 'C', 'B', 'A', 'S'];
+
+  const RARITY_BADGE_STYLES = {
+    F: 'bg-zinc-800 text-zinc-300 border-zinc-700',
+    D: 'bg-emerald-950/60 text-emerald-400 border-emerald-800',
+    C: 'bg-cyan-950/60 text-cyan-400 border-cyan-800',
+    B: 'bg-purple-950/60 text-purple-400 border-purple-800',
+    A: 'bg-amber-950/60 text-amber-400 border-amber-800',
+    S: 'bg-rose-950/70 text-rose-300 border-rose-700/80 font-black shadow-sm ring-1 ring-rose-500/30'
+  };
+
+  function normalizeRarity(val) {
+    if (!val) return 'F';
+    const u = String(val).trim().toUpperCase();
+    if (u === 'COMMON') return 'F';
+    if (u === 'UNCOMMON') return 'D';
+    if (u === 'RARE') return 'C';
+    if (u === 'EPIC') return 'B';
+    if (u === 'LEGENDARY') return 'A';
+    if (u === 'MYTHIC') return 'S';
+    if (RARITY_RANKS.includes(u)) return u;
+    return 'F';
+  }
+
+  /**
+   * Container Rarity Chance Presets (All guaranteed to sum to exactly 100.0%)
+   * Red Rank S is carefully tuned to 0% for low tiers and strictly 5% - 10% for high-tier vaults/airdrops.
+   */
+  const RARITY_CHANCE_PRESETS = [
+    {
+      id: 'basic',
+      name: 'กล่องทั่วไป',
+      icon: '📦',
+      desc: 'เน้นของพื้นฐาน F/D (S 0%)',
+      chances: { F: 70.0, D: 25.0, C: 5.0, B: 0.0, A: 0.0, S: 0.0 }
+    },
+    {
+      id: 'supply',
+      name: 'กล่องเสบียง',
+      icon: '🧰',
+      desc: 'สมดุลระดับกลาง F/D/C (S 0%)',
+      chances: { F: 45.0, D: 35.0, C: 15.0, B: 5.0, A: 0.0, S: 0.0 }
+    },
+    {
+      id: 'military',
+      name: 'กล่องทหาร',
+      icon: '🎖️',
+      desc: 'ยุทโธปกรณ์ระดับกลาง-สูง D/C/B/A (S 0%)',
+      chances: { F: 20.0, D: 35.0, C: 25.0, B: 15.0, A: 5.0, S: 0.0 }
+    },
+    {
+      id: 'safe',
+      name: 'ตู้เซฟ (S 5%)',
+      icon: '🔒',
+      desc: 'ของมีค่า C/B/A พร้อมโอกาสแดง S 5%',
+      chances: { F: 10.0, D: 20.0, C: 35.0, B: 20.0, A: 10.0, S: 5.0 }
+    },
+    {
+      id: 'airdrop',
+      name: 'แอร์ดรอป (S 8%)',
+      icon: '🪂',
+      desc: 'กล่องบินเสบียงพิเศษ แดง S 8%',
+      chances: { F: 5.0, D: 15.0, C: 25.0, B: 30.0, A: 17.0, S: 8.0 }
+    },
+    {
+      id: 'boss',
+      name: 'กล่องบอส (S 10%)',
+      icon: '👑',
+      desc: 'ระดับสูงสุด แดง S 10% เต็มพิกัด',
+      chances: { F: 0.0, D: 10.0, C: 20.0, B: 35.0, A: 25.0, S: 10.0 }
+    }
+  ];
+
+  /**
+   * Proportionally balances rarity drop chances to ensure total sum is strictly 100.0%.
+   * Caps Red Rank S to maximum 10.0% if higher.
+   */
+  function balanceChancesTo100(chances) {
+    const ranks = ['F', 'D', 'C', 'B', 'A', 'S'];
+    const current = {};
+    ranks.forEach(r => {
+      current[r] = Math.max(0, parseFloat(chances[r]) || 0);
+    });
+
+    let sum = ranks.reduce((acc, r) => acc + current[r], 0);
+    if (sum <= 0) {
+      return { F: 70.0, D: 25.0, C: 5.0, B: 0.0, A: 0.0, S: 0.0 };
+    }
+
+    const balanced = {};
+    let distributed = 0;
+    ranks.forEach((r, idx) => {
+      if (idx === ranks.length - 1) {
+        balanced[r] = Math.max(0, parseFloat((100.0 - distributed).toFixed(1)));
+      } else {
+        const raw = (current[r] / sum) * 100.0;
+        const rounded = Math.round(raw * 10.0) / 10.0;
+        balanced[r] = rounded;
+        distributed += rounded;
+      }
+    });
+
+    // Check if S exceeds 10%
+    if (balanced.S > 10.0) {
+      const excess = parseFloat((balanced.S - 10.0).toFixed(1));
+      balanced.S = 10.0;
+      balanced.A = parseFloat((balanced.A + excess).toFixed(1));
+    }
+
+    return balanced;
+  }
+
+  function updateRarityChancesBadge(badgeEl, sum) {
+    if (!badgeEl) return;
+    const is100 = Math.abs(sum - 100.0) < 0.1;
+    badgeEl.textContent = `รวม ${sum.toFixed(1)}%`;
+    if (is100) {
+      badgeEl.className = 'cat-total-badge text-[10px] font-mono px-2 py-0.5 rounded-full border transition font-bold bg-emerald-950/60 text-emerald-400 border-emerald-800';
+    } else {
+      badgeEl.className = 'cat-total-badge text-[10px] font-mono px-2 py-0.5 rounded-full border transition font-bold bg-amber-950/60 text-amber-400 border-amber-800';
+    }
+  }
+
+  /**
+   * 16 Standard Minecraft Colors Palette with Chat Codes and Hex values
+   */
+  const MINECRAFT_COLORS = [
+    { code: '0', hex: '#000000', name: 'Black', nameTh: 'ดำ' },
+    { code: '1', hex: '#0000AA', name: 'Dark Blue', nameTh: 'น้ำเงินเข้ม' },
+    { code: '2', hex: '#00AA00', name: 'Dark Green', nameTh: 'เขียวเข้ม' },
+    { code: '3', hex: '#00AAAA', name: 'Dark Aqua', nameTh: 'ฟ้าคราม' },
+    { code: '4', hex: '#AA0000', name: 'Dark Red', nameTh: 'แดงเข้ม' },
+    { code: '5', hex: '#AA00AA', name: 'Dark Purple', nameTh: 'ม่วงเข้ม' },
+    { code: '6', hex: '#FFAA00', name: 'Gold', nameTh: 'ทอง' },
+    { code: '7', hex: '#AAAAAA', name: 'Gray', nameTh: 'เทา' },
+    { code: '8', hex: '#555555', name: 'Dark Gray', nameTh: 'เทาเข้ม' },
+    { code: '9', hex: '#5555FF', name: 'Blue', nameTh: 'น้ำเงิน' },
+    { code: 'a', hex: '#55FF55', name: 'Green', nameTh: 'เขียวสว่าง' },
+    { code: 'b', hex: '#55FFFF', name: 'Aqua', nameTh: 'ฟ้าสว่าง' },
+    { code: 'c', hex: '#FF5555', name: 'Red', nameTh: 'แดง' },
+    { code: 'd', hex: '#FF55FF', name: 'Light Purple', nameTh: 'ชมพูม่วง' },
+    { code: 'e', hex: '#FFFF55', name: 'Yellow', nameTh: 'เหลือง' },
+    { code: 'f', hex: '#FFFFFF', name: 'White', nameTh: 'ขาว' }
+  ];
+
+  function normalizeHexColor(input) {
+    if (!input || typeof input !== 'string') return '#AAAAAA';
+    let str = input.trim();
+    if (!str.startsWith('#')) str = '#' + str;
+    if (/^#[0-9A-Fa-f]{3}$/.test(str)) {
+      str = '#' + str[1] + str[1] + str[2] + str[2] + str[3] + str[3];
+    }
+    return str.toUpperCase();
+  }
+
+  function isLightColor(hex) {
+    const clean = (hex || '').replace('#', '');
+    if (clean.length !== 6) return false;
+    const r = parseInt(clean.substring(0, 2), 16) || 0;
+    const g = parseInt(clean.substring(2, 4), 16) || 0;
+    const b = parseInt(clean.substring(4, 6), 16) || 0;
+    return (r * 299 + g * 587 + b * 114) / 1000 > 140;
+  }
+
+  function findMinecraftColor(hex) {
+    if (!hex) return null;
+    const clean = normalizeHexColor(hex).toUpperCase();
+    return MINECRAFT_COLORS.find(c => c.hex.toUpperCase() === clean) || null;
+  }
+
+  /**
+   * Renders an interactive Minecraft Hex Color Picker component
+   * into a target container element.
+   */
+  function renderMinecraftColorPicker(containerEl, initialHex, onChange) {
+    if (!containerEl) return null;
+    let currentHex = normalizeHexColor(initialHex || '#AAAAAA');
+
+    containerEl.innerHTML = `
+      <div class="mc-color-picker-widget bg-zinc-950/90 border border-zinc-800/80 rounded-lg p-2.5 space-y-2.5">
+        <!-- Input Row -->
+        <div class="flex items-center gap-2">
+          <!-- Color Preview Box & Native Picker -->
+          <div class="relative w-8 h-8 rounded-lg border border-zinc-700/80 shadow-inner flex-shrink-0 overflow-hidden cursor-pointer group" title="คลิกเพื่อเลือกสีอิสระผ่านวงล้อสี">
+            <div class="mc-cp-preview w-full h-full transition" style="background-color: ${currentHex}"></div>
+            <input type="color" class="mc-cp-native absolute inset-0 opacity-0 cursor-pointer w-full h-full" value="${/^#[0-9A-Fa-f]{6}$/.test(currentHex) ? currentHex : '#AAAAAA'}">
+          </div>
+
+          <!-- Hex Input with # prefix -->
+          <div class="relative flex-1">
+            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-mono text-zinc-500 font-bold select-none">#</span>
+            <input type="text" maxlength="7" class="mc-cp-text w-full pl-6 pr-2 py-1.5 bg-zinc-900 border border-zinc-700 rounded-md text-xs font-mono text-zinc-100 outline-none focus:border-white transition uppercase font-semibold" value="${currentHex.replace('#', '')}" placeholder="RRGGBB">
+          </div>
+
+          <!-- Matching Minecraft Color Tag -->
+          <div class="mc-cp-badge px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 whitespace-nowrap min-w-[76px] text-center shadow-sm">
+            -
+          </div>
+        </div>
+
+        <!-- 16 Minecraft Colors Grid -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5 px-0.5">
+            <span class="text-[10px] font-medium text-zinc-400 flex items-center gap-1">
+              <span>🎨 สีมาตรฐาน Minecraft (16 สี):</span>
+            </span>
+            <span class="text-[9px] text-zinc-500">คลิกเลือกสีทันที</span>
+          </div>
+          <div class="grid grid-cols-8 gap-1.5 mc-cp-palette">
+            ${MINECRAFT_COLORS.map(c => {
+              const isSelected = c.hex.toUpperCase() === currentHex.toUpperCase();
+              const isLight = isLightColor(c.hex);
+              const checkColor = isLight ? '#000000' : '#FFFFFF';
+              return `
+                <button type="button" data-hex="${c.hex}" data-code="${c.code}" class="mc-cp-swatch relative h-6 rounded border border-zinc-700/80 transition transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center ${isSelected ? 'ring-2 ring-indigo-400 ring-offset-1 ring-offset-zinc-950 scale-105' : 'hover:border-zinc-400'}" style="background-color: ${c.hex};" title="§${c.code} ${c.name} (${c.nameTh}) ${c.hex}">
+                  <span class="mc-cp-check ${isSelected ? 'block' : 'hidden'}" style="color: ${checkColor}; font-size: 10px; font-weight: bold; line-height: 1;">✓</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+
+    const previewEl = containerEl.querySelector('.mc-cp-preview');
+    const nativeInput = containerEl.querySelector('.mc-cp-native');
+    const textInput = containerEl.querySelector('.mc-cp-text');
+    const badgeEl = containerEl.querySelector('.mc-cp-badge');
+    const swatches = containerEl.querySelectorAll('.mc-cp-swatch');
+
+    function updateUI(hex, notify = true) {
+      currentHex = normalizeHexColor(hex);
+      if (previewEl) previewEl.style.backgroundColor = currentHex;
+      if (nativeInput && /^#[0-9A-Fa-f]{6}$/.test(currentHex)) {
+        nativeInput.value = currentHex;
+      }
+      const rawHexClean = currentHex.replace('#', '');
+      if (textInput && textInput.value.toUpperCase() !== rawHexClean) {
+        textInput.value = rawHexClean;
+      }
+
+      // Update Minecraft badge
+      const mcMatch = findMinecraftColor(currentHex);
+      if (badgeEl) {
+        if (mcMatch) {
+          badgeEl.innerHTML = `<span class="font-bold text-amber-400">§${mcMatch.code}</span> <span class="text-zinc-200">${mcMatch.name}</span>`;
+          badgeEl.className = 'mc-cp-badge px-2.5 py-1 rounded bg-zinc-900 border border-zinc-700 text-[10px] font-mono whitespace-nowrap min-w-[76px] text-center shadow-sm';
+        } else {
+          badgeEl.innerHTML = `<span class="text-zinc-400 font-mono">Hex Custom</span>`;
+          badgeEl.className = 'mc-cp-badge px-2.5 py-1 rounded bg-zinc-900/60 border border-zinc-800 text-[10px] font-mono text-zinc-400 whitespace-nowrap min-w-[76px] text-center';
+        }
+      }
+
+      // Update swatch rings and checks
+      swatches.forEach(swatch => {
+        const swatchHex = swatch.getAttribute('data-hex');
+        const isMatch = swatchHex && swatchHex.toUpperCase() === currentHex.toUpperCase();
+        const check = swatch.querySelector('.mc-cp-check');
+        if (isMatch) {
+          swatch.classList.add('ring-2', 'ring-indigo-400', 'ring-offset-1', 'ring-offset-zinc-950', 'scale-105');
+          swatch.classList.remove('hover:border-zinc-400');
+          if (check) check.classList.remove('hidden');
+        } else {
+          swatch.classList.remove('ring-2', 'ring-indigo-400', 'ring-offset-1', 'ring-offset-zinc-950', 'scale-105');
+          swatch.classList.add('hover:border-zinc-400');
+          if (check) check.classList.add('hidden');
+        }
+      });
+
+      if (notify && typeof onChange === 'function') {
+        onChange(currentHex);
+      }
+    }
+
+    // Initialize UI
+    updateUI(currentHex, false);
+
+    // Event listeners
+    if (nativeInput) {
+      nativeInput.addEventListener('input', (e) => {
+        updateUI(e.target.value.toUpperCase(), true);
+      });
+    }
+
+    if (textInput) {
+      textInput.addEventListener('input', (e) => {
+        let val = e.target.value.trim();
+        if (val.startsWith('#')) val = val.substring(1);
+        val = val.replace(/[^0-9A-Fa-f]/g, '');
+        e.target.value = val.toUpperCase();
+        if (val.length === 6 || val.length === 3) {
+          updateUI('#' + val, true);
+        }
+      });
+      textInput.addEventListener('blur', (e) => {
+        let val = e.target.value.trim();
+        if (!val) val = 'AAAAAA';
+        updateUI('#' + val, true);
+      });
+    }
+
+    swatches.forEach(swatch => {
+      swatch.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const hex = swatch.getAttribute('data-hex');
+        if (hex) {
+          updateUI(hex, true);
+        }
+      });
+    });
+
+    return {
+      setColor: (newHex) => updateUI(newHex, false),
+      getColor: () => currentHex
+    };
+  }
+
+  /**
+   * Container Category Preloader & Cache for interactive container selector
+   */
+  let cachedCategoryList = [];
+
+  async function preloadCategories() {
+    try {
+      const res = await apiFetch('/api/config?file=categories.yml');
+      if (res && res.success && res.parsed && res.parsed.categories) {
+        const cats = res.parsed.categories;
+        cachedCategoryList = Object.keys(cats).map(id => {
+          const cat = cats[id] || {};
+          const rawName = cat.name || cat.display_name || id;
+          const cleanName = rawName.replace(/<[^>]+>/g, '').trim();
+          return {
+            id: id,
+            displayName: cleanName || id,
+            color: cat.color || '#888888'
+          };
+        });
+      }
+    } catch (err) {
+      console.warn('Could not preload categories.yml:', err);
+    }
+  }
+
+  function getKnownContainerCategories(extraList = []) {
+    const list = [...cachedCategoryList];
+    const knownIds = new Set(list.map(c => c.id));
+
+    // Fallback defaults if not loaded yet
+    const defaults = [
+      { id: 'normal_crate', displayName: 'กล่องธรรมดา (Normal Crate)', color: '#AAAAAA' },
+      { id: 'airdrop', displayName: 'กล่องแอร์ดรอป (Supply Airdrop)', color: '#00D2FF' },
+      { id: 'safe_box', displayName: 'กล่องตู้เซฟ (Armored Safe)', color: '#FFAA00' },
+      { id: 'military_crate', displayName: 'กล่องทหาร (Military Crate)', color: '#55FF55' },
+      { id: 'medical_crate', displayName: 'กล่องพยาบาล (Medical Crate)', color: '#FF5555' }
+    ];
+    if (list.length === 0) {
+      defaults.forEach(d => {
+        if (!knownIds.has(d.id)) {
+          list.push(d);
+          knownIds.add(d.id);
+        }
+      });
+    }
+
+    if (Array.isArray(extraList)) {
+      extraList.forEach(id => {
+        const trimmed = String(id).trim();
+        if (trimmed && !knownIds.has(trimmed)) {
+          list.push({ id: trimmed, displayName: trimmed, color: '#A1A1AA' });
+          knownIds.add(trimmed);
+        }
+      });
+    }
+
+    return list;
+  }
+
+  /**
+   * Interactive Container Tag / Chip Selector Component
+   * Allows clicking to add/remove container drop targets without typing.
+   */
+  function renderContainerChipSelector(containerEl, currentList, onUpdate) {
+    let selected = Array.isArray(currentList) ? [...currentList] : (currentList ? [currentList] : []);
+
+    function render() {
+      const allKnown = getKnownContainerCategories(selected);
+      containerEl.innerHTML = `
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="text-[11px] font-semibold text-zinc-300 flex items-center gap-1.5">
+              <span>กล่องที่ไอเทมนี้จะดรอป:</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded ${selected.length > 0 ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800' : 'bg-zinc-800 text-zinc-500'}">
+                ${selected.length} กล่อง
+              </span>
+            </label>
+            <div class="flex items-center gap-1.5 text-[10px]">
+              <button type="button" class="btn-select-all px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition cursor-pointer">
+                เลือกทั้งหมด
+              </button>
+              <button type="button" class="btn-clear-all px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-400 transition cursor-pointer">
+                ล้างทั้งหมด
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-1.5 min-h-[34px] p-2 bg-zinc-950/90 border border-zinc-800/80 rounded-xl items-center">
+            ${allKnown.map(cat => {
+              const isSelected = selected.includes(cat.id);
+              if (isSelected) {
+                return `
+                  <button type="button" data-cat-id="${escapeHtml(cat.id)}" class="chip-toggle px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 border transition cursor-pointer active:scale-95 bg-indigo-950/80 border-indigo-500/70 text-indigo-200 shadow-sm hover:bg-indigo-900" title="คลิกเพื่อยกเลิกการดรอปในกล่องนี้">
+                    <span class="w-1.5 h-1.5 rounded-full" style="background-color: ${cat.color || '#6366F1'}"></span>
+                    <span class="font-mono">${escapeHtml(cat.id)}</span>
+                    <svg class="w-3.5 h-3.5 text-indigo-400 hover:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </button>
+                `;
+              } else {
+                return `
+                  <button type="button" data-cat-id="${escapeHtml(cat.id)}" class="chip-toggle px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center gap-1.5 border transition cursor-pointer active:scale-95 bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 hover:bg-zinc-850" title="คลิกเพื่อเพิ่มการดรอปในกล่องนี้">
+                    <span class="w-1.5 h-1.5 rounded-full opacity-50" style="background-color: ${cat.color || '#71717A'}"></span>
+                    <span class="font-mono">${escapeHtml(cat.id)}</span>
+                    <span class="text-zinc-500 text-xs font-bold">+</span>
+                  </button>
+                `;
+              }
+            }).join('')}
+            <div class="inline-flex items-center gap-1 ml-auto">
+              <input type="text" placeholder="+ กล่องอื่น" class="custom-cat-input h-6 px-2 bg-zinc-900 border border-zinc-800 rounded-md text-[10px] font-mono text-zinc-200 placeholder-zinc-500 outline-none focus:border-indigo-500 w-24">
+              <button type="button" class="btn-add-custom h-6 px-2 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-[10px] font-medium transition cursor-pointer">
+                + เพิ่ม
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      containerEl.querySelectorAll('.chip-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const cid = btn.getAttribute('data-cat-id');
+          if (selected.includes(cid)) {
+            selected = selected.filter(x => x !== cid);
+          } else {
+            selected.push(cid);
+          }
+          onUpdate(selected);
+          render();
+        });
+      });
+
+      const btnSelectAll = containerEl.querySelector('.btn-select-all');
+      if (btnSelectAll) {
+        btnSelectAll.addEventListener('click', () => {
+          selected = allKnown.map(c => c.id);
+          onUpdate(selected);
+          render();
+        });
+      }
+
+      const btnClearAll = containerEl.querySelector('.btn-clear-all');
+      if (btnClearAll) {
+        btnClearAll.addEventListener('click', () => {
+          selected = [];
+          onUpdate(selected);
+          render();
+        });
+      }
+
+      const customInput = containerEl.querySelector('.custom-cat-input');
+      const btnAddCustom = containerEl.querySelector('.btn-add-custom');
+      const handleAddCustom = () => {
+        const val = customInput.value.trim().toLowerCase().replace(/\s+/g, '_');
+        if (val && !selected.includes(val)) {
+          selected.push(val);
+          onUpdate(selected);
+          render();
+        }
+      };
+      if (btnAddCustom && customInput) {
+        btnAddCustom.addEventListener('click', handleAddCustom);
+        customInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            handleAddCustom();
+          }
+        });
+      }
+    }
+
+    render();
+  }
+
+  /**
    * Dedicated View for items.yml with Add, Duplicate, Delete, and Full Edit capabilities
    */
   let itemSearchQuery = '';
@@ -678,7 +1618,7 @@
     if (itemRarityFilter !== 'ALL') {
       itemKeys = itemKeys.filter(k => {
         const item = itemsData[k] || {};
-        const r = (item.rarity || item.tier || 'COMMON').toUpperCase();
+        const r = normalizeRarity(item.rarity || item.tier || 'F');
         return r === itemRarityFilter;
       });
     }
@@ -705,13 +1645,14 @@
         <div class="flex items-center gap-2">
           <input type="text" id="itemLocalSearchInput" placeholder="ค้นหาไอเทมหรือ Material..." value="${escapeHtml(itemSearchQuery)}"
                  class="h-7 px-2.5 bg-zinc-950 border border-zinc-800 rounded-md text-xs text-zinc-200 placeholder-zinc-500 outline-none focus:border-zinc-500 w-44">
-          <select id="itemRarityFilterSelect" class="h-7 px-2 bg-zinc-950 border border-zinc-800 rounded-md text-xs text-zinc-300 outline-none focus:border-zinc-500 cursor-pointer">
+          <select id="itemRarityFilterSelect" class="h-7 px-2 bg-zinc-950 border border-zinc-800 rounded-md text-xs font-medium text-zinc-300 outline-none focus:border-zinc-500 cursor-pointer">
             <option value="ALL" ${itemRarityFilter === 'ALL' ? 'selected' : ''}>ทุกระดับความหายาก</option>
-            <option value="COMMON" ${itemRarityFilter === 'COMMON' ? 'selected' : ''}>COMMON</option>
-            <option value="UNCOMMON" ${itemRarityFilter === 'UNCOMMON' ? 'selected' : ''}>UNCOMMON</option>
-            <option value="RARE" ${itemRarityFilter === 'RARE' ? 'selected' : ''}>RARE</option>
-            <option value="EPIC" ${itemRarityFilter === 'EPIC' ? 'selected' : ''}>EPIC</option>
-            <option value="LEGENDARY" ${itemRarityFilter === 'LEGENDARY' ? 'selected' : ''}>LEGENDARY</option>
+            <option value="F" ${itemRarityFilter === 'F' ? 'selected' : ''}>แรงค์ F (สีเทา)</option>
+            <option value="D" ${itemRarityFilter === 'D' ? 'selected' : ''}>แรงค์ D (สีเขียว)</option>
+            <option value="C" ${itemRarityFilter === 'C' ? 'selected' : ''}>แรงค์ C (สีฟ้า)</option>
+            <option value="B" ${itemRarityFilter === 'B' ? 'selected' : ''}>แรงค์ B (สีม่วง)</option>
+            <option value="A" ${itemRarityFilter === 'A' ? 'selected' : ''}>แรงค์ A (สีทอง)</option>
+            <option value="S" ${itemRarityFilter === 'S' ? 'selected' : ''}>แรงค์ S (สีแดง)</option>
           </select>
         </div>
       </div>
@@ -748,18 +1689,8 @@
       const card = document.createElement('div');
       card.className = 'bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700/80 rounded-2xl p-5 shadow-xl transition space-y-4';
 
-      const rarity = (item.rarity || item.tier || 'COMMON').toUpperCase();
-      const rarityBadgeColor = {
-        COMMON: 'bg-zinc-800 text-zinc-300 border-zinc-700',
-        UNCOMMON: 'bg-emerald-950/60 text-emerald-400 border-emerald-800',
-        RARE: 'bg-blue-950/60 text-blue-400 border-blue-800',
-        EPIC: 'bg-purple-950/60 text-purple-400 border-purple-800',
-        LEGENDARY: 'bg-amber-950/60 text-amber-400 border-amber-800'
-      }[rarity] || 'bg-zinc-800 text-zinc-300 border-zinc-700';
-
-      const allowedContStr = Array.isArray(item.allowed_containers)
-        ? item.allowed_containers.join(', ')
-        : (item.allowed_containers || '');
+      const rarity = normalizeRarity(item.rarity || item.tier || 'F');
+      const rarityBadgeColor = RARITY_BADGE_STYLES[rarity] || RARITY_BADGE_STYLES.F;
 
       const loreStr = Array.isArray(item.lore)
         ? item.lore.join('\n')
@@ -767,16 +1698,20 @@
 
       card.innerHTML = `
         <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="p-1.5 rounded-lg bg-zinc-800 text-indigo-400 flex-shrink-0">${SVG_ICONS.box}</span>
+          <div class="flex items-center gap-3 min-w-0">
+            <button type="button" class="w-12 h-12 rounded-xl border border-zinc-700/80 item-slot-frame flex items-center justify-center p-1.5 transition select-card-mat-btn cursor-pointer flex-shrink-0 group" title="คลิกเพื่อเลือกไอเทมในเกม">
+              <img class="w-8 h-8 mc-icon object-contain group-hover:scale-110 transition-transform item-card-icon-img" src="${getMinecraftItemTexture(item.material || 'STONE')}" alt="${escapeHtml(item.material || 'STONE')}" onerror="this.onerror=null; this.src='https://assets.mcasset.cloud/1.21/assets/minecraft/textures/block/${(item.material||'stone').toLowerCase()}.png';">
+            </button>
             <div class="min-w-0">
               <div class="font-bold text-xs text-white truncate" title="${itemId}">${escapeHtml(itemId)}</div>
-              <div class="text-[10px] font-mono text-zinc-500 truncate">${escapeHtml(item.material || 'STONE')}</div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800 truncate item-card-mat-badge">${escapeHtml(item.material || 'STONE')}</span>
+              </div>
             </div>
           </div>
           <div class="flex items-center gap-1.5 flex-shrink-0">
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${rarityBadgeColor}">
-              ${escapeHtml(rarity)}
+              แรงค์ ${escapeHtml(rarity)}
             </span>
             <button class="duplicate-item-btn p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white border border-zinc-700/60 transition cursor-pointer" title="คัดลอกไอเทมนี้">
               ${SVG_ICONS.copy}
@@ -810,21 +1745,25 @@
 
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-[11px] font-medium text-zinc-400 block mb-1">ชนิดบล็อก (Material):</label>
-              <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition item-material" value="${escapeHtml(item.material || 'STONE')}">
+              <label class="text-[11px] font-medium text-zinc-400 block mb-1">ชนิดไอเทม (Material ในเกม):</label>
+              <div class="flex items-center gap-1.5">
+                <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition item-material" value="${escapeHtml(item.material || 'STONE')}">
+                <button type="button" class="px-2 py-1.5 rounded-lg bg-zinc-800 hover:bg-indigo-600 hover:text-white text-zinc-300 text-xs font-medium border border-zinc-700/60 pick-card-mat-btn transition cursor-pointer flex-shrink-0 flex items-center gap-1" title="เปิดหน้าต่างเลือกไอเทมในเกมทั้งหมด">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                  <span>เลือก</span>
+                </button>
+              </div>
             </div>
             <div>
               <label class="text-[11px] font-medium text-zinc-400 block mb-1">ระดับความหายาก (Rarity):</label>
-              <select class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs text-zinc-100 outline-none focus:border-white transition item-rarity cursor-pointer">
-                ${['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'].map(r => `<option value="${r}" ${r === rarity ? 'selected' : ''}>${r}</option>`).join('')}
+              <select class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-bold text-zinc-100 outline-none focus:border-white transition item-rarity cursor-pointer">
+                ${RARITY_RANKS.map(r => `<option value="${r}" ${r === rarity ? 'selected' : ''}>แรงค์ ${r}</option>`).join('')}
               </select>
             </div>
           </div>
 
-          <div>
-            <label class="text-[11px] font-medium text-zinc-400 block mb-1">กล่องที่อนุญาตให้ดรอป (คั่นด้วยจุลภาค):</label>
-            <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition item-containers" value="${escapeHtml(allowedContStr)}" placeholder="เช่น normal_crate, airdrop">
-          </div>
+          <!-- Interactive Container Dropdown / Chip Selector -->
+          <div class="item-containers-slot pt-1"></div>
 
           <div>
             <label class="text-[11px] font-medium text-zinc-400 block mb-1">คำอธิบายใต้ไอเทม (Lore):</label>
@@ -833,30 +1772,60 @@
         </div>
       `;
 
-      card.querySelector('.item-display-name').addEventListener('input', (e) => {
-        updateSettingValue(`items.${itemId}.display_name`, e.target.value);
+      // Mount interactive container chip selector
+      const currentCont = Array.isArray(item.allowed_containers)
+        ? [...item.allowed_containers]
+        : (item.allowed_containers ? [item.allowed_containers] : []);
+
+      const containersSlot = card.querySelector('.item-containers-slot');
+      if (containersSlot) {
+        renderContainerChipSelector(containersSlot, currentCont, (updatedList) => {
+          item.allowed_containers = updatedList;
+          updateSettingValue(`items.${itemId}.allowed_containers`, updatedList);
+        });
+      }
+
+      const updateCardMaterial = (newMat) => {
+        newMat = newMat.toUpperCase().trim();
+        card.querySelector('.item-material').value = newMat;
+        card.querySelector('.item-card-mat-badge').textContent = newMat;
+        const iconImg = card.querySelector('.item-card-icon-img');
+        if (iconImg) {
+          iconImg.src = getMinecraftItemTexture(newMat);
+          iconImg.alt = newMat;
+        }
+        updateSettingValue(`items.${itemId}.material`, newMat);
+      };
+
+      card.querySelector('.select-card-mat-btn').addEventListener('click', () => {
+        openMaterialPicker({
+          currentMaterial: card.querySelector('.item-material').value || 'STONE',
+          title: `เลือกไอเทมใหม่สำหรับ [${itemId}]`,
+          onSelect: (selectedMat) => updateCardMaterial(selectedMat)
+        });
       });
-      card.querySelector('.item-price').addEventListener('input', (e) => {
-        const val = parseFloat(e.target.value) || 0;
-        updateSettingValue(`items.${itemId}.price`, val);
-        updateSettingValue(`items.${itemId}.value`, val);
+
+      card.querySelector('.pick-card-mat-btn').addEventListener('click', () => {
+        openMaterialPicker({
+          currentMaterial: card.querySelector('.item-material').value || 'STONE',
+          title: `เลือกไอเทมใหม่สำหรับ [${itemId}]`,
+          onSelect: (selectedMat) => updateCardMaterial(selectedMat)
+        });
       });
-      card.querySelector('.item-weight').addEventListener('input', (e) => {
-        updateSettingValue(`items.${itemId}.weight`, parseFloat(e.target.value) || 1);
-      });
-      card.querySelector('.item-search-time').addEventListener('input', (e) => {
-        updateSettingValue(`items.${itemId}.search_time`, parseInt(e.target.value, 10) || 1);
-      });
+
       card.querySelector('.item-material').addEventListener('input', (e) => {
-        updateSettingValue(`items.${itemId}.material`, e.target.value.toUpperCase().trim());
+        const val = e.target.value.toUpperCase().trim();
+        card.querySelector('.item-card-mat-badge').textContent = val || 'STONE';
+        const iconImg = card.querySelector('.item-card-icon-img');
+        if (iconImg) {
+          iconImg.src = getMinecraftItemTexture(val);
+        }
+        updateSettingValue(`items.${itemId}.material`, val);
       });
       card.querySelector('.item-rarity').addEventListener('change', (e) => {
-        updateSettingValue(`items.${itemId}.rarity`, e.target.value);
-        updateSettingValue(`items.${itemId}.tier`, e.target.value);
-      });
-      card.querySelector('.item-containers').addEventListener('input', (e) => {
-        const arr = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
-        updateSettingValue(`items.${itemId}.allowed_containers`, arr);
+        const newRarity = e.target.value;
+        updateSettingValue(`items.${itemId}.rarity`, newRarity);
+        updateSettingValue(`items.${itemId}.tier`, newRarity);
       });
       card.querySelector('.item-lore').addEventListener('input', (e) => {
         const lines = e.target.value.split('\n').map(l => l.trim()).filter(Boolean);
@@ -945,7 +1914,7 @@
             </div>
           </div>
           <div class="flex items-center gap-1.5 flex-shrink-0">
-            <span class="w-3.5 h-3.5 rounded-full border border-zinc-700 shadow-sm" style="background-color: ${cat.color || '#AAAAAA'}"></span>
+            <span class="w-3.5 h-3.5 rounded-full border border-zinc-700 shadow-sm cat-header-dot transition" style="background-color: ${cat.color || '#AAAAAA'}"></span>
             <button class="duplicate-cat-btn p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white border border-zinc-700/60 transition cursor-pointer" title="คัดลอกหมวดหมู่นี้">
               ${SVG_ICONS.copy}
             </button>
@@ -961,23 +1930,19 @@
             <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs text-zinc-100 outline-none focus:border-white transition cat-display-name" value="${escapeHtml(cat.display_name || cat.name || catId)}">
           </div>
 
+          <div>
+            <label class="text-[11px] font-medium text-zinc-400 block mb-1">สีประจำกล่อง (Color Hex & Minecraft Colors):</label>
+            <div class="cat-color-picker-slot"></div>
+          </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="text-[11px] font-medium text-zinc-400 block mb-1">สีประจำกล่อง (Color Hex):</label>
-              <div class="flex items-center gap-2">
-                <input type="color" class="w-8 h-8 rounded bg-zinc-950 border border-zinc-800 outline-none cursor-pointer cat-color-picker" value="${cat.color || '#AAAAAA'}">
-                <input type="text" class="w-full px-2 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white cat-color-text" value="${escapeHtml(cat.color || '#AAAAAA')}">
-              </div>
+              <label class="text-[11px] font-medium text-zinc-400 block mb-1">จำนวน Min:</label>
+              <input type="number" min="1" class="w-full px-2 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white cat-min-rolls" value="${cat.min_rolls || 1}">
             </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="text-[11px] font-medium text-zinc-400 block mb-1">จำนวน Min:</label>
-                <input type="number" min="1" class="w-full px-2 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white cat-min-rolls" value="${cat.min_rolls || 1}">
-              </div>
-              <div>
-                <label class="text-[11px] font-medium text-zinc-400 block mb-1">จำนวน Max:</label>
-                <input type="number" min="1" class="w-full px-2 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white cat-max-rolls" value="${cat.max_rolls || 4}">
-              </div>
+            <div>
+              <label class="text-[11px] font-medium text-zinc-400 block mb-1">จำนวน Max:</label>
+              <input type="number" min="1" class="w-full px-2 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white cat-max-rolls" value="${cat.max_rolls || 4}">
             </div>
           </div>
 
@@ -995,53 +1960,158 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="text-[11px] font-medium text-zinc-400 block mb-1">บล็อกปิดกล่อง (Covered):</label>
-              <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition cat-covered" value="${escapeHtml(cat.covered_material || 'BLACK_STAINED_GLASS_PANE')}">
+              <div class="flex items-center gap-1.5">
+                <div class="w-8 h-8 rounded-lg border border-zinc-700/80 item-slot-frame flex items-center justify-center p-1 flex-shrink-0">
+                  <img class="w-6 h-6 mc-icon object-contain cat-covered-icon" src="${getMinecraftItemTexture(cat.covered_material || 'BLACK_STAINED_GLASS_PANE')}" alt="" onerror="this.onerror=null; this.src='https://assets.mcasset.cloud/1.21/assets/minecraft/textures/block/${(cat.covered_material||'black_stained_glass_pane').toLowerCase()}.png';">
+                </div>
+                <input type="text" class="w-full px-2 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition cat-covered" value="${escapeHtml(cat.covered_material || 'BLACK_STAINED_GLASS_PANE')}">
+                <button type="button" class="px-2 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 pick-cat-covered-btn transition cursor-pointer flex-shrink-0" title="เลือกบล็อก">
+                  เลือก
+                </button>
+              </div>
             </div>
             <div>
               <label class="text-[11px] font-medium text-zinc-400 block mb-1">บล็อกค้นหา (Searching):</label>
-              <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition cat-searching" value="${escapeHtml(cat.searching_material || 'STONE')}">
+              <div class="flex items-center gap-1.5">
+                <div class="w-8 h-8 rounded-lg border border-zinc-700/80 item-slot-frame flex items-center justify-center p-1 flex-shrink-0">
+                  <img class="w-6 h-6 mc-icon object-contain cat-searching-icon" src="${getMinecraftItemTexture(cat.searching_material || 'STONE')}" alt="" onerror="this.onerror=null; this.src='https://assets.mcasset.cloud/1.21/assets/minecraft/textures/block/${(cat.searching_material||'stone').toLowerCase()}.png';">
+                </div>
+                <input type="text" class="w-full px-2 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition cat-searching" value="${escapeHtml(cat.searching_material || 'STONE')}">
+                <button type="button" class="px-2 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 pick-cat-searching-btn transition cursor-pointer flex-shrink-0" title="เลือกบล็อก">
+                  เลือก
+                </button>
+              </div>
             </div>
           </div>
 
-          <div class="pt-2 border-t border-zinc-800/80">
-            <label class="text-[11px] font-semibold text-zinc-300 block mb-1.5">โอกาสออกของระดับความหายาก (Rarity Chances %):</label>
-            <div class="grid grid-cols-5 gap-1.5 text-center">
+          <div class="pt-2.5 border-t border-zinc-800/80 space-y-2">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-2">
+                <label class="text-[11px] font-semibold text-zinc-300">โอกาสออกความหายาก (Rarity Chances %):</label>
+                <span class="cat-total-badge text-[10px] font-mono px-2 py-0.5 rounded-full border transition font-bold bg-zinc-800 text-zinc-400 border-zinc-700">
+                  รวม 0%
+                </span>
+              </div>
+              <button type="button" class="btn-balance-cat px-2 py-0.5 rounded bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 text-indigo-300 text-[10px] font-medium flex items-center gap-1 transition cursor-pointer active:scale-95" title="ปรับสัดส่วนทุกแรงค์ให้รวมได้ 100% พอดี">
+                <span>⚡ ปรับให้ครบ 100%</span>
+              </button>
+            </div>
+
+            <!-- Presets Bar -->
+            <div class="flex flex-wrap items-center gap-1 p-1.5 bg-zinc-950/80 border border-zinc-800/80 rounded-lg">
+              <span class="text-[10px] text-zinc-500 font-semibold px-1">พรีเซ็ทเรท:</span>
+              ${RARITY_CHANCE_PRESETS.map(p => `
+                <button type="button" data-preset="${p.id}" class="cat-preset-btn px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 transition cursor-pointer active:scale-95 flex items-center gap-1" title="${p.name} - ${p.desc}">
+                  <span>${p.icon}</span>
+                  <span>${p.name}</span>
+                </button>
+              `).join('')}
+            </div>
+
+            <div class="grid grid-cols-6 gap-1 text-center">
               <div>
-                <span class="text-[10px] text-zinc-400 block mb-0.5 font-bold">COM</span>
-                <input type="number" step="1" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white cat-chance-common" value="${(cat.rarity_chances && cat.rarity_chances.COMMON !== undefined) ? cat.rarity_chances.COMMON : 0}">
+                <span class="text-[10px] text-zinc-400 block mb-0.5 font-bold">F</span>
+                <input type="number" step="0.5" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white cat-chance-f" value="${(cat.rarity_chances && cat.rarity_chances.F !== undefined) ? cat.rarity_chances.F : ((cat.rarity_chances && cat.rarity_chances.COMMON !== undefined) ? cat.rarity_chances.COMMON : 0)}">
               </div>
               <div>
-                <span class="text-[10px] text-emerald-400 block mb-0.5 font-bold">UNC</span>
-                <input type="number" step="1" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white cat-chance-uncommon" value="${(cat.rarity_chances && cat.rarity_chances.UNCOMMON !== undefined) ? cat.rarity_chances.UNCOMMON : 0}">
+                <span class="text-[10px] text-emerald-400 block mb-0.5 font-bold">D</span>
+                <input type="number" step="0.5" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-emerald-300 text-center outline-none focus:border-white cat-chance-d" value="${(cat.rarity_chances && cat.rarity_chances.D !== undefined) ? cat.rarity_chances.D : ((cat.rarity_chances && cat.rarity_chances.UNCOMMON !== undefined) ? cat.rarity_chances.UNCOMMON : 0)}">
               </div>
               <div>
-                <span class="text-[10px] text-blue-400 block mb-0.5 font-bold">RARE</span>
-                <input type="number" step="1" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white cat-chance-rare" value="${(cat.rarity_chances && cat.rarity_chances.RARE !== undefined) ? cat.rarity_chances.RARE : 0}">
+                <span class="text-[10px] text-cyan-400 block mb-0.5 font-bold">C</span>
+                <input type="number" step="0.5" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-cyan-300 text-center outline-none focus:border-white cat-chance-c" value="${(cat.rarity_chances && cat.rarity_chances.C !== undefined) ? cat.rarity_chances.C : ((cat.rarity_chances && cat.rarity_chances.RARE !== undefined) ? cat.rarity_chances.RARE : 0)}">
               </div>
               <div>
-                <span class="text-[10px] text-purple-400 block mb-0.5 font-bold">EPIC</span>
-                <input type="number" step="1" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white cat-chance-epic" value="${(cat.rarity_chances && cat.rarity_chances.EPIC !== undefined) ? cat.rarity_chances.EPIC : 0}">
+                <span class="text-[10px] text-purple-400 block mb-0.5 font-bold">B</span>
+                <input type="number" step="0.5" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-purple-300 text-center outline-none focus:border-white cat-chance-b" value="${(cat.rarity_chances && cat.rarity_chances.B !== undefined) ? cat.rarity_chances.B : ((cat.rarity_chances && cat.rarity_chances.EPIC !== undefined) ? cat.rarity_chances.EPIC : 0)}">
               </div>
               <div>
-                <span class="text-[10px] text-amber-400 block mb-0.5 font-bold">LEG</span>
-                <input type="number" step="1" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white cat-chance-legendary" value="${(cat.rarity_chances && cat.rarity_chances.LEGENDARY !== undefined) ? cat.rarity_chances.LEGENDARY : 0}">
+                <span class="text-[10px] text-amber-400 block mb-0.5 font-bold">A</span>
+                <input type="number" step="0.5" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-800 rounded text-xs font-mono text-amber-300 text-center outline-none focus:border-white cat-chance-a" value="${(cat.rarity_chances && cat.rarity_chances.A !== undefined) ? cat.rarity_chances.A : ((cat.rarity_chances && cat.rarity_chances.LEGENDARY !== undefined) ? cat.rarity_chances.LEGENDARY : 0)}">
+              </div>
+              <div>
+                <span class="text-[10px] text-rose-400 block mb-0.5 font-bold">S</span>
+                <input type="number" step="0.5" class="w-full px-1 py-1 bg-zinc-950 border border-rose-900/60 rounded text-xs font-mono text-rose-300 text-center outline-none focus:border-rose-500 cat-chance-s" value="${(cat.rarity_chances && cat.rarity_chances.S !== undefined) ? cat.rarity_chances.S : 0}">
               </div>
             </div>
           </div>
         </div>
       `;
 
+      const inputF = card.querySelector('.cat-chance-f');
+      const inputD = card.querySelector('.cat-chance-d');
+      const inputC = card.querySelector('.cat-chance-c');
+      const inputB = card.querySelector('.cat-chance-b');
+      const inputA = card.querySelector('.cat-chance-a');
+      const inputS = card.querySelector('.cat-chance-s');
+      const totalBadge = card.querySelector('.cat-total-badge');
+
+      const refreshCardTotal = () => {
+        const sum = (parseFloat(inputF.value) || 0) +
+                    (parseFloat(inputD.value) || 0) +
+                    (parseFloat(inputC.value) || 0) +
+                    (parseFloat(inputB.value) || 0) +
+                    (parseFloat(inputA.value) || 0) +
+                    (parseFloat(inputS.value) || 0);
+        updateRarityChancesBadge(totalBadge, sum);
+      };
+
+      const setCardChances = (ch) => {
+        inputF.value = ch.F;
+        inputD.value = ch.D;
+        inputC.value = ch.C;
+        inputB.value = ch.B;
+        inputA.value = ch.A;
+        inputS.value = ch.S;
+        updateSettingValue(`categories.${catId}.rarity_chances.F`, ch.F);
+        updateSettingValue(`categories.${catId}.rarity_chances.D`, ch.D);
+        updateSettingValue(`categories.${catId}.rarity_chances.C`, ch.C);
+        updateSettingValue(`categories.${catId}.rarity_chances.B`, ch.B);
+        updateSettingValue(`categories.${catId}.rarity_chances.A`, ch.A);
+        updateSettingValue(`categories.${catId}.rarity_chances.S`, ch.S);
+        refreshCardTotal();
+      };
+
+      // Preset click handlers
+      card.querySelectorAll('.cat-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pid = btn.getAttribute('data-preset');
+          const p = RARITY_CHANCE_PRESETS.find(x => x.id === pid);
+          if (p) {
+            setCardChances(p.chances);
+            showToast(`ใช้พรีเซ็ท "${p.name}" ให้กล่อง "${catId}" แล้ว`, 'info');
+          }
+        });
+      });
+
+      // Auto-balance click handler
+      card.querySelector('.btn-balance-cat').addEventListener('click', () => {
+        const current = {
+          F: parseFloat(inputF.value) || 0,
+          D: parseFloat(inputD.value) || 0,
+          C: parseFloat(inputC.value) || 0,
+          B: parseFloat(inputB.value) || 0,
+          A: parseFloat(inputA.value) || 0,
+          S: parseFloat(inputS.value) || 0
+        };
+        const balanced = balanceChancesTo100(current);
+        setCardChances(balanced);
+        showToast(`ปรับสมดุลเรทกล่อง "${catId}" ให้ครบ 100% เรียบร้อยแล้ว`, 'success');
+      });
+
       card.querySelector('.cat-display-name').addEventListener('input', (e) => {
         updateSettingValue(`categories.${catId}.display_name`, e.target.value);
       });
-      card.querySelector('.cat-color-picker').addEventListener('input', (e) => {
-        card.querySelector('.cat-color-text').value = e.target.value;
-        updateSettingValue(`categories.${catId}.color`, e.target.value);
-      });
-      card.querySelector('.cat-color-text').addEventListener('input', (e) => {
-        card.querySelector('.cat-color-picker').value = e.target.value;
-        updateSettingValue(`categories.${catId}.color`, e.target.value);
-      });
+      const colorSlot = card.querySelector('.cat-color-picker-slot');
+      const headerDot = card.querySelector('.cat-header-dot');
+      if (colorSlot) {
+        renderMinecraftColorPicker(colorSlot, cat.color || '#AAAAAA', (newHex) => {
+          updateSettingValue(`categories.${catId}.color`, newHex);
+          if (headerDot) headerDot.style.backgroundColor = newHex;
+          const cached = cachedCategoryList.find(c => c.id === catId);
+          if (cached) cached.color = newHex;
+        });
+      }
       card.querySelector('.cat-min-rolls').addEventListener('input', (e) => {
         updateSettingValue(`categories.${catId}.min_rolls`, parseInt(e.target.value, 10) || 1);
       });
@@ -1054,27 +2124,72 @@
       card.querySelector('.cat-search-max').addEventListener('input', (e) => {
         updateSettingValue(`categories.${catId}.search_time_max`, parseInt(e.target.value, 10) || 1);
       });
+      card.querySelector('.pick-cat-covered-btn').addEventListener('click', () => {
+        openMaterialPicker({
+          currentMaterial: card.querySelector('.cat-covered').value || 'BLACK_STAINED_GLASS_PANE',
+          title: `เลือกบล็อกปิดกล่อง (Covered) สำหรับ [${catId}]`,
+          filterType: 'BLOCKS',
+          onSelect: (selectedMat) => {
+            card.querySelector('.cat-covered').value = selectedMat;
+            const icon = card.querySelector('.cat-covered-icon');
+            if (icon) icon.src = getMinecraftItemTexture(selectedMat);
+            updateSettingValue(`categories.${catId}.covered_material`, selectedMat);
+          }
+        });
+      });
+
+      card.querySelector('.pick-cat-searching-btn').addEventListener('click', () => {
+        openMaterialPicker({
+          currentMaterial: card.querySelector('.cat-searching').value || 'STONE',
+          title: `เลือกบล็อกค้นหา (Searching) สำหรับ [${catId}]`,
+          filterType: 'BLOCKS',
+          onSelect: (selectedMat) => {
+            card.querySelector('.cat-searching').value = selectedMat;
+            const icon = card.querySelector('.cat-searching-icon');
+            if (icon) icon.src = getMinecraftItemTexture(selectedMat);
+            updateSettingValue(`categories.${catId}.searching_material`, selectedMat);
+          }
+        });
+      });
+
       card.querySelector('.cat-covered').addEventListener('input', (e) => {
-        updateSettingValue(`categories.${catId}.covered_material`, e.target.value.toUpperCase().trim());
+        const val = e.target.value.toUpperCase().trim();
+        const icon = card.querySelector('.cat-covered-icon');
+        if (icon) icon.src = getMinecraftItemTexture(val);
+        updateSettingValue(`categories.${catId}.covered_material`, val);
       });
       card.querySelector('.cat-searching').addEventListener('input', (e) => {
-        updateSettingValue(`categories.${catId}.searching_material`, e.target.value.toUpperCase().trim());
+        const val = e.target.value.toUpperCase().trim();
+        const icon = card.querySelector('.cat-searching-icon');
+        if (icon) icon.src = getMinecraftItemTexture(val);
+        updateSettingValue(`categories.${catId}.searching_material`, val);
       });
-      card.querySelector('.cat-chance-common').addEventListener('input', (e) => {
-        updateSettingValue(`categories.${catId}.rarity_chances.COMMON`, parseFloat(e.target.value) || 0);
+      card.querySelector('.cat-chance-f').addEventListener('input', (e) => {
+        updateSettingValue(`categories.${catId}.rarity_chances.F`, parseFloat(e.target.value) || 0);
+        refreshCardTotal();
       });
-      card.querySelector('.cat-chance-uncommon').addEventListener('input', (e) => {
-        updateSettingValue(`categories.${catId}.rarity_chances.UNCOMMON`, parseFloat(e.target.value) || 0);
+      card.querySelector('.cat-chance-d').addEventListener('input', (e) => {
+        updateSettingValue(`categories.${catId}.rarity_chances.D`, parseFloat(e.target.value) || 0);
+        refreshCardTotal();
       });
-      card.querySelector('.cat-chance-rare').addEventListener('input', (e) => {
-        updateSettingValue(`categories.${catId}.rarity_chances.RARE`, parseFloat(e.target.value) || 0);
+      card.querySelector('.cat-chance-c').addEventListener('input', (e) => {
+        updateSettingValue(`categories.${catId}.rarity_chances.C`, parseFloat(e.target.value) || 0);
+        refreshCardTotal();
       });
-      card.querySelector('.cat-chance-epic').addEventListener('input', (e) => {
-        updateSettingValue(`categories.${catId}.rarity_chances.EPIC`, parseFloat(e.target.value) || 0);
+      card.querySelector('.cat-chance-b').addEventListener('input', (e) => {
+        updateSettingValue(`categories.${catId}.rarity_chances.B`, parseFloat(e.target.value) || 0);
+        refreshCardTotal();
       });
-      card.querySelector('.cat-chance-legendary').addEventListener('input', (e) => {
-        updateSettingValue(`categories.${catId}.rarity_chances.LEGENDARY`, parseFloat(e.target.value) || 0);
+      card.querySelector('.cat-chance-a').addEventListener('input', (e) => {
+        updateSettingValue(`categories.${catId}.rarity_chances.A`, parseFloat(e.target.value) || 0);
+        refreshCardTotal();
       });
+      card.querySelector('.cat-chance-s').addEventListener('input', (e) => {
+        updateSettingValue(`categories.${catId}.rarity_chances.S`, parseFloat(e.target.value) || 0);
+        refreshCardTotal();
+      });
+
+      refreshCardTotal();
 
       // Duplicate category button
       card.querySelector('.duplicate-cat-btn').addEventListener('click', () => {
@@ -1150,11 +2265,13 @@
 
       card.innerHTML = `
         <div class="flex items-center justify-between pb-3 border-b border-zinc-800">
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="p-1.5 rounded-lg bg-zinc-800 text-sky-400 flex-shrink-0">${SVG_ICONS.safe_cases_settings}</span>
+          <div class="flex items-center gap-3 min-w-0">
+            <button type="button" class="w-12 h-12 rounded-xl border border-zinc-700/80 item-slot-frame flex items-center justify-center p-1.5 transition select-case-mat-btn cursor-pointer flex-shrink-0 group" title="คลิกเพื่อเลือกไอเทม">
+              <img class="w-8 h-8 mc-icon object-contain group-hover:scale-110 transition-transform case-icon-img" src="${getMinecraftItemTexture(c.material || 'BUNDLE')}" alt="${escapeHtml(c.material || 'BUNDLE')}" onerror="this.onerror=null; this.src='https://assets.mcasset.cloud/1.21/assets/minecraft/textures/item/bundle.png';">
+            </button>
             <div class="min-w-0">
               <div class="font-bold text-xs text-white truncate" title="${caseId}">${escapeHtml(caseId)}</div>
-              <div class="text-[10px] text-zinc-500 font-mono truncate">${escapeHtml(c.material || 'BUNDLE')}</div>
+              <div class="text-[10px] text-zinc-400 font-mono truncate case-mat-badge">${escapeHtml(c.material || 'BUNDLE')}</div>
             </div>
           </div>
           <div class="flex items-center gap-1.5 flex-shrink-0">
@@ -1183,7 +2300,12 @@
             </div>
             <div>
               <label class="text-[11px] font-medium text-zinc-400 block mb-1">ไอเทม (Material):</label>
-              <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition case-material" value="${escapeHtml(c.material || 'BUNDLE')}">
+              <div class="flex items-center gap-1.5">
+                <input type="text" class="w-full px-2.5 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition case-material" value="${escapeHtml(c.material || 'BUNDLE')}">
+                <button type="button" class="px-2 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 pick-case-mat-btn transition cursor-pointer flex-shrink-0">
+                  เลือก
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1202,6 +2324,34 @@
         </div>
       `;
 
+      const updateCaseMaterial = (newMat) => {
+        newMat = newMat.toUpperCase().trim();
+        card.querySelector('.case-material').value = newMat;
+        card.querySelector('.case-mat-badge').textContent = newMat;
+        const iconImg = card.querySelector('.case-icon-img');
+        if (iconImg) {
+          iconImg.src = getMinecraftItemTexture(newMat);
+          iconImg.alt = newMat;
+        }
+        updateSettingValue(`safe_cases.${caseId}.material`, newMat);
+      };
+
+      card.querySelector('.select-case-mat-btn').addEventListener('click', () => {
+        openMaterialPicker({
+          currentMaterial: card.querySelector('.case-material').value || 'BUNDLE',
+          title: `เลือกไอเทมสำหรับกระเป๋า [${caseId}]`,
+          onSelect: (selectedMat) => updateCaseMaterial(selectedMat)
+        });
+      });
+
+      card.querySelector('.pick-case-mat-btn').addEventListener('click', () => {
+        openMaterialPicker({
+          currentMaterial: card.querySelector('.case-material').value || 'BUNDLE',
+          title: `เลือกไอเทมสำหรับกระเป๋า [${caseId}]`,
+          onSelect: (selectedMat) => updateCaseMaterial(selectedMat)
+        });
+      });
+
       card.querySelector('.case-display-name').addEventListener('input', (e) => {
         updateSettingValue(`safe_cases.${caseId}.display_name`, e.target.value);
         updateSettingValue(`safe_cases.${caseId}.title`, e.target.value);
@@ -1210,7 +2360,11 @@
         updateSettingValue(`safe_cases.${caseId}.capacity`, parseInt(e.target.value, 10) || 9);
       });
       card.querySelector('.case-material').addEventListener('input', (e) => {
-        updateSettingValue(`safe_cases.${caseId}.material`, e.target.value.toUpperCase().trim());
+        const val = e.target.value.toUpperCase().trim();
+        card.querySelector('.case-mat-badge').textContent = val || 'NONE';
+        const iconImg = card.querySelector('.case-icon-img');
+        if (iconImg) iconImg.src = getMinecraftItemTexture(val);
+        updateSettingValue(`safe_cases.${caseId}.material`, val);
       });
       card.querySelector('.case-cmd').addEventListener('input', (e) => {
         updateSettingValue(`safe_cases.${caseId}.custom_model_data`, parseInt(e.target.value, 10) || 0);
@@ -1513,7 +2667,13 @@
       }
 
       let formattedVal = newValue;
-      if (typeof newValue === 'string') {
+      if (Array.isArray(newValue)) {
+        if (newValue.length === 0) {
+          formattedVal = '[]';
+        } else {
+          formattedVal = '[' + newValue.map(item => formatYamlScalar(item)).join(', ') + ']';
+        }
+      } else if (typeof newValue === 'string') {
         if (newValue.includes(':') || newValue.includes('#') || newValue.startsWith('@') || newValue.startsWith('"')) {
           formattedVal = `"${newValue.replace(/"/g, '\\"')}"`;
         } else if (newValue === '' || /^\s*$/.test(newValue)) {
@@ -1533,6 +2693,7 @@
 
   /**
    * Safe JavaScript to YAML Stringifier
+   * Guarantees space after mapping key (e.g. key: []) preventing SnakeYAML lexer errors
    */
   function stringifyYaml(val, indent = 0) {
     const pad = '  '.repeat(indent);
@@ -1552,12 +2713,28 @@
     }
 
     if (typeof val === 'object') {
-      let res = indent > 0 ? '\n' : '';
       const keys = Object.keys(val);
+      if (keys.length === 0) return '{}\n';
+      let res = indent > 0 ? '\n' : '';
       for (const key of keys) {
         const v = val[key];
-        if (typeof v === 'object' && v !== null) {
-          res += `${pad}${key}:${stringifyYaml(v, indent + 1)}`;
+        if (Array.isArray(v)) {
+          if (v.length === 0) {
+            res += `${pad}${key}: []\n`;
+          } else {
+            const isPrimitiveArray = v.every(x => typeof x !== 'object' || x === null);
+            if (isPrimitiveArray && v.length <= 8) {
+              res += `${pad}${key}: [${v.map(formatYamlScalar).join(', ')}]\n`;
+            } else {
+              res += `${pad}${key}:${stringifyYaml(v, indent + 1)}`;
+            }
+          }
+        } else if (typeof v === 'object' && v !== null) {
+          if (Object.keys(v).length === 0) {
+            res += `${pad}${key}: {}\n`;
+          } else {
+            res += `${pad}${key}:${stringifyYaml(v, indent + 1)}`;
+          }
         } else {
           res += `${pad}${key}: ${formatYamlScalar(v)}\n`;
         }
@@ -1598,16 +2775,37 @@
       <span>${isClone ? 'คัดลอกและสร้างไอเทมใหม่ (Clone Item)' : 'เพิ่มไอเทมใหม่ (Add New Item)'}</span>
     `;
 
-    const defRarity = preset ? (preset.rarity || preset.tier || 'COMMON').toUpperCase() : 'RARE';
-    const defContainers = preset && Array.isArray(preset.allowed_containers)
-      ? preset.allowed_containers.join(', ')
-      : (preset && preset.allowed_containers ? preset.allowed_containers : 'common, rare, epic');
+    const defMaterial = (preset ? (preset.material || 'IRON_SWORD') : 'IRON_SWORD').toUpperCase().trim();
+    const defRarity = preset ? normalizeRarity(preset.rarity || preset.tier || 'F') : 'C';
+    let modalSelectedContainers = preset && Array.isArray(preset.allowed_containers)
+      ? [...preset.allowed_containers]
+      : (preset && preset.allowed_containers ? [preset.allowed_containers] : ['normal_crate', 'airdrop']);
     const defLore = preset && Array.isArray(preset.lore)
       ? preset.lore.join('\n')
       : (preset && preset.lore ? preset.lore : '');
 
+    const defTexture = getMinecraftItemTexture(defMaterial);
+    const defReadable = getMinecraftItemReadableName(defMaterial);
+
     elements.entryModalBody.innerHTML = `
-      <div class="space-y-3">
+      <div class="space-y-4">
+        <!-- Interactive Item Picker Banner -->
+        <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-xl flex items-center justify-between gap-3 shadow-inner">
+          <div class="flex items-center gap-3 min-w-0">
+            <button type="button" id="m_choose_item_slot_btn" class="w-12 h-12 rounded-xl border border-zinc-700 item-slot-frame flex items-center justify-center p-2 flex-shrink-0 cursor-pointer group hover:border-indigo-500 transition" title="คลิกเพื่อเลือกไอเทมในเกม">
+              <img id="m_item_icon_img" src="${defTexture}" class="w-8 h-8 mc-icon object-contain group-hover:scale-110 transition-transform" alt="${escapeHtml(defMaterial)}" onerror="this.onerror=null; this.src='https://assets.mcasset.cloud/1.21/assets/minecraft/textures/block/${defMaterial.toLowerCase()}.png';">
+            </button>
+            <div class="min-w-0">
+              <div id="m_item_mat_display" class="text-xs font-bold font-mono text-white truncate">${escapeHtml(defMaterial)}</div>
+              <div id="m_item_readable_display" class="text-[11px] text-zinc-400 truncate">${escapeHtml(defReadable)}</div>
+            </div>
+          </div>
+          <button type="button" id="m_choose_item_all_btn" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer flex-shrink-0">
+            ${SVG_ICONS.box}
+            <span>เลือกไอเทมในเกมทั้งหมด</span>
+          </button>
+        </div>
+
         <div>
           <label class="text-xs font-semibold text-zinc-300 block mb-1">รหัสไอเทม (Item ID):</label>
           <input type="text" id="m_item_id" value="${escapeHtml(defaultId)}" placeholder="เช่น combat_knife, gold_coin" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
@@ -1619,13 +2817,18 @@
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-xs font-semibold text-zinc-300 block mb-1">ชนิดบล็อก (Material):</label>
-            <input type="text" id="m_item_mat" value="${escapeHtml(preset ? (preset.material || 'IRON_SWORD') : 'IRON_SWORD')}" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+            <label class="text-xs font-semibold text-zinc-300 block mb-1">ชนิดไอเทม (Material ในเกม):</label>
+            <div class="flex items-center gap-1.5">
+              <input type="text" id="m_item_mat" value="${escapeHtml(defMaterial)}" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+              <button type="button" id="m_pick_mat_btn" class="px-2.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 transition cursor-pointer flex-shrink-0">
+                เลือก
+              </button>
+            </div>
           </div>
           <div>
             <label class="text-xs font-semibold text-zinc-300 block mb-1">ระดับความหายาก (Rarity):</label>
-            <select id="m_item_rarity" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs text-zinc-100 outline-none focus:border-white transition cursor-pointer">
-              ${['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'].map(r => `<option value="${r}" ${r === defRarity ? 'selected' : ''}>${r}</option>`).join('')}
+            <select id="m_item_rarity" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-bold text-zinc-100 outline-none focus:border-white transition cursor-pointer">
+              ${RARITY_RANKS.map(r => `<option value="${r}" ${r === defRarity ? 'selected' : ''}>แรงค์ ${r}</option>`).join('')}
             </select>
           </div>
         </div>
@@ -1643,16 +2846,84 @@
             <input type="number" id="m_item_time" value="${preset ? (preset.search_time || 2) : 2}" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
           </div>
         </div>
-        <div>
-          <label class="text-xs font-semibold text-zinc-300 block mb-1">กล่องที่อนุญาตให้สุ่มเกิด (คั่นด้วยจุลภาค):</label>
-          <input type="text" id="m_item_containers" value="${escapeHtml(defContainers)}" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
-        </div>
+
+        <!-- Interactive Container Chip Selector -->
+        <div id="m_containers_selector_slot" class="pt-1"></div>
+
         <div>
           <label class="text-xs font-semibold text-zinc-300 block mb-1">คำอธิบายใต้ไอเทม (Lore - 1 บรรทัดต่อ 1 ข้อความ):</label>
           <textarea id="m_item_lore" rows="2" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition leading-relaxed resize-y">${escapeHtml(defLore)}</textarea>
         </div>
       </div>
     `;
+
+    // Mount interactive container selector into modal
+    const contSlot = elements.entryModalBody.querySelector('#m_containers_selector_slot');
+    if (contSlot) {
+      renderContainerChipSelector(contSlot, modalSelectedContainers, (updated) => {
+        modalSelectedContainers = updated;
+      });
+    }
+
+    const setModalMaterial = (selectedMat, itemObj) => {
+      selectedMat = selectedMat.toUpperCase().trim();
+      const matInput = document.getElementById('m_item_mat');
+      if (matInput) matInput.value = selectedMat;
+
+      const matDisp = document.getElementById('m_item_mat_display');
+      if (matDisp) matDisp.textContent = selectedMat;
+
+      const readName = (itemObj && itemObj.readable) ? itemObj.readable : getMinecraftItemReadableName(selectedMat);
+      const readDisp = document.getElementById('m_item_readable_display');
+      if (readDisp) readDisp.textContent = readName;
+
+      const iconImg = document.getElementById('m_item_icon_img');
+      if (iconImg) {
+        iconImg.src = getMinecraftItemTexture(selectedMat);
+        iconImg.alt = selectedMat;
+      }
+
+      const idInput = document.getElementById('m_item_id');
+      if (idInput && !idInput.value.trim()) {
+        idInput.value = selectedMat.toLowerCase();
+      }
+
+      const nameInput = document.getElementById('m_item_name');
+      if (nameInput && !nameInput.value.trim()) {
+        nameInput.value = `<gradient:#00FFA3:#00B8FF><bold>${readName}</bold></gradient>`;
+      }
+    };
+
+    const triggerPicker = () => {
+      const currentVal = (document.getElementById('m_item_mat') || {}).value || 'IRON_SWORD';
+      openMaterialPicker({
+        currentMaterial: currentVal,
+        title: 'เลือกไอเทมในเกมสำหรับไอเทมใหม่',
+        onSelect: (selectedMat, itemObj) => setModalMaterial(selectedMat, itemObj)
+      });
+    };
+
+    const slotBtn = document.getElementById('m_choose_item_slot_btn');
+    if (slotBtn) slotBtn.addEventListener('click', triggerPicker);
+
+    const allBtn = document.getElementById('m_choose_item_all_btn');
+    if (allBtn) allBtn.addEventListener('click', triggerPicker);
+
+    const pickSubBtn = document.getElementById('m_pick_mat_btn');
+    if (pickSubBtn) pickSubBtn.addEventListener('click', triggerPicker);
+
+    const matInput = document.getElementById('m_item_mat');
+    if (matInput) {
+      matInput.addEventListener('input', (e) => {
+        const val = e.target.value.toUpperCase().trim();
+        const matDisp = document.getElementById('m_item_mat_display');
+        if (matDisp) matDisp.textContent = val || 'NONE';
+        const readDisp = document.getElementById('m_item_readable_display');
+        if (readDisp) readDisp.textContent = getMinecraftItemReadableName(val);
+        const iconImg = document.getElementById('m_item_icon_img');
+        if (iconImg) iconImg.src = getMinecraftItemTexture(val);
+      });
+    }
 
     openEntryModal(() => {
       const id = document.getElementById('m_item_id').value.trim().toLowerCase().replace(/\s+/g, '_');
@@ -1666,8 +2937,9 @@
         return false;
       }
 
-      const containersStr = document.getElementById('m_item_containers').value;
-      const containers = containersStr.split(',').map(s => s.trim()).filter(Boolean);
+      const containers = (modalSelectedContainers && modalSelectedContainers.length > 0)
+        ? [...modalSelectedContainers]
+        : ['normal_crate'];
       const loreText = document.getElementById('m_item_lore').value.trim();
       const loreLines = loreText ? loreText.split('\n').map(l => l.trim()).filter(Boolean) : [
         `<color:#AAAAAA>Item ID: ${id}</color>`,
@@ -1705,7 +2977,12 @@
       <span>${isClone ? 'คัดลอกและสร้างหมวดหมู่กล่อง (Clone Category)' : 'เพิ่มหมวดหมู่กล่องใหม่ (Add New Category)'}</span>
     `;
 
-    const chances = (preset && preset.rarity_chances) || { COMMON: 50, UNCOMMON: 35, RARE: 15, EPIC: 0, LEGENDARY: 0 };
+    const chances = (preset && preset.rarity_chances) || { F: 60, D: 25, C: 10, B: 4, A: 1, S: 0 };
+    const getChance = (rank, oldKey) => {
+      if (chances[rank] !== undefined) return chances[rank];
+      if (oldKey && chances[oldKey] !== undefined) return chances[oldKey];
+      return 0;
+    };
 
     elements.entryModalBody.innerHTML = `
       <div class="space-y-3">
@@ -1718,8 +2995,8 @@
           <input type="text" id="m_cat_name" value="${escapeHtml(preset ? (preset.display_name || preset.name || '') : '')}" placeholder="เช่น <gradient:#00FFA3:#00B8FF><bold>กล่องอาวุธ (Weapon Crate)</bold></gradient>" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs text-zinc-100 outline-none focus:border-white transition">
         </div>
         <div>
-          <label class="text-xs font-semibold text-zinc-300 block mb-1">สีประจำกล่อง (Hex Color):</label>
-          <input type="color" id="m_cat_color" value="${preset ? (preset.color || '#00FFA3') : '#00FFA3'}" class="w-full h-8 bg-zinc-950 border border-zinc-700 rounded-lg outline-none cursor-pointer">
+          <label class="text-xs font-semibold text-zinc-300 block mb-1">สีประจำกล่อง (Color Hex & Minecraft Colors):</label>
+          <div id="m_cat_color_slot"></div>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -1744,40 +3021,183 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="text-xs font-semibold text-zinc-300 block mb-1">บล็อกปิดกล่อง (Covered):</label>
-            <input type="text" id="m_cat_covered" value="${escapeHtml(preset ? (preset.covered_material || 'BLACK_STAINED_GLASS_PANE') : 'BLACK_STAINED_GLASS_PANE')}" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+            <div class="flex items-center gap-1.5">
+              <div class="w-8 h-8 rounded-lg border border-zinc-700/80 item-slot-frame flex items-center justify-center p-1 flex-shrink-0">
+                <img id="m_cat_cov_img" class="w-6 h-6 mc-icon object-contain" src="${getMinecraftItemTexture(preset ? (preset.covered_material || 'BLACK_STAINED_GLASS_PANE') : 'BLACK_STAINED_GLASS_PANE')}" alt="">
+              </div>
+              <input type="text" id="m_cat_covered" value="${escapeHtml(preset ? (preset.covered_material || 'BLACK_STAINED_GLASS_PANE') : 'BLACK_STAINED_GLASS_PANE')}" class="w-full px-2 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+              <button type="button" id="m_cat_cov_btn" class="px-2 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 transition cursor-pointer flex-shrink-0">เลือก</button>
+            </div>
           </div>
           <div>
             <label class="text-xs font-semibold text-zinc-300 block mb-1">บล็อกค้นหา (Searching):</label>
-            <input type="text" id="m_cat_searching" value="${escapeHtml(preset ? (preset.searching_material || 'STONE') : 'STONE')}" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+            <div class="flex items-center gap-1.5">
+              <div class="w-8 h-8 rounded-lg border border-zinc-700/80 item-slot-frame flex items-center justify-center p-1 flex-shrink-0">
+                <img id="m_cat_src_img" class="w-6 h-6 mc-icon object-contain" src="${getMinecraftItemTexture(preset ? (preset.searching_material || 'STONE') : 'STONE')}" alt="">
+              </div>
+              <input type="text" id="m_cat_searching" value="${escapeHtml(preset ? (preset.searching_material || 'STONE') : 'STONE')}" class="w-full px-2 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+              <button type="button" id="m_cat_src_btn" class="px-2 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 transition cursor-pointer flex-shrink-0">เลือก</button>
+            </div>
           </div>
         </div>
         <div>
-          <label class="text-xs font-semibold text-zinc-300 block mb-1">โอกาสออกของระดับความหายาก (Rarity Chances %):</label>
-          <div class="grid grid-cols-5 gap-1.5 text-center">
+          <div class="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-semibold text-zinc-300">โอกาสออกความหายาก (Rarity Chances %):</label>
+              <span id="m_cat_total_badge" class="text-[10px] font-mono px-2 py-0.5 rounded-full border transition font-bold bg-zinc-800 text-zinc-400 border-zinc-700">
+                รวม 0%
+              </span>
+            </div>
+            <button type="button" id="m_cat_balance_btn" class="px-2 py-0.5 rounded bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700/60 text-indigo-300 text-[10px] font-medium flex items-center gap-1 transition cursor-pointer active:scale-95" title="ปรับสัดส่วนทุกแรงค์ให้รวมได้ 100% พอดี">
+              <span>⚡ ปรับให้ครบ 100%</span>
+            </button>
+          </div>
+
+          <!-- Presets Buttons Bar in Modal -->
+          <div class="flex flex-wrap items-center gap-1 p-1.5 mb-2 bg-zinc-950/80 border border-zinc-800/80 rounded-lg">
+            <span class="text-[10px] text-zinc-500 font-semibold px-1">พรีเซ็ท:</span>
+            ${RARITY_CHANCE_PRESETS.map(p => `
+              <button type="button" data-preset="${p.id}" class="m-cat-preset-btn px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-900 hover:bg-zinc-850 text-zinc-300 hover:text-white border border-zinc-800 hover:border-zinc-700 transition cursor-pointer active:scale-95 flex items-center gap-1" title="${p.name} - ${p.desc}">
+                <span>${p.icon}</span>
+                <span>${p.name}</span>
+              </button>
+            `).join('')}
+          </div>
+
+          <div class="grid grid-cols-6 gap-1 text-center">
             <div>
-              <span class="text-[10px] text-zinc-400 block mb-0.5 font-bold">COM</span>
-              <input type="number" id="m_cat_c_com" value="${chances.COMMON || 0}" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white">
+              <span class="text-[10px] text-zinc-400 block mb-0.5 font-bold">F</span>
+              <input type="number" step="0.5" id="m_cat_c_f" value="${getChance('F', 'COMMON')}" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white">
             </div>
             <div>
-              <span class="text-[10px] text-emerald-400 block mb-0.5 font-bold">UNC</span>
-              <input type="number" id="m_cat_c_unc" value="${chances.UNCOMMON || 0}" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white">
+              <span class="text-[10px] text-emerald-400 block mb-0.5 font-bold">D</span>
+              <input type="number" step="0.5" id="m_cat_c_d" value="${getChance('D', 'UNCOMMON')}" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-emerald-300 text-center outline-none focus:border-white">
             </div>
             <div>
-              <span class="text-[10px] text-blue-400 block mb-0.5 font-bold">RARE</span>
-              <input type="number" id="m_cat_c_rare" value="${chances.RARE || 0}" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white">
+              <span class="text-[10px] text-cyan-400 block mb-0.5 font-bold">C</span>
+              <input type="number" step="0.5" id="m_cat_c_c" value="${getChance('C', 'RARE')}" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-cyan-300 text-center outline-none focus:border-white">
             </div>
             <div>
-              <span class="text-[10px] text-purple-400 block mb-0.5 font-bold">EPIC</span>
-              <input type="number" id="m_cat_c_epic" value="${chances.EPIC || 0}" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white">
+              <span class="text-[10px] text-purple-400 block mb-0.5 font-bold">B</span>
+              <input type="number" step="0.5" id="m_cat_c_b" value="${getChance('B', 'EPIC')}" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-purple-300 text-center outline-none focus:border-white">
             </div>
             <div>
-              <span class="text-[10px] text-amber-400 block mb-0.5 font-bold">LEG</span>
-              <input type="number" id="m_cat_c_leg" value="${chances.LEGENDARY || 0}" class="w-full px-1.5 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-zinc-100 text-center outline-none focus:border-white">
+              <span class="text-[10px] text-amber-400 block mb-0.5 font-bold">A</span>
+              <input type="number" step="0.5" id="m_cat_c_a" value="${getChance('A', 'LEGENDARY')}" class="w-full px-1 py-1 bg-zinc-950 border border-zinc-700 rounded text-xs font-mono text-amber-300 text-center outline-none focus:border-white">
+            </div>
+            <div>
+              <span class="text-[10px] text-rose-400 block mb-0.5 font-bold">S</span>
+              <input type="number" step="0.5" id="m_cat_c_s" value="${getChance('S', 'MYTHIC')}" class="w-full px-1 py-1 bg-zinc-950 border border-rose-900/60 rounded text-xs font-mono text-rose-300 text-center outline-none focus:border-rose-500">
             </div>
           </div>
         </div>
       </div>
     `;
+
+    let modalSelectedColor = preset ? (preset.color || '#00FFA3') : '#00FFA3';
+    const modalColorSlot = document.getElementById('m_cat_color_slot');
+    if (modalColorSlot) {
+      renderMinecraftColorPicker(modalColorSlot, modalSelectedColor, (newHex) => {
+        modalSelectedColor = newHex;
+      });
+    }
+
+    const mInputF = document.getElementById('m_cat_c_f');
+    const mInputD = document.getElementById('m_cat_c_d');
+    const mInputC = document.getElementById('m_cat_c_c');
+    const mInputB = document.getElementById('m_cat_c_b');
+    const mInputA = document.getElementById('m_cat_c_a');
+    const mInputS = document.getElementById('m_cat_c_s');
+    const mTotalBadge = document.getElementById('m_cat_total_badge');
+
+    const refreshModalTotal = () => {
+      const sum = (parseFloat(mInputF.value) || 0) +
+                  (parseFloat(mInputD.value) || 0) +
+                  (parseFloat(mInputC.value) || 0) +
+                  (parseFloat(mInputB.value) || 0) +
+                  (parseFloat(mInputA.value) || 0) +
+                  (parseFloat(mInputS.value) || 0);
+      updateRarityChancesBadge(mTotalBadge, sum);
+    };
+
+    const setModalChances = (ch) => {
+      mInputF.value = ch.F;
+      mInputD.value = ch.D;
+      mInputC.value = ch.C;
+      mInputB.value = ch.B;
+      mInputA.value = ch.A;
+      mInputS.value = ch.S;
+      refreshModalTotal();
+    };
+
+    elements.entryModalBody.querySelectorAll('.m-cat-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pid = btn.getAttribute('data-preset');
+        const p = RARITY_CHANCE_PRESETS.find(x => x.id === pid);
+        if (p) {
+          setModalChances(p.chances);
+          showToast(`ใช้พรีเซ็ท "${p.name}" แล้ว`, 'info');
+        }
+      });
+    });
+
+    const mBalanceBtn = document.getElementById('m_cat_balance_btn');
+    if (mBalanceBtn) {
+      mBalanceBtn.addEventListener('click', () => {
+        const cur = {
+          F: parseFloat(mInputF.value) || 0,
+          D: parseFloat(mInputD.value) || 0,
+          C: parseFloat(mInputC.value) || 0,
+          B: parseFloat(mInputB.value) || 0,
+          A: parseFloat(mInputA.value) || 0,
+          S: parseFloat(mInputS.value) || 0
+        };
+        const balanced = balanceChancesTo100(cur);
+        setModalChances(balanced);
+        showToast('ปรับสมดุลเรทให้ครบ 100% เรียบร้อยแล้ว', 'success');
+      });
+    }
+
+    [mInputF, mInputD, mInputC, mInputB, mInputA, mInputS].forEach(inp => {
+      inp.addEventListener('input', refreshModalTotal);
+    });
+    refreshModalTotal();
+
+    const covBtn = document.getElementById('m_cat_cov_btn');
+    if (covBtn) {
+      covBtn.addEventListener('click', () => {
+        const cur = (document.getElementById('m_cat_covered') || {}).value || 'BLACK_STAINED_GLASS_PANE';
+        openMaterialPicker({
+          currentMaterial: cur,
+          title: 'เลือกบล็อกปิดกล่อง (Covered)',
+          filterType: 'BLOCKS',
+          onSelect: (selectedMat) => {
+            const input = document.getElementById('m_cat_covered');
+            if (input) input.value = selectedMat;
+            const img = document.getElementById('m_cat_cov_img');
+            if (img) img.src = getMinecraftItemTexture(selectedMat);
+          }
+        });
+      });
+    }
+
+    const srcBtn = document.getElementById('m_cat_src_btn');
+    if (srcBtn) {
+      srcBtn.addEventListener('click', () => {
+        const cur = (document.getElementById('m_cat_searching') || {}).value || 'STONE';
+        openMaterialPicker({
+          currentMaterial: cur,
+          title: 'เลือกบล็อกค้นหา (Searching)',
+          filterType: 'BLOCKS',
+          onSelect: (selectedMat) => {
+            const input = document.getElementById('m_cat_searching');
+            if (input) input.value = selectedMat;
+            const img = document.getElementById('m_cat_src_img');
+            if (img) img.src = getMinecraftItemTexture(selectedMat);
+          }
+        });
+      });
+    }
 
     openEntryModal(() => {
       const id = document.getElementById('m_cat_id').value.trim().toLowerCase().replace(/\s+/g, '_');
@@ -1794,7 +3214,7 @@
       const newCat = {
         display_name: document.getElementById('m_cat_name').value.trim() || id,
         name: id,
-        color: document.getElementById('m_cat_color').value,
+        color: modalSelectedColor || '#AAAAAA',
         min_rolls: parseInt(document.getElementById('m_cat_min_rolls').value, 10) || 2,
         max_rolls: parseInt(document.getElementById('m_cat_max_rolls').value, 10) || 4,
         search_time_min: parseInt(document.getElementById('m_cat_search_min').value, 10) || 2,
@@ -1803,16 +3223,24 @@
         searching_material: document.getElementById('m_cat_searching').value.trim().toUpperCase() || 'STONE',
         search_sound: preset && preset.search_sound ? preset.search_sound : 'BLOCK_STONE_HIT',
         reveal_sound: preset && preset.reveal_sound ? preset.reveal_sound : 'ENTITY_ITEM_PICKUP',
-        rarity_chances: {
-          COMMON: parseFloat(document.getElementById('m_cat_c_com').value) || 0,
-          UNCOMMON: parseFloat(document.getElementById('m_cat_c_unc').value) || 0,
-          RARE: parseFloat(document.getElementById('m_cat_c_rare').value) || 0,
-          EPIC: parseFloat(document.getElementById('m_cat_c_epic').value) || 0,
-          LEGENDARY: parseFloat(document.getElementById('m_cat_c_leg').value) || 0
-        }
+        rarity_chances: balanceChancesTo100({
+          F: parseFloat(document.getElementById('m_cat_c_f').value) || 0,
+          D: parseFloat(document.getElementById('m_cat_c_d').value) || 0,
+          C: parseFloat(document.getElementById('m_cat_c_c').value) || 0,
+          B: parseFloat(document.getElementById('m_cat_c_b').value) || 0,
+          A: parseFloat(document.getElementById('m_cat_c_a').value) || 0,
+          S: parseFloat(document.getElementById('m_cat_c_s').value) || 0
+        })
       };
 
       state.parsedData.categories[id] = newCat;
+      if (!cachedCategoryList.some(c => c.id === id)) {
+        cachedCategoryList.push({
+          id: id,
+          displayName: newCat.display_name.replace(/<[^>]+>/g, '').trim() || id,
+          color: newCat.color || '#AAAAAA'
+        });
+      }
       state.rawYaml = stringifyYaml(state.parsedData);
       elements.rawYamlTextarea.value = state.rawYaml;
       setDirty(true);
@@ -1846,7 +3274,13 @@
           </div>
           <div>
             <label class="text-xs font-semibold text-zinc-300 block mb-1">ไอเทม (Material):</label>
-            <input type="text" id="m_case_mat" value="${escapeHtml(preset ? (preset.material || 'BUNDLE') : 'BUNDLE')}" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+            <div class="flex items-center gap-1.5">
+              <div class="w-8 h-8 rounded-lg border border-zinc-700/80 item-slot-frame flex items-center justify-center p-1 flex-shrink-0">
+                <img id="m_case_mat_img" class="w-6 h-6 mc-icon object-contain" src="${getMinecraftItemTexture(preset ? (preset.material || 'BUNDLE') : 'BUNDLE')}" alt="">
+              </div>
+              <input type="text" id="m_case_mat" value="${escapeHtml(preset ? (preset.material || 'BUNDLE') : 'BUNDLE')}" class="w-full px-2 py-2 bg-zinc-950 border border-zinc-700 rounded-lg text-xs font-mono text-zinc-100 outline-none focus:border-white transition">
+              <button type="button" id="m_case_mat_btn" class="px-2 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 transition cursor-pointer flex-shrink-0">เลือก</button>
+            </div>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3 items-center">
@@ -1863,6 +3297,23 @@
         </div>
       </div>
     `;
+
+    const caseMatBtn = document.getElementById('m_case_mat_btn');
+    if (caseMatBtn) {
+      caseMatBtn.addEventListener('click', () => {
+        const cur = (document.getElementById('m_case_mat') || {}).value || 'BUNDLE';
+        openMaterialPicker({
+          currentMaterial: cur,
+          title: 'เลือกไอเทมสำหรับกระเป๋านิรภัย',
+          onSelect: (selectedMat) => {
+            const input = document.getElementById('m_case_mat');
+            if (input) input.value = selectedMat;
+            const img = document.getElementById('m_case_mat_img');
+            if (img) img.src = getMinecraftItemTexture(selectedMat);
+          }
+        });
+      });
+    }
 
     openEntryModal(() => {
       const id = document.getElementById('m_case_id').value.trim().toLowerCase().replace(/\s+/g, '_');
@@ -2312,7 +3763,7 @@
       }
     });
 
-    // Confirm Modal
+    // Confirm Modal (Close only via explicit buttons)
     elements.cancelConfirmModalBtn.addEventListener('click', closeConfirmModal);
     elements.okConfirmModalBtn.addEventListener('click', () => {
       if (activeConfirmCallback) {
@@ -2320,20 +3771,14 @@
       }
       closeConfirmModal();
     });
-    elements.confirmModal.addEventListener('click', (e) => {
-      if (e.target === elements.confirmModal) closeConfirmModal();
-    });
 
-    // Create File Modal
+    // Create File Modal (Close only via explicit buttons)
     if (elements.createNewFileBtn) {
       elements.createNewFileBtn.addEventListener('click', openCreateFileModal);
     }
     elements.closeCreateFileModalBtn.addEventListener('click', closeCreateFileModal);
     elements.cancelCreateFileModalBtn.addEventListener('click', closeCreateFileModal);
     elements.confirmCreateFileModalBtn.addEventListener('click', handleCreateNewFile);
-    elements.createFileModal.addEventListener('click', (e) => {
-      if (e.target === elements.createFileModal) closeCreateFileModal();
-    });
     elements.newConfigFileNameInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -2341,7 +3786,7 @@
       }
     });
 
-    // Auth Modal
+    // Auth Modal (Close only via explicit buttons)
     elements.authModalBtn.addEventListener('click', openAuthModal);
     elements.closeAuthModalBtn.addEventListener('click', closeAuthModal);
     elements.saveAuthTokenBtn.addEventListener('click', () => {
@@ -2366,13 +3811,43 @@
       closeAuthModal();
     });
 
-    elements.authModal.addEventListener('click', (e) => {
-      if (e.target === elements.authModal) closeAuthModal();
-    });
+    // Material Picker Modal (Close only via explicit buttons)
+    if (elements.closeMaterialPickerBtn) {
+      elements.closeMaterialPickerBtn.addEventListener('click', closeMaterialPicker);
+    }
+    if (elements.cancelMaterialPickerBtn) {
+      elements.cancelMaterialPickerBtn.addEventListener('click', closeMaterialPicker);
+    }
+    if (elements.materialSearchInput) {
+      elements.materialSearchInput.addEventListener('input', (e) => {
+        currentPickerQuery = e.target.value;
+        renderMaterialPickerGrid();
+      });
+    }
+    if (elements.materialCategoryFilters) {
+      elements.materialCategoryFilters.addEventListener('click', (e) => {
+        const btn = e.target.closest('.mat-filter-btn');
+        if (!btn) return;
+        currentPickerFilter = btn.getAttribute('data-cat');
+        elements.materialCategoryFilters.querySelectorAll('.mat-filter-btn').forEach(b => {
+          if (b === btn) {
+            b.className = 'mat-filter-btn px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-indigo-600 text-white transition whitespace-nowrap cursor-pointer flex items-center gap-1.5 shadow-sm';
+          } else {
+            b.className = 'mat-filter-btn px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition whitespace-nowrap cursor-pointer flex items-center gap-1.5';
+          }
+        });
+        renderMaterialPickerGrid();
+      });
+    }
 
-    elements.entryModal.addEventListener('click', (e) => {
-      if (e.target === elements.entryModal) closeEntryModal();
-    });
+    if (elements.materialGridContainer) {
+      elements.materialGridContainer.addEventListener('scroll', () => {
+        const { scrollTop, scrollHeight, clientHeight } = elements.materialGridContainer;
+        if (scrollTop + clientHeight >= scrollHeight - 180) {
+          renderNextPickerBatch();
+        }
+      });
+    }
 
     window.addEventListener('beforeunload', (e) => {
       if (state.isDirty) {
@@ -2387,6 +3862,8 @@
     setupEventListeners();
     await loadStatus();
     await loadFilesList();
+    await preloadCategories();
+    await loadMinecraftAssets();
     await loadConfigFile('config.yml');
   }
 

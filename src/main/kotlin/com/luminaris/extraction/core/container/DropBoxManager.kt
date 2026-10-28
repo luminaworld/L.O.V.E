@@ -176,7 +176,7 @@ class DropBoxManager(private val plugin: LuminarisCorePlugin) {
                 id = stack.type.name.lowercase(),
                 itemStack = stack.clone(),
                 price = 100.0,
-                rarity = Rarity.COMMON,
+                rarity = Rarity.F,
                 weight = 10.0,
                 searchTime = 1
             )

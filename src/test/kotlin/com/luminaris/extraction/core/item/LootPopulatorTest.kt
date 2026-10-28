@@ -41,21 +41,21 @@ class LootPopulatorTest {
             id = "low_tier",
             itemStack = createTestItemStack(),
             price = 5.0,
-            rarity = Rarity.COMMON,
+            rarity = Rarity.F,
             weight = 10.0
         )
         val itemMid = ExtractionItem(
             id = "mid_tier",
             itemStack = createTestItemStack(),
             price = 50.0,
-            rarity = Rarity.UNCOMMON,
+            rarity = Rarity.D,
             weight = 30.0
         )
         val itemHigh = ExtractionItem(
             id = "high_tier",
             itemStack = createTestItemStack(),
             price = 250.0,
-            rarity = Rarity.RARE,
+            rarity = Rarity.C,
             weight = 60.0
         )
 
@@ -99,7 +99,7 @@ class LootPopulatorTest {
             id = "test_item",
             itemStack = createTestItemStack(),
             price = 20.0,
-            rarity = Rarity.COMMON,
+            rarity = Rarity.F,
             weight = 10.0
         )
         assertTrue(populator.rollWeightedCandidateItems(listOf(item), 0).isEmpty())
@@ -110,7 +110,7 @@ class LootPopulatorTest {
             id = "zero_item",
             itemStack = createTestItemStack(),
             price = 1.0,
-            rarity = Rarity.COMMON,
+            rarity = Rarity.F,
             weight = 0.0
         )
         assertTrue(populator.rollWeightedCandidateItems(listOf(zeroWeightItem), 5).isEmpty())

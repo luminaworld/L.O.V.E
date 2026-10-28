@@ -3,7 +3,13 @@
  * Clean Tailwind-friendly styles, active nav, custom toggles, and scrollbars
  * ========================================================================= */
 
-/* Custom Scrollbar */
+/* Standard modern dark scrollbars for Firefox & modern browsers */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #27272a transparent;
+}
+
+/* Custom WebKit Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -17,6 +23,22 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
+}
+
+/* Hide scrollbar completely while maintaining smooth scroll functionality */
+.sidebar-scroll,
+.no-scrollbar {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -ms-overflow-style: none !important; /* IE and legacy Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+.sidebar-scroll::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Opera and WebKit */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Nav item active state */
@@ -142,4 +164,22 @@ input:checked + .slider:before {
 
 .preview-gradient-uncommon {
   color: #22c55e;
+}
+
+/* Minecraft Item Icon Crisp Rendering */
+.mc-icon {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.item-slot-frame {
+  background: radial-gradient(circle at 50% 50%, #27272a 0%, #18181b 100%);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(255,255,255,0.05);
+}
+
+.item-slot-frame:hover {
+  background: radial-gradient(circle at 50% 50%, #3f3f46 0%, #27272a 100%);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 12px rgba(99,102,241,0.3);
 }

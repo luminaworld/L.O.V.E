@@ -68,7 +68,7 @@ data class ContainerCategory(
             currentPcts[r] = if (currentTotal > 0.0) (currentW / currentTotal) * 100.0 else 0.0
         }
         if (currentPcts.values.sum() <= 0.0) {
-            currentPcts[Rarity.COMMON] = 100.0
+            currentPcts[Rarity.F] = 100.0
         }
 
         val oldTargetPct = currentPcts[targetRarity] ?: 0.0
@@ -88,7 +88,7 @@ data class ContainerCategory(
                 currentPcts[r] = (oldVal / otherOldSum) * newOtherTotal
             }
         } else {
-            val fallback = if (targetRarity == Rarity.COMMON) Rarity.UNCOMMON else Rarity.COMMON
+            val fallback = if (targetRarity == Rarity.F) Rarity.D else Rarity.F
             currentPcts[fallback] = newOtherTotal
         }
 
@@ -129,40 +129,53 @@ data class ContainerCategory(
         fun defaultRarityWeights(categoryId: String = ""): MutableMap<Rarity, Double> {
             val lower = categoryId.lowercase()
             return when {
-                lower.contains("legendary") || lower.contains("safe") -> mutableMapOf(
-                    Rarity.COMMON to 0.0,
-                    Rarity.UNCOMMON to 5.0,
-                    Rarity.RARE to 25.0,
-                    Rarity.EPIC to 45.0,
-                    Rarity.LEGENDARY to 25.0
+                lower.contains("mythic") || lower.contains("rank_s") || lower.contains("s_grade") || lower.contains("boss") -> mutableMapOf(
+                    Rarity.F to 0.0,
+                    Rarity.D to 10.0,
+                    Rarity.C to 20.0,
+                    Rarity.B to 35.0,
+                    Rarity.A to 25.0,
+                    Rarity.S to 10.0
                 )
-                lower.contains("epic") || lower.contains("airdrop") -> mutableMapOf(
-                    Rarity.COMMON to 5.0,
-                    Rarity.UNCOMMON to 20.0,
-                    Rarity.RARE to 40.0,
-                    Rarity.EPIC to 25.0,
-                    Rarity.LEGENDARY to 10.0
+                lower.contains("legendary") || lower.contains("safe") || lower.contains("rank_a") -> mutableMapOf(
+                    Rarity.F to 10.0,
+                    Rarity.D to 20.0,
+                    Rarity.C to 35.0,
+                    Rarity.B to 20.0,
+                    Rarity.A to 10.0,
+                    Rarity.S to 5.0
                 )
-                lower.contains("rare") -> mutableMapOf(
-                    Rarity.COMMON to 15.0,
-                    Rarity.UNCOMMON to 35.0,
-                    Rarity.RARE to 35.0,
-                    Rarity.EPIC to 15.0,
-                    Rarity.LEGENDARY to 0.0
+                lower.contains("epic") || lower.contains("airdrop") || lower.contains("rank_b") -> mutableMapOf(
+                    Rarity.F to 5.0,
+                    Rarity.D to 15.0,
+                    Rarity.C to 25.0,
+                    Rarity.B to 30.0,
+                    Rarity.A to 17.0,
+                    Rarity.S to 8.0
                 )
-                lower.contains("uncommon") -> mutableMapOf(
-                    Rarity.COMMON to 40.0,
-                    Rarity.UNCOMMON to 40.0,
-                    Rarity.RARE to 18.0,
-                    Rarity.EPIC to 2.0,
-                    Rarity.LEGENDARY to 0.0
+                lower.contains("rare") || lower.contains("rank_c") -> mutableMapOf(
+                    Rarity.F to 15.0,
+                    Rarity.D to 35.0,
+                    Rarity.C to 35.0,
+                    Rarity.B to 14.0,
+                    Rarity.A to 1.0,
+                    Rarity.S to 0.0
+                )
+                lower.contains("uncommon") || lower.contains("rank_d") -> mutableMapOf(
+                    Rarity.F to 40.0,
+                    Rarity.D to 40.0,
+                    Rarity.C to 18.0,
+                    Rarity.B to 2.0,
+                    Rarity.A to 0.0,
+                    Rarity.S to 0.0
                 )
                 else -> mutableMapOf(
-                    Rarity.COMMON to 70.0,
-                    Rarity.UNCOMMON to 25.0,
-                    Rarity.RARE to 5.0,
-                    Rarity.EPIC to 0.0,
-                    Rarity.LEGENDARY to 0.0
+                    Rarity.F to 70.0,
+                    Rarity.D to 25.0,
+                    Rarity.C to 5.0,
+                    Rarity.B to 0.0,
+                    Rarity.A to 0.0,
+                    Rarity.S to 0.0
                 )
             }
         }

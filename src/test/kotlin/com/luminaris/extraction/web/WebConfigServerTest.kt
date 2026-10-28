@@ -137,4 +137,73 @@ class WebConfigServerTest {
         val json = gson.toJson(data)
         assertTrue(json.contains("Hello Paper"))
     }
+
+    @Test
+    fun testPaper26MaterialsMatchTextureRegistry() {
+        val nonLegacy = org.bukkit.Material.entries.filter { !it.name.startsWith("LEGACY_") }
+        val stream = javaClass.classLoader.getResourceAsStream("web/items_textures.json")
+        assertNotNull(stream, "items_textures.json must exist in resources")
+        val json = InputStreamReader(stream, StandardCharsets.UTF_8).use {
+            com.google.gson.JsonParser.parseReader(it).asJsonObject
+        }
+        assertEquals("26.3", json.get("version").asString)
+        assertEquals(nonLegacy.size, json.get("total").asInt)
+        assertEquals(nonLegacy.size, json.getAsJsonArray("items").size())
+    }
+
+    @Test
+    fun testCopperAndIronTexturesAreDistinct() {
+        val stream = javaClass.classLoader.getResourceAsStream("web/items_textures.json")
+        assertNotNull(stream, "items_textures.json must exist in resources")
+        val json = InputStreamReader(stream, StandardCharsets.UTF_8).use {
+            com.google.gson.JsonParser.parseReader(it).asJsonObject
+        }
+        val items = json.getAsJsonArray("items")
+        val map = mutableMapOf<String, String>()
+        for (el in items) {
+            val obj = el.asJsonObject
+            val id = obj.get("id").asString
+            val tex = obj.get("texture").asString
+            map[id] = tex
+        }
+
+        val pairs = listOf(
+            "minecraft:copper_sword" to "minecraft:iron_sword",
+            "minecraft:copper_axe" to "minecraft:iron_axe",
+            "minecraft:copper_pickaxe" to "minecraft:iron_pickaxe",
+            "minecraft:copper_shovel" to "minecraft:iron_shovel",
+            "minecraft:copper_hoe" to "minecraft:iron_hoe",
+            "minecraft:copper_helmet" to "minecraft:iron_helmet",
+            "minecraft:copper_chestplate" to "minecraft:iron_chestplate",
+            "minecraft:copper_leggings" to "minecraft:iron_leggings",
+            "minecraft:copper_boots" to "minecraft:iron_boots"
+        )
+
+        for ((copper, iron) in pairs) {
+            val cTex = map[copper]
+            val iTex = map[iron]
+            assertNotNull(cTex, "$copper must exist")
+            assertNotNull(iTex, "$iron must exist")
+            assertTrue(cTex != iTex, "Texture for $copper must NOT be identical to $iron")
+        }
+    }
+
+    @Test
+    fun testEmptyAllowedContainersYamlSyntax() {
+        val yamlSnippet = """
+            items:
+              test_item:
+                material: DIAMOND_SWORD
+                price: 100.0
+                weight: 10.0
+                allowed_containers: []
+                search_time: 2
+        """.trimIndent()
+
+        val config = YamlConfiguration()
+        config.loadFromString(yamlSnippet)
+        assertEquals("DIAMOND_SWORD", config.getString("items.test_item.material"))
+        assertEquals(emptyList<String>(), config.getStringList("items.test_item.allowed_containers"))
+        assertEquals(2, config.getInt("items.test_item.search_time"))
+    }
 }

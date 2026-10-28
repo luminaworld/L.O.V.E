@@ -212,21 +212,21 @@ class FullSystemsAuditVerificationTest {
             id = "common_junk",
             itemStack = createBareItem(),
             price = 10.0,
-            rarity = Rarity.COMMON,
+            rarity = Rarity.F,
             weight = 70.0
         )
         val itemRare = ExtractionItem(
             id = "rare_artifact",
             itemStack = createBareItem(),
             price = 500.0,
-            rarity = Rarity.RARE,
+            rarity = Rarity.C,
             weight = 25.0
         )
         val itemLegendary = ExtractionItem(
             id = "classified_gpu",
             itemStack = createBareItem(),
             price = 5000.0,
-            rarity = Rarity.LEGENDARY,
+            rarity = Rarity.A,
             weight = 5.0
         )
 
@@ -274,7 +274,7 @@ class FullSystemsAuditVerificationTest {
             id = "unspawnable",
             itemStack = createBareItem(),
             price = 0.0,
-            rarity = Rarity.COMMON,
+            rarity = Rarity.F,
             weight = 0.0
         )
         val resZeroWeight = populator.rollWeightedCandidateItems(listOf(zeroWeight), 10)

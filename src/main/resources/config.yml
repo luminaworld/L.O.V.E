@@ -192,20 +192,22 @@ drop_box:
   # ระยะเวลาการค้นหาไอเทมเริ่มต้นตามระดับความหายาก (หน่วย: วินาที)
   # หากไอเทมนั้นไม่ได้กำหนด search_time ไว้ จะใช้ค่าตามเกรดนี้
   rarity_search_times:
-    COMMON: 1
-    UNCOMMON: 2
-    RARE: 3
-    EPIC: 4
-    LEGENDARY: 5
+    F: 1
+    D: 2
+    C: 3
+    B: 4
+    A: 5
+    S: 6
 
   # เสียงประกอบเมื่อเปิดเจอไอเทมตามระดับความหายาก (Reveal Sound Fallback)
   # หากไอเทมหรือกล่องไม่ได้กำหนดเสียงเฉพาะไว้ ระบบจะเล่นเสียงตามระดับนี้
   rarity_reveal_sounds:
-    COMMON: "ENTITY_ITEM_PICKUP"
-    UNCOMMON: "BLOCK_NOTE_BLOCK_BELL"
-    RARE: "BLOCK_AMETHYST_BLOCK_CHIME"
-    EPIC: "ENTITY_PLAYER_LEVELUP"
-    LEGENDARY: "UI_TOAST_CHALLENGE_COMPLETE"
+    F: "ENTITY_ITEM_PICKUP"
+    D: "BLOCK_NOTE_BLOCK_BELL"
+    C: "BLOCK_AMETHYST_BLOCK_CHIME"
+    B: "ENTITY_PLAYER_LEVELUP"
+    A: "UI_TOAST_CHALLENGE_COMPLETE"
+    S: "UI_TOAST_CHALLENGE_COMPLETE"
 
   # เสียงประกอบอื่นๆ ภายในหน้าต่าง GUI กล่องดรอป
   sounds:
@@ -248,18 +250,20 @@ spawn:
 economy:
   # เกณฑ์ราคาขั้นต่ำสำหรับการจัดระดับความหายากของไอเทมโดยอัตโนมัติ
   rarity_price_thresholds:
-    LEGENDARY: 2500.0
-    EPIC: 1000.0
-    RARE: 400.0
-    UNCOMMON: 100.0
+    S: 5000.0
+    A: 2500.0
+    B: 1000.0
+    C: 400.0
+    D: 100.0
 
   # ราคาเริ่มต้นของแต่ละเกรดความหายาก เมื่อสร้างไอเทมใหม่ใน GUI Editor
   default_prices:
-    COMMON: 50.0
-    UNCOMMON: 150.0
-    RARE: 500.0
-    EPIC: 1500.0
-    LEGENDARY: 4000.0
+    F: 50.0
+    D: 150.0
+    C: 500.0
+    B: 1200.0
+    A: 3000.0
+    S: 6000.0
 
 # =========================================================================
 # 11. หน้าต่างเมนูแก้ไขและเครื่องมือมาร์กเกอร์ (Editor & Marker Tool Visuals)

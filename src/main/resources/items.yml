@@ -19,15 +19,16 @@
 #   - ไล่เฉดสี: <gradient:#HEX1:#HEX2>ข้อความ</gradient> (เช่น <gradient:#00FFA3:#00B8FF>...</gradient>)
 #
 # rarity (หรือ tier):
-#   ระดับความหายากของไอเทม มี 5 ระดับให้เลือกใช้งาน:
-#   - COMMON    : ระดับทั่วไป (ไอเทมพื้นฐาน)
-#   - UNCOMMON  : ระดับไม่ธรรมดา (ไอเทมคุณภาพปานกลาง)
-#   - RARE      : ระดับหายาก (เทคโนโลยีขั้นสูง)
-#   - EPIC      : ระดับมหากาพย์ (ต้นแบบทางการทหาร)
-#   - LEGENDARY : ระดับตำนาน (โบราณวัตถุล้ำค่า)
+#   ระดับความหายากของไอเทม เรียงจากน้อยไปมาก:
+#   - F : ระดับพื้นฐาน (เดิม COMMON)
+#   - D : ระดับไม่ธรรมดา (เดิม UNCOMMON)
+#   - C : ระดับหายาก (เดิม RARE)
+#   - B : ระดับมหากาพย์ (เดิม EPIC)
+#   - A : ระดับตำนาน (เดิม LEGENDARY)
+#   - S : ระดับสูงสุด (สีแดง ระดับพิเศษล้ำค่า)
 #
 # price (หรือ value):
-#   มูลค่าการสกัดหรือราคาขายของไอเทม (ทศนิยม เช่น 50.0, 750.0, 3500.0)
+#   มูลค่าการสกัดหรือราคาขายของไอเทม (ทศนิยม เช่น 50.0, 750.0, 3500.0, 10000.0)
 #
 # weight:
 #   ค่าน้ำหนักโอกาสสุ่มดรอป (Spawn Weight)
@@ -37,7 +38,7 @@
 #
 # allowed_containers:
 #   รายการหมวดหมู่ของคอนเทนเนอร์ที่อนุญาตให้ไอเทมชิ้นนี้สุ่มเกิดได้
-#   (ต้องตรงกับรหัสหมวดหมู่ใน categories.yml เช่น common, uncommon, rare, epic, legendary)
+#   (ต้องตรงกับรหัสหมวดหมู่ใน categories.yml เช่น normal_crate, airdrop, safe_box, F, D, C, B, A, S)
 #   - หากเว้นว่างไว้หรือไม่ใส่คีย์นี้ ไอเทมจะสามารถสุ่มเกิดได้ในคอนเทนเนอร์ทุกหมวดหมู่
 #
 # search_time:
@@ -63,16 +64,16 @@ items:
   military_circuit:
     material: "REPEATER"
     display_name: "<gradient:#00D2FF:#3A7BD5><bold>Military Grade Circuit</bold></gradient>"
-    rarity: "RARE"
-    tier: "RARE"
+    rarity: "C"
+    tier: "C"
     price: 750.0
     value: 750.0
     weight: 20.0
     search_time: 3
     reveal_sound: "BLOCK_NOTE_BLOCK_CHIME"
     allowed_containers:
-      - "rare"
-      - "epic"
+      - "C"
+      - "B"
       - "airdrop"
     lore:
       - "<color:#AAAAAA>High-frequency military electronic component.</color>"
@@ -82,16 +83,16 @@ items:
   energy_core:
     material: "NETHER_STAR"
     display_name: "<gradient:#FFAA00:#FF0055><bold>Stabilized Energy Core</bold></gradient>"
-    rarity: "LEGENDARY"
-    tier: "LEGENDARY"
+    rarity: "A"
+    tier: "A"
     price: 3500.0
     value: 3500.0
     weight: 5.0
-    search_time: 6
+    search_time: 5
     reveal_sound: "UI_TOAST_CHALLENGE_COMPLETE"
     allowed_containers:
-      - "epic"
-      - "legendary"
+      - "B"
+      - "A"
       - "airdrop"
       - "safe_box"
     lore:
@@ -99,19 +100,37 @@ items:
       - "<color:#FF5555>Extremely volatile in non-stabilized zones.</color>"
       - "<color:#FFFF55>Extraction Value: </color><color:#FFAA00>$3,500.00</color>"
 
+  ancient_singularity:
+    material: "HEAVY_CORE"
+    display_name: "<gradient:#FF0055:#FF5555><bold>Ancient Dark Matter Singularity</bold></gradient>"
+    rarity: "S"
+    tier: "S"
+    price: 10000.0
+    value: 10000.0
+    weight: 1.0
+    search_time: 6
+    reveal_sound: "UI_TOAST_CHALLENGE_COMPLETE"
+    allowed_containers:
+      - "S"
+      - "safe_box"
+    lore:
+      - "<color:#FF5555>Extremely rare artifact from a collapsed realm.</color>"
+      - "<color:#AAAAAA>Rank S - Priceless Extraction Loot</color>"
+      - "<color:#FFFF55>Extraction Value: </color><color:#FFAA00>$10,000.00</color>"
+
   survival_ration:
     material: "COOKED_BEEF"
     display_name: "<color:#55FF55><bold>Military MRE Ration</bold></color>"
-    rarity: "COMMON"
-    tier: "COMMON"
+    rarity: "F"
+    tier: "F"
     price: 50.0
     value: 50.0
     weight: 60.0
     search_time: 1
     reveal_sound: "ENTITY_ITEM_PICKUP"
     allowed_containers:
-      - "common"
-      - "uncommon"
+      - "F"
+      - "D"
       - "normal_crate"
     lore:
       - "<color:#AAAAAA>Long shelf-life military food ration.</color>"

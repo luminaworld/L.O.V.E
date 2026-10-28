@@ -41,11 +41,12 @@ class ItemEditorGui(
     private var currentPrice: Double = initialPrice ?: existingItem?.price ?: run {
         val cfg = plugin.config
         when (currentRarity) {
-            Rarity.COMMON -> cfg.getDouble("economy.default_prices.COMMON", 50.0)
-            Rarity.UNCOMMON -> cfg.getDouble("economy.default_prices.UNCOMMON", 150.0)
-            Rarity.RARE -> cfg.getDouble("economy.default_prices.RARE", 500.0)
-            Rarity.EPIC -> cfg.getDouble("economy.default_prices.EPIC", 1500.0)
-            Rarity.LEGENDARY -> cfg.getDouble("economy.default_prices.LEGENDARY", 4000.0)
+            Rarity.F -> cfg.getDouble("economy.default_prices.F", 50.0)
+            Rarity.D -> cfg.getDouble("economy.default_prices.D", 150.0)
+            Rarity.C -> cfg.getDouble("economy.default_prices.C", 500.0)
+            Rarity.B -> cfg.getDouble("economy.default_prices.B", 1200.0)
+            Rarity.A -> cfg.getDouble("economy.default_prices.A", 3000.0)
+            Rarity.S -> cfg.getDouble("economy.default_prices.S", 6000.0)
         }
     }
     private val allowedContainers: MutableSet<String> = initialAllowedContainers ?: existingItem?.allowedContainers?.toMutableSet() ?: mutableSetOf()
@@ -69,11 +70,12 @@ class ItemEditorGui(
     )
 
     private val raritySlots = mapOf(
-        29 to Rarity.COMMON,
-        30 to Rarity.UNCOMMON,
-        31 to Rarity.RARE,
-        32 to Rarity.EPIC,
-        33 to Rarity.LEGENDARY
+        29 to Rarity.F,
+        30 to Rarity.D,
+        31 to Rarity.C,
+        32 to Rarity.B,
+        33 to Rarity.A,
+        34 to Rarity.S
     )
 
     fun open(player: Player) {
@@ -206,11 +208,12 @@ class ItemEditorGui(
         for ((slot, rarity) in raritySlots) {
             val isSelected = (rarity == currentRarity)
             val iconMat = when (rarity) {
-                Rarity.COMMON -> Material.GRAY_DYE
-                Rarity.UNCOMMON -> Material.LIME_DYE
-                Rarity.RARE -> Material.LIGHT_BLUE_DYE
-                Rarity.EPIC -> Material.PURPLE_DYE
-                Rarity.LEGENDARY -> Material.ORANGE_DYE
+                Rarity.F -> Material.GRAY_DYE
+                Rarity.D -> Material.LIME_DYE
+                Rarity.C -> Material.LIGHT_BLUE_DYE
+                Rarity.B -> Material.PURPLE_DYE
+                Rarity.A -> Material.ORANGE_DYE
+                Rarity.S -> Material.RED_DYE
             }
 
             val statusText = if (isSelected) {
@@ -445,11 +448,12 @@ class ItemEditorGui(
             currentRarity = selectedRarity
             if (existingItem == null) {
                 currentPrice = when (currentRarity) {
-                    Rarity.COMMON -> 50.0
-                    Rarity.UNCOMMON -> 150.0
-                    Rarity.RARE -> 500.0
-                    Rarity.EPIC -> 1500.0
-                    Rarity.LEGENDARY -> 4000.0
+                    Rarity.F -> 50.0
+                    Rarity.D -> 150.0
+                    Rarity.C -> 500.0
+                    Rarity.B -> 1200.0
+                    Rarity.A -> 3000.0
+                    Rarity.S -> 6000.0
                 }
             }
             open(player)

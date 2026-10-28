@@ -29,11 +29,12 @@ class ContainerEditGui(
 
     // Slot mappings for each Rarity tier
     private val raritySlots = mapOf(
-        29 to Rarity.COMMON,
-        30 to Rarity.UNCOMMON,
-        31 to Rarity.RARE,
-        32 to Rarity.EPIC,
-        33 to Rarity.LEGENDARY
+        29 to Rarity.F,
+        30 to Rarity.D,
+        31 to Rarity.C,
+        32 to Rarity.B,
+        33 to Rarity.A,
+        34 to Rarity.S
     )
 
     fun open(player: Player) {
@@ -260,11 +261,12 @@ class ContainerEditGui(
             val eligibleItems = plugin.itemRegistry.getItemsForCategory(category.id).count { it.rarity == rarity }
 
             val iconMat = when (rarity) {
-                Rarity.COMMON -> Material.GRAY_CONCRETE
-                Rarity.UNCOMMON -> Material.LIME_CONCRETE
-                Rarity.RARE -> Material.LIGHT_BLUE_CONCRETE
-                Rarity.EPIC -> Material.PURPLE_CONCRETE
-                Rarity.LEGENDARY -> Material.YELLOW_CONCRETE
+                Rarity.F -> Material.GRAY_CONCRETE
+                Rarity.D -> Material.LIME_CONCRETE
+                Rarity.C -> Material.LIGHT_BLUE_CONCRETE
+                Rarity.B -> Material.PURPLE_CONCRETE
+                Rarity.A -> Material.YELLOW_CONCRETE
+                Rarity.S -> Material.RED_CONCRETE
             }
 
             val rarityName = TranslationManager.get("rarity.${rarity.name.lowercase()}")
