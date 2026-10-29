@@ -135,6 +135,9 @@ class ContainerMarkerListener(
         val y = block.y
         val z = block.z
 
+        // Clean up any old safe sessions at this coordinate
+        plugin.timedSafeManager.resetContainer(world, x, y, z)
+
         // Append entry into TemplateStorage for that world
         val containerId = PlacedContainer.generateId(x, y, z)
         val placedContainer = PlacedContainer(
@@ -247,6 +250,7 @@ class ContainerMarkerListener(
         // Remove from TemplateStorage
         templateStorage.removeContainer(templateId, block.x, block.y, block.z, saveToDisk = true)
         plugin.containerHighlightService.unregisterContainer(world, block.x, block.y, block.z)
+        plugin.timedSafeManager.resetContainer(world, block.x, block.y, block.z)
 
         // Send message notifying deletion
         TranslationManager.send(
@@ -567,6 +571,32 @@ class ContainerMarkerListener(
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     fun onPlayerInteract(event: PlayerInteractEvent) {
+        // Admin Sneak + Left Click to reset safe countdown in template worlds
+        if (event.action == Action.LEFT_CLICK_BLOCK) {
+            val block = event.clickedBlock ?: return
+            val player = event.player
+            val world = block.world
+            val isAdmin = player.hasPermission("luminaris.admin") || player.hasPermission("luminaris.editor")
+            if (player.isSneaking && isAdmin && templateStorage.isTemplateWorld(world)) {
+                val templateId = templateStorage.resolveTemplateId(world)
+                val container = findContainerForBlock(world, templateId, null, block)
+                if (container != null) {
+                    val category = plugin.containerRegistry.getCategory(container.categoryId)
+                    if (category != null && plugin.timedSafeManager.isSafeContainer(container, category)) {
+                        event.isCancelled = true
+                        val reset = plugin.timedSafeManager.resetContainer(world, block.x, block.y, block.z)
+                        if (reset) {
+                            player.playSound(block.location, Sound.UI_BUTTON_CLICK, 1.0f, 1.0f)
+                            world.spawnParticle(org.bukkit.Particle.SMOKE, block.location.clone().add(0.5, 0.5, 0.5), 8, 0.2, 0.2, 0.2, 0.02)
+                            TranslationManager.sendActionBar(player, "safe.simulation_reset")
+                        }
+                        return
+                    }
+                }
+            }
+            return
+        }
+
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         if (event.hand != EquipmentSlot.HAND) return
 
@@ -575,6 +605,74 @@ class ContainerMarkerListener(
         val player = event.player
 
         val itemInHand = player.inventory.itemInMainHand
+
+        // Check if player is holding the SafeSetupTool:
+        if (com.luminaris.extraction.editor.tool.SafeSetupTool.isSafeSetupTool(itemInHand)) {
+            val isAdmin = player.hasPermission("luminaris.admin") || player.hasPermission("luminaris.editor")
+            if (!isAdmin) {
+                event.isCancelled = true
+                TranslationManager.send(player, "general.no_permission")
+                return
+            }
+
+            event.isCancelled = true
+
+            // Validate that target block is a supported single-block container
+            if (!ContainerMarkerTool.isSupportedMaterial(block.type) || block.type == Material.ARMOR_STAND) {
+                TranslationManager.send(player, "safe.tool.unsupported_block")
+                return
+            }
+
+            // Ensure single block only (no Double Chest)
+            if (ContainerMarkerTool.getConnectedDoubleChestBlock(block) != null) {
+                TranslationManager.send(player, "safe.tool.no_double_chest")
+                return
+            }
+
+            val face = event.blockFace
+            if (!com.luminaris.extraction.editor.tool.SafeSetupTool.isSupportedFace(face)) {
+                TranslationManager.send(player, "safe.tool.must_be_horizontal_face")
+                return
+            }
+
+            val templateId = templateStorage.resolveTemplateId(world)
+            if (templateId == null) {
+                TranslationManager.send(player, "safe.tool.must_be_template_world")
+                return
+            }
+
+            val targetCategory = com.luminaris.extraction.editor.tool.SafeSetupTool.getTargetCategory(itemInHand)
+            plugin.timedSafeManager.resetContainer(world, block.x, block.y, block.z)
+            val existing = templateStorage.getContainerAt(templateId, block.x, block.y, block.z)
+
+            if (existing != null) {
+                val updated = existing.copy(categoryId = targetCategory, displayFace = face.name)
+                templateStorage.removeContainer(templateId, block.x, block.y, block.z, false)
+                templateStorage.addContainer(templateId, updated, true)
+            } else {
+                val newContainer = PlacedContainer(
+                    id = PlacedContainer.generateId(block.x, block.y, block.z),
+                    categoryId = targetCategory,
+                    x = block.x,
+                    y = block.y,
+                    z = block.z,
+                    displayFace = face.name
+                )
+                templateStorage.addContainer(templateId, newContainer, true)
+            }
+
+            // Audio & Particle feedback
+            player.playSound(block.location, Sound.BLOCK_ANVIL_USE, 0.8f, 1.4f)
+            world.spawnParticle(org.bukkit.Particle.WAX_ON, block.location.clone().add(0.5, 0.5, 0.5), 15, 0.3, 0.3, 0.3, 0.05)
+            TranslationManager.send(
+                player,
+                "safe.tool.configured_success",
+                "face" to face.name,
+                "category" to targetCategory
+            )
+            return
+        }
+
         if (ContainerMarkerTool.isContainerMarker(itemInHand)) {
             // Placing marker tool - allow place event to process
             return
@@ -596,6 +694,39 @@ class ContainerMarkerListener(
 
         val isAdmin = player.hasPermission("luminaris.admin") || player.hasPermission("luminaris.editor")
 
+        // 1. Timed safe box interaction (Handles both live matches and template simulations!)
+        if (plugin.timedSafeManager.isSafeContainer(container, category)) {
+            // Ensure safe is single block only
+            if (ContainerMarkerTool.getConnectedDoubleChestBlock(block) != null) {
+                TranslationManager.sendActionBar(player, "safe.single_block_only")
+                return
+            }
+
+            // Check if not yet unlocked
+            if (!plugin.timedSafeManager.isUnlocked(world, container.x, container.y, container.z)) {
+                if (plugin.timedSafeManager.isCountingDown(world, container.x, container.y, container.z)) {
+                    val remaining = plugin.timedSafeManager.getRemainingSeconds(world, container.x, container.y, container.z)
+                    TranslationManager.sendActionBar(player, "safe.counting_down", "seconds" to remaining)
+                    player.playSound(player.location, Sound.BLOCK_DISPENSER_FAIL, 0.8f, 1.6f)
+                } else {
+                    // First click! Start countdown (both in live match and in template simulation)
+                    plugin.timedSafeManager.startUnlock(player, world, block, container, category)
+                }
+                return
+            }
+
+            // Unlocked! In match, open match container; in template world, open simulation
+            if (match != null) {
+                plugin.dropBoxManager.openMatchContainer(player, world, container, block.type)
+            } else if (isAdmin) {
+                // In template simulation: upon opening, clean up the Hologram and reset safe state
+                plugin.timedSafeManager.resetContainer(world, container.x, container.y, container.z)
+                plugin.dropBoxManager.openSimulation(player, category, block.type)
+            }
+            return
+        }
+
+        // 2. Regular non-safe container interaction
         // Admin sneak-click: simulate real game drop opening
         if (player.isSneaking && isAdmin) {
             plugin.dropBoxManager.openSimulation(player, category, block.type)
@@ -665,6 +796,10 @@ class ContainerMarkerListener(
         // Live match container opening
         if (match != null) {
             event.isCancelled = true
+            if (plugin.timedSafeManager.isSafeCategory(category)) {
+                TranslationManager.sendActionBar(player, "safe.armorstand_not_supported")
+                return
+            }
             val placedContainer = match.templateData.containers.find {
                 it.x == entity.location.blockX && it.y == entity.location.blockY && it.z == entity.location.blockZ
             } ?: PlacedContainer("c_as", categoryId, entity.location.blockX, entity.location.blockY, entity.location.blockZ)

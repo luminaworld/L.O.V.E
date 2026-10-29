@@ -79,6 +79,14 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
                 handleChestCommand(sender, label, args.drop(1).toTypedArray())
             }
 
+            "safe" -> {
+                if (!sender.hasPermission("luminaris.admin") && !sender.hasPermission("luminaris.editor")) {
+                    TranslationManager.send(sender, "general.no_permission")
+                    return
+                }
+                handleSafeCommand(sender, label, args.drop(1).toTypedArray())
+            }
+
             "match" -> {
                 if (!sender.hasPermission("luminaris.admin")) {
                     TranslationManager.send(sender, "general.no_permission")
@@ -182,6 +190,27 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
             else -> {
                 TranslationManager.send(sender, "command.case.unknown_action", "action" to args[0], "label" to label)
             }
+        }
+    }
+
+    private fun handleSafeCommand(sender: CommandSender, label: String, args: Array<out String>) {
+        val player = sender as? org.bukkit.entity.Player
+        if (player == null) {
+            TranslationManager.send(sender, "general.player_only")
+            return
+        }
+
+        val targetCat = if (args.isNotEmpty()) args[0].lowercase().trim() else "safe_box"
+        val tool = com.luminaris.extraction.editor.tool.SafeSetupTool.createTool(targetCat)
+
+        plugin.scheduler.runAtEntity(player) {
+            val leftover = player.inventory.addItem(tool)
+            if (leftover.isNotEmpty()) {
+                for (item in leftover.values) {
+                    player.world.dropItemNaturally(player.location, item)
+                }
+            }
+            TranslationManager.send(player, "safe.tool.received", "category" to targetCat)
         }
     }
 
@@ -332,12 +361,21 @@ class ExtCommand(private val plugin: LuminarisCorePlugin) : BasicCommand {
             if (sender.hasPermission("luminaris.admin") || sender.hasPermission("luminaris.editor")) {
                 subcommands.add("case")
                 subcommands.add("chest")
+                subcommands.add("safe")
                 subcommands.add("editor")
                 subcommands.add("match")
                 subcommands.add("reload")
                 subcommands.add("web")
             }
             return subcommands.filter { it.startsWith(query, ignoreCase = true) }
+        }
+
+        if (args.size > 1 && args[0].equals("safe", ignoreCase = true)) {
+            if (!sender.hasPermission("luminaris.admin") && !sender.hasPermission("luminaris.editor")) return emptyList()
+            if (args.size == 2) {
+                return plugin.containerRegistry.getAllCategories().map { it.id }.filter { it.startsWith(args[1], ignoreCase = true) }
+            }
+            return emptyList()
         }
 
         if (args.size > 1 && args[0].equals("match", ignoreCase = true)) {

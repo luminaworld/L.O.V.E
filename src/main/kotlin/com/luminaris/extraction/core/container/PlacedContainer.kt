@@ -16,7 +16,8 @@ data class PlacedContainer(
     val categoryId: String,
     val x: Int,
     val y: Int,
-    val z: Int
+    val z: Int,
+    val displayFace: String? = null
 ) {
     companion object {
         /**

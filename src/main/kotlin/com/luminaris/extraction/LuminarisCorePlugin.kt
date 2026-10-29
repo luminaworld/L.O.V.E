@@ -70,6 +70,9 @@ class LuminarisCorePlugin : JavaPlugin() {
     lateinit var dropBoxManager: com.luminaris.extraction.core.container.DropBoxManager
         private set
 
+    lateinit var timedSafeManager: com.luminaris.extraction.core.container.TimedSafeManager
+        private set
+
     lateinit var templateStorage: com.luminaris.extraction.storage.TemplateStorage
         private set
 
@@ -163,6 +166,9 @@ class LuminarisCorePlugin : JavaPlugin() {
         }
 
         // 6. Clean up drop box container states and container highlights
+        if (::timedSafeManager.isInitialized) {
+            runCatching { timedSafeManager.shutdown() }
+        }
         if (::containerHighlightService.isInitialized) {
             runCatching { containerHighlightService.shutdown() }
         }
@@ -226,6 +232,7 @@ class LuminarisCorePlugin : JavaPlugin() {
         server.pluginManager.registerEvents(safeCaseListener, this)
 
         dropBoxManager = com.luminaris.extraction.core.container.DropBoxManager(this)
+        timedSafeManager = com.luminaris.extraction.core.container.TimedSafeManager(this, scheduler)
 
         containerHighlightService = com.luminaris.extraction.core.container.ContainerHighlightService(this, scheduler)
         containerHighlightService.start()

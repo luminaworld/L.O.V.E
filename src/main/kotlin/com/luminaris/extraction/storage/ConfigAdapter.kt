@@ -65,6 +65,20 @@ abstract class ConfigAdapter(
             InputStreamReader(stream, StandardCharsets.UTF_8).use { reader ->
                 val defConfig = YamlConfiguration.loadConfiguration(reader)
                 yamlConfig.setDefaults(defConfig)
+
+                var missingKeysFound = false
+                for (key in defConfig.getKeys(true)) {
+                    if (!yamlConfig.contains(key)) {
+                        yamlConfig.set(key, defConfig.get(key))
+                        missingKeysFound = true
+                    }
+                }
+                if (missingKeysFound) {
+                    runCatching {
+                        yamlConfig.save(file)
+                        plugin.logger.info("[LuminaExtractionCore] Automatically updated $fileName with missing default configuration keys.")
+                    }
+                }
             }
         }
 

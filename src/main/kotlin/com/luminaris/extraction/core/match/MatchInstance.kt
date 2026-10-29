@@ -248,6 +248,7 @@ class MatchInstance(
 
         // 5. Clean up cached match drop containers, glowing highlights, and decommission world asynchronously
         activePlugin?.dropBoxManager?.clearWorld(world.name)
+        activePlugin?.timedSafeManager?.cleanupMatch(world)
         activePlugin?.containerHighlightService?.clearWorld(world.name)
         activeInstanceWorldService?.deleteInstance(world)?.whenComplete { _, ex ->
             if (ex != null) {

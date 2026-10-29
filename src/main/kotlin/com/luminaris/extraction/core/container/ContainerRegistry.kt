@@ -77,6 +77,27 @@ class ContainerRegistry(private val plugin: Plugin) {
 
             val yaml = YamlConfiguration.loadConfiguration(file)
             categories.clear()
+            var needsSave = false
+
+            // Check if embedded default categories has any category missing in disk categories.yml
+            plugin.getResource("categories.yml")?.use { stream ->
+                InputStreamReader(stream, StandardCharsets.UTF_8).use { reader ->
+                    val defaultYaml = YamlConfiguration.loadConfiguration(reader)
+                    val defaultSec = defaultYaml.getConfigurationSection("categories")
+                    val currentSec = yaml.getConfigurationSection("categories") ?: yaml.createSection("categories")
+                    if (defaultSec != null) {
+                        for (defKey in defaultSec.getKeys(false)) {
+                            if (!currentSec.contains(defKey)) {
+                                val defCatSec = defaultSec.getConfigurationSection(defKey)
+                                if (defCatSec != null) {
+                                    currentSec.set(defKey, defCatSec)
+                                    needsSave = true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             val section = yaml.getConfigurationSection("categories")
             if (section != null) {
@@ -120,6 +141,32 @@ class ContainerRegistry(private val plugin: Plugin) {
                     val searchSound = catSec.getString("search_sound", defaultSearchSound) ?: defaultSearchSound
                     val revealSound = catSec.getString("reveal_sound", defaultRevealSound) ?: defaultRevealSound
 
+                    val isDefaultSafe = key.equals("safe_box", ignoreCase = true) || key.contains("safe", ignoreCase = true)
+
+                    // Auto-fill missing timed unlock keys in disk file
+                    if (!catSec.contains("timed_unlock_enabled") && !catSec.contains("timed_unlock")) {
+                        catSec.set("timed_unlock_enabled", isDefaultSafe)
+                        needsSave = true
+                    }
+                    if (!catSec.contains("unlock_countdown_seconds") && !catSec.contains("unlock_seconds")) {
+                        catSec.set("unlock_countdown_seconds", if (isDefaultSafe) 30 else 0)
+                        needsSave = true
+                    }
+                    if (!catSec.contains("unlock_tick_sound")) {
+                        catSec.set("unlock_tick_sound", "BLOCK_NOTE_BLOCK_HAT")
+                        needsSave = true
+                    }
+                    if (!catSec.contains("unlock_finish_sound")) {
+                        catSec.set("unlock_finish_sound", "BLOCK_IRON_DOOR_OPEN")
+                        needsSave = true
+                    }
+
+                    val timedUnlockEnabled = catSec.getBoolean("timed_unlock_enabled", catSec.getBoolean("timed_unlock", isDefaultSafe))
+                    val defaultSeconds = if (isDefaultSafe) 30 else 0
+                    val unlockCountdownSeconds = catSec.getInt("unlock_countdown_seconds", catSec.getInt("unlock_seconds", defaultSeconds))
+                    val unlockTickSound = catSec.getString("unlock_tick_sound", "BLOCK_NOTE_BLOCK_HAT")
+                    val unlockFinishSound = catSec.getString("unlock_finish_sound", "BLOCK_IRON_DOOR_OPEN")
+
                     val rarityWeights = ContainerCategory.defaultRarityWeights(key)
                     val raritySection = catSec.getConfigurationSection("rarity_chances")
                         ?: catSec.getConfigurationSection("rarity_weights")
@@ -142,9 +189,20 @@ class ContainerRegistry(private val plugin: Plugin) {
                         coveredMaterial = coveredMaterial,
                         searchingMaterial = searchingMaterial,
                         searchSound = searchSound,
-                        revealSound = revealSound
+                        revealSound = revealSound,
+                        timedUnlockEnabled = timedUnlockEnabled,
+                        unlockCountdownSeconds = unlockCountdownSeconds,
+                        unlockTickSound = unlockTickSound,
+                        unlockFinishSound = unlockFinishSound
                     )
                     categories[category.id] = category
+                }
+            }
+
+            if (needsSave) {
+                runCatching {
+                    yaml.save(file)
+                    plugin.logger.info("[LuminaExtractionCore] Automatically updated categories.yml with missing configuration keys.")
                 }
             }
         }
@@ -172,6 +230,14 @@ class ContainerRegistry(private val plugin: Plugin) {
                 }
                 if (category.revealSound != null) {
                     catSec.set("reveal_sound", category.revealSound)
+                }
+                catSec.set("timed_unlock_enabled", category.timedUnlockEnabled)
+                catSec.set("unlock_countdown_seconds", category.unlockCountdownSeconds)
+                if (category.unlockTickSound != null) {
+                    catSec.set("unlock_tick_sound", category.unlockTickSound)
+                }
+                if (category.unlockFinishSound != null) {
+                    catSec.set("unlock_finish_sound", category.unlockFinishSound)
                 }
                 val raritySec = catSec.createSection("rarity_chances")
                 for ((rarity, weight) in category.rarityWeights) {

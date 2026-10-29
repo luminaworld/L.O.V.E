@@ -1,12 +1,14 @@
 /* =========================================================================
  * Luminaris Extraction Core • Web Configuration Custom Utilities & Switches
  * Clean Tailwind-friendly styles, active nav, custom toggles, and scrollbars
+ * Universal Design & Mobile Responsive Enhancements
  * ========================================================================= */
 
 /* Standard modern dark scrollbars for Firefox & modern browsers */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #27272a transparent;
+  scrollbar-color: #3f3f46 transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Custom WebKit Scrollbar */
@@ -23,6 +25,14 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
+}
+
+/* Smooth Touch Scrolling on Mobile */
+.touch-scroll,
+#contentScrollContainer,
+#materialGridContainer,
+.sidebar-scroll {
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Hide scrollbar completely while maintaining smooth scroll functionality */
@@ -43,30 +53,42 @@
 
 /* Nav item active state */
 .nav-item.active {
-  background-color: #22222a !important;
+  background-color: #272732 !important;
   color: #ffffff !important;
   font-weight: 600;
-  border-left: 2px solid #ffffff;
+  border-left: 3px solid #6366f1;
 }
 
 .nav-item.active svg {
-  color: #ffffff !important;
+  color: #818cf8 !important;
 }
 
-/* Toggle Switch Component */
+/* Universal Design: Accessible Focus States */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #6366f1 !important;
+  outline-offset: 2px !important;
+}
+
+/* Toggle Switch Component - Optimized for Touch & Click */
 .switch {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 48px;
+  height: 26px;
   cursor: pointer;
   flex-shrink: 0;
+  touch-action: manipulation;
 }
 
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
+  position: absolute;
 }
 
 .slider {
@@ -84,62 +106,168 @@
 .slider:before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
+  height: 18px;
+  width: 18px;
   left: 3px;
   bottom: 3px;
   background-color: #a1a1aa;
   border-radius: 50%;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 input:checked + .slider {
-  background-color: #ffffff;
-  border-color: #ffffff;
+  background-color: #6366f1;
+  border-color: #4f46e5;
 }
 
 input:checked + .slider:before {
-  transform: translateX(20px);
-  background-color: #09090b;
+  transform: translateX(22px);
+  background-color: #ffffff;
 }
 
-/* Toast Notification Styles */
+/* Toast Notification Styles - Responsive Position and Touch Bounds */
 .toast {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 300px;
-  max-width: 460px;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 90vw;
   padding: 12px 16px;
   background-color: #18181b;
   border: 1px solid #27272a;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
   color: #f4f4f5;
   font-size: 13px;
   pointer-events: auto;
-  animation: toast-in 0.2s ease-out;
+  animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   transition: all 0.2s ease;
 }
 
 @keyframes toast-in {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .toast-success {
-  border-left: 3px solid #10b981;
+  border-left: 4px solid #10b981;
 }
 
 .toast-error {
-  border-left: 3px solid #ef4444;
+  border-left: 4px solid #ef4444;
 }
 
 .toast-warning {
-  border-left: 3px solid #f59e0b;
+  border-left: 4px solid #f59e0b;
 }
 
 /* MiniMessage color preview simulation */
+:root {
+  --rarity-f: #9CA3AF; /* Slate/Gray */
+  --rarity-d: #10B981; /* Emerald Green */
+  --rarity-c: #06B6D4; /* Cyan / Blue */
+  --rarity-b: #A855F7; /* Purple / Amethyst */
+  --rarity-a: #F59E0B; /* Amber / Gold */
+  --rarity-s: #EF4444; /* Rose / Red */
+}
+
+/* Minecraft Text Wrapper & High-Contrast Tooltip Styling */
+.mc-text-wrapper {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.75);
+  letter-spacing: 0.02em;
+  display: inline;
+}
+
+.mc-tooltip-box {
+  background: #110c18;
+  border: 2px solid #2e1065;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), inset 0 0 12px rgba(46, 16, 101, 0.3);
+}
+
+.mc-lore-line {
+  line-height: 1.4;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.8);
+}
+
+/* Quick Color Swatch Buttons */
+.quick-color-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.quick-color-btn:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 10px currentColor;
+  border-color: #ffffff;
+}
+
+.quick-color-btn:active {
+  transform: scale(0.95);
+}
+
+.rarity-cp-swatch {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rarity-cp-swatch:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Rarity Bar Segments */
+.rarity-bar-f { background-color: var(--rarity-f); }
+.rarity-bar-d { background-color: var(--rarity-d); }
+.rarity-bar-c { background-color: var(--rarity-c); }
+.rarity-bar-b { background-color: var(--rarity-b); }
+.rarity-bar-a { background-color: var(--rarity-a); }
+.rarity-bar-s { background-color: var(--rarity-s); }
+
+/* Rarity Badges */
+.rarity-badge-f {
+  background-color: rgba(156, 163, 175, 0.12) !important;
+  color: #d1d5db !important;
+  border-color: rgba(156, 163, 175, 0.3) !important;
+}
+
+.rarity-badge-d {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.rarity-badge-c {
+  background-color: rgba(6, 182, 212, 0.12) !important;
+  color: #22d3ee !important;
+  border-color: rgba(6, 182, 212, 0.3) !important;
+}
+
+.rarity-badge-b {
+  background-color: rgba(168, 85, 247, 0.12) !important;
+  color: #c084fc !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+.rarity-badge-a {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.rarity-badge-s {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Gradients for Preview simulation */
 .preview-gradient-rare {
   background: linear-gradient(90deg, #00D2FF 0%, #3A7BD5 100%);
   -webkit-background-clip: text;
@@ -182,4 +310,88 @@ input:checked + .slider:before {
 .item-slot-frame:hover {
   background: radial-gradient(circle at 50% 50%, #3f3f46 0%, #27272a 100%);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.4), 0 0 12px rgba(99,102,241,0.3);
+}
+
+/* Mobile Sidebar Drawer Transition */
+.sidebar-transition {
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), visibility 0.28s;
+}
+
+/* Mobile Backdrop Overlay */
+.sidebar-backdrop {
+  transition: opacity 0.25s ease-in-out;
+}
+
+/* Touch Friendly Utilities */
+.touch-target {
+  min-height: 40px;
+  min-width: 40px;
+}
+
+/* Modal Tab Navigation */
+.modal-tab-btn {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.modal-tab-btn.active {
+  color: #ffffff !important;
+  background-color: #272732 !important;
+}
+
+.modal-tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background-color: #6366f1;
+  border-radius: 9999px;
+}
+
+/* Visual Inventory Slot Simulation */
+.slot-cell {
+  width: 32px;
+  height: 32px;
+  background-color: #121215;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.slot-cell.active-slot {
+  background-color: #1f1f2e;
+  border-color: #6366f1;
+  box-shadow: inset 0 1px 2px rgba(99,102,241,0.2), 0 0 6px rgba(99,102,241,0.25);
+}
+
+/* Stacked Rarity Progress Bar */
+.rarity-progress-bar {
+  display: flex;
+  height: 8px;
+  width: 100%;
+  border-radius: 9999px;
+  overflow: hidden;
+  background-color: #27272a;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.rarity-bar-seg {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Showcase Card Hover & Transitions */
+.showcase-card {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.showcase-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
 }

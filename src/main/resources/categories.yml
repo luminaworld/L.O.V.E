@@ -97,6 +97,10 @@ categories:
     color: "#FFAA00"
     min_rolls: 1
     max_rolls: 3
+    timed_unlock_enabled: true
+    unlock_countdown_seconds: 30
+    unlock_tick_sound: "BLOCK_NOTE_BLOCK_HAT"
+    unlock_finish_sound: "BLOCK_IRON_DOOR_OPEN"
     search_time_min: 4
     search_time_max: 7
     covered_material: "BLACK_STAINED_GLASS_PANE"

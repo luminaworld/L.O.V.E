@@ -31,7 +31,11 @@ data class ContainerCategory(
     var coveredMaterial: Material = Material.BLACK_STAINED_GLASS_PANE,
     var searchingMaterial: Material = Material.STONE,
     var searchSound: String? = null,
-    var revealSound: String? = null
+    var revealSound: String? = null,
+    var timedUnlockEnabled: Boolean = false,
+    var unlockCountdownSeconds: Int = 0,
+    var unlockTickSound: String? = "BLOCK_NOTE_BLOCK_HAT",
+    var unlockFinishSound: String? = "BLOCK_IRON_DOOR_OPEN"
 ) {
     /**
      * Retrieves the configured drop weight for a given [Rarity].

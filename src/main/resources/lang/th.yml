@@ -632,3 +632,22 @@ web:
   disabled: "<color:#AAAAAA>ระบบหน้าเว็บตั้งค่าถูกปิดใช้งานใน config.yml</color>"
   reloaded: "<color:#55FF55>✔ ระบบหน้าเว็บตั้งค่าเริ่มต้นทำงานใหม่บนพอร์ต {port}</color>"
 
+# -------------------------------------------------------------------------
+# ส่วนที่ 21: ระบบตู้เซฟนับถอยหลัง (Timed Safe Containers)
+# -------------------------------------------------------------------------
+safe:
+  single_block_only: "<color:#FF5555>ตู้เซฟรองรับเฉพาะกล่องเดี่ยว 1 บล็อกเท่านั้น!</color>"
+  armorstand_not_supported: "<color:#FF5555>ArmorStand ไม่สามารถเป็นตู้เซฟได้!</color>"
+  counting_down: "<color:#FFAA00>🔒 ตู้เซฟกำลังปลดล็อค... เหลือเวลาอีก <color:#FFFF55><bold>{seconds}</bold></color> วินาที</color>"
+  unlock_started: "<color:#55FF55>🔒 เริ่มการปลดล็อคตู้เซฟ! (<color:#FFFF55>{seconds}</color> วินาที)</color>"
+  simulation_reset: "<color:#FFFF55>↺ รีเซ็ตการจำลองตู้เซฟแล้ว (สามารถกดเปิดเพื่อนับถอยหลังใหม่ได้)</color>"
+  tool:
+    received: "<color:#55FF55>✔ ได้รับเครื่องมือตั้งค่าตู้เซฟสำหรับหมวดหมู่: <color:#FFFF55>{category}</color></color>"
+    configured_success: "<color:#55FF55>✔ ตั้งค่าตู้เซฟสำเร็จ! ด้านหน้าจอ: <color:#FFFF55>{face}</color> (หมวดหมู่: <color:#55FFFF>{category}</color>)</color>"
+    unsupported_block: "<color:#FF5555>บล็อกนี้ไม่รองรับการตั้งเป็นตู้เซฟ!</color>"
+    no_double_chest: "<color:#FF5555>ตู้เซฟต้องเป็นกล่องเดี่ยว 1 บล็อกเท่านั้น ไม่รองรับกล่องคู่ (Double Chest)</color>"
+    must_be_horizontal_face: "<color:#FF5555>กรุณาคลิกที่ด้านข้างของกล่อง (ทิศเหนือ ใต้ ออก ตก) เพื่อกำหนดด้านที่ติดหน้าจอ</color>"
+    must_be_template_world: "<color:#FF5555>คุณต้องใช้งานเครื่องมือนี้ในแผนที่เทมเพลตเท่านั้น</color>"
+    no_armor_stand: "<color:#FF5555>ไม่สามารถตั้งค่า ArmorStand ให้เป็นตู้เซฟได้</color>"
+
+

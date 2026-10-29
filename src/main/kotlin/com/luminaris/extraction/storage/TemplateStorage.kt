@@ -260,7 +260,8 @@ class TemplateStorage(private val plugin: Plugin) {
                         val x = (item["x"] as? Number)?.toInt() ?: 0
                         val y = (item["y"] as? Number)?.toInt() ?: 0
                         val z = (item["z"] as? Number)?.toInt() ?: 0
-                        containers.add(PlacedContainer(id = id, categoryId = catId, x = x, y = y, z = z))
+                        val displayFace = item["display_face"]?.toString() ?: item["displayFace"]?.toString()
+                        containers.add(PlacedContainer(id = id, categoryId = catId, x = x, y = y, z = z, displayFace = displayFace))
                     }
                 }
             } else if (yaml.isConfigurationSection("containers")) {
@@ -272,7 +273,8 @@ class TemplateStorage(private val plugin: Plugin) {
                     val x = cSec.getInt("x")
                     val y = cSec.getInt("y")
                     val z = cSec.getInt("z")
-                    containers.add(PlacedContainer(id = id, categoryId = catId, x = x, y = y, z = z))
+                    val displayFace = cSec.getString("display_face") ?: cSec.getString("displayFace")
+                    containers.add(PlacedContainer(id = id, categoryId = catId, x = x, y = y, z = z, displayFace = displayFace))
                 }
             }
 
@@ -368,13 +370,17 @@ class TemplateStorage(private val plugin: Plugin) {
 
             // Containers serialization
             val containerList = data.containers.map { c ->
-                mapOf(
+                val map = mutableMapOf<String, Any>(
                     "id" to c.id,
                     "category_id" to c.categoryId,
                     "x" to c.x,
                     "y" to c.y,
                     "z" to c.z
                 )
+                if (c.displayFace != null) {
+                    map["display_face"] = c.displayFace
+                }
+                map
             }
             yaml.set("containers", containerList)
 

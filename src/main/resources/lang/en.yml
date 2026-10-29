@@ -637,3 +637,22 @@ web:
   disabled: "<color:#AAAAAA>Web configuration server is disabled in config.yml.</color>"
   reloaded: "<color:#55FF55>✔ Web configuration server restarted on port {port}.</color>"
 
+# -------------------------------------------------------------------------
+# Section 21: Timed Safe Containers (ระบบตู้เซฟนับถอยหลัง)
+# -------------------------------------------------------------------------
+safe:
+  single_block_only: "<color:#FF5555>Safe containers only support single-block containers!</color>"
+  armorstand_not_supported: "<color:#FF5555>ArmorStand cannot be a safe container!</color>"
+  counting_down: "<color:#FFAA00>🔒 Safe is unlocking... <color:#FFFF55><bold>{seconds}</bold></color> seconds remaining</color>"
+  unlock_started: "<color:#55FF55>🔒 Safe unlock initiated! (<color:#FFFF55>{seconds}</color> seconds)</color>"
+  simulation_reset: "<color:#FFFF55>↺ Safe simulation reset (You can interact to count down again)</color>"
+  tool:
+    received: "<color:#55FF55>✔ Received Safe Setup Tool for category: <color:#FFFF55>{category}</color></color>"
+    configured_success: "<color:#55FF55>✔ Safe configured successfully! Display Face: <color:#FFFF55>{face}</color> (Category: <color:#55FFFF>{category}</color>)</color>"
+    unsupported_block: "<color:#FF5555>This block is not supported as a safe container!</color>"
+    no_double_chest: "<color:#FF5555>Safe must be a single block container (Double chests are not supported)</color>"
+    must_be_horizontal_face: "<color:#FF5555>Please click a horizontal side (NORTH, SOUTH, EAST, WEST) to attach the display screen</color>"
+    must_be_template_world: "<color:#FF5555>You must use this tool inside a template world</color>"
+    no_armor_stand: "<color:#FF5555>ArmorStands cannot be configured as safe containers</color>"
+
+
