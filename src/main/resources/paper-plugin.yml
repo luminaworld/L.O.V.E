@@ -17,3 +17,12 @@ permissions:
   luminaris.extract:
     description: Allows player to participate in extractions
     default: true
+  luminaris.security.clientguard.admin:
+    description: Grants administrative access to Client Guard commands
+    default: op
+  luminaris.security.clientguard.alert:
+    description: Receives real-time security alerts when cheat clients or mods are detected
+    default: op
+  luminaris.security.clientguard.bypass:
+    description: Bypasses all client guard inspections and enforcement
+    default: "false"

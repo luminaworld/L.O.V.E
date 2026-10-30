@@ -650,4 +650,12 @@ safe:
     must_be_template_world: "<color:#FF5555>คุณต้องใช้งานเครื่องมือนี้ในแผนที่เทมเพลตเท่านั้น</color>"
     no_armor_stand: "<color:#FF5555>ไม่สามารถตั้งค่า ArmorStand ให้เป็นตู้เซฟได้</color>"
 
+# -------------------------------------------------------------------------
+# ส่วนที่ 22: ระบบป้องกันและตรวจจับ Mod / Client โกง (Client Guard)
+# -------------------------------------------------------------------------
+clientguard:
+  reloaded: "<gradient:#00FFA3:#00B8FF><bold>[ClientGuard]</bold></gradient> <color:#55FF55>โหลดไฟล์ตั้งค่า client_guard.yml ใหม่สำเร็จแล้ว!</color>"
+  player_report: "<gradient:#00FFA3:#00B8FF><bold>[ClientGuard Report]</bold></gradient> <color:#FFFFFF>{player}</color>"
+  status_title: "<gradient:#00FFA3:#00B8FF><bold>[ClientGuard Protection Status]</bold></gradient>"
+
 

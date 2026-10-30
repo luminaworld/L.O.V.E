@@ -83,6 +83,7 @@ class WebConfigServer(private val plugin: LuminarisCorePlugin) {
     fun ensureDefaultConfigs() {
         val configs = listOf(
             "config.yml",
+            "client_guard.yml",
             "items.yml",
             "categories.yml",
             "safe_cases.yml",
@@ -339,6 +340,7 @@ class WebConfigServer(private val plugin: LuminarisCorePlugin) {
                             val relPath = file.relativeTo(dataFolder).path.replace('\\', '/')
                             val category = when {
                                 relPath == "config.yml" -> "Master"
+                                relPath == "client_guard.yml" -> "Security"
                                 relPath == "items.yml" -> "Items"
                                 relPath == "categories.yml" -> "Categories"
                                 relPath == "safe_cases.yml" -> "Safe Cases"
@@ -364,12 +366,13 @@ class WebConfigServer(private val plugin: LuminarisCorePlugin) {
                     val p = it["path"] as String
                     when (p) {
                         "config.yml" -> "0_$p"
-                        "items.yml" -> "1_$p"
-                        "categories.yml" -> "2_$p"
-                        "safe_cases.yml" -> "3_$p"
-                        "lang/th.yml" -> "4_$p"
-                        "lang/en.yml" -> "5_$p"
-                        else -> "6_$p"
+                        "client_guard.yml" -> "1_$p"
+                        "items.yml" -> "2_$p"
+                        "categories.yml" -> "3_$p"
+                        "safe_cases.yml" -> "4_$p"
+                        "lang/th.yml" -> "5_$p"
+                        "lang/en.yml" -> "6_$p"
+                        else -> "7_$p"
                     }
                 }
 
@@ -512,6 +515,7 @@ class WebConfigServer(private val plugin: LuminarisCorePlugin) {
                     "DELETE" -> {
                         val protectedFiles = setOf(
                             "config.yml",
+                            "client_guard.yml",
                             "items.yml",
                             "categories.yml",
                             "safe_cases.yml",

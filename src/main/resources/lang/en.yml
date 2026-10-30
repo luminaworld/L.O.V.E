@@ -655,4 +655,12 @@ safe:
     must_be_template_world: "<color:#FF5555>You must use this tool inside a template world</color>"
     no_armor_stand: "<color:#FF5555>ArmorStands cannot be configured as safe containers</color>"
 
+# -------------------------------------------------------------------------
+# Section 22: Client Guard & Anti-Mod Enforcement
+# -------------------------------------------------------------------------
+clientguard:
+  reloaded: "<gradient:#00FFA3:#00B8FF><bold>[ClientGuard]</bold></gradient> <color:#55FF55>Client guard configuration reloaded successfully!</color>"
+  player_report: "<gradient:#00FFA3:#00B8FF><bold>[ClientGuard Report]</bold></gradient> <color:#FFFFFF>{player}</color>"
+  status_title: "<gradient:#00FFA3:#00B8FF><bold>[ClientGuard Protection Status]</bold></gradient>"
+
 

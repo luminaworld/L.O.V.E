@@ -145,8 +145,14 @@ class FoliaScheduler(private val plugin: Plugin = LuminarisCorePlugin.instance) 
     fun runAtEntityDelayed(
         entity: Entity,
         delayTicks: Long,
+        runnable: () -> Unit
+    ): ScheduledTask? = runAtEntityDelayed(entity, delayTicks, runnable, null)
+
+    fun runAtEntityDelayed(
+        entity: Entity,
+        delayTicks: Long,
         runnable: () -> Unit,
-        retired: (() -> Unit)? = null
+        retired: (() -> Unit)?
     ): ScheduledTask? {
         val entityScheduler: EntityScheduler = entity.scheduler
         val safeDelay = maxOf(1L, delayTicks)

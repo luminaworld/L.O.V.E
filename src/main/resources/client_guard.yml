@@ -1,0 +1,309 @@
+# =========================================================================
+# Luminaris: Operation Vanilla Extraction Core Engine (L.O.V.E)
+# ระบบป้องกันและตรวจจับ Mod / Client โกง (Client Guard & Mod Blocker)
+# =========================================================================
+#
+# คำอธิบายภาพรวม:
+# ระบบนี้ทำหน้าที่ตรวจสอบข้อมูล Client Brand และ Plugin Messaging Channels ของผู้เล่น
+# ทันทีที่เชื่อมต่อเข้าสู่เซิร์ฟเวอร์ เพื่อตรวจจับการใช้งาน Hacked Client หรือ Mod ที่ไม่ได้รับอนุญาต
+# เช่น Meteor Client, Wurst, Lunar Client, LiquidBounce, Aristois, Baritone ฯลฯ
+#
+# รองรับการทำงานแบบ Multi-threaded ปลอดภัย 100% บนทั้ง Paper และ Folia
+# ข้อความทั้งหมดรองรับการจัดรูปแบบด้วย Adventure MiniMessage และตัวแปรระบบ (Placeholders)
+#
+# ตัวแปรระบบ (Placeholders) ที่ใช้ได้ในข้อความและคำสั่ง:
+#   <player>           - ชื่อของผู้เล่น (Player Username)
+#   <uuid>             - UUID ของผู้เล่น
+#   <ip>               - หมายเลข IP ของผู้เล่น
+#   <detected_client>  - ชื่อ Client/Mod ที่ตรวจพบ (ตามที่ตั้งไว้ใน name)
+#   <brand>            - ค่า Client Brand ดั้งเดิมที่ผู้เล่นส่งมา (เช่น fabric, lunarclient:v2.x)
+#   <channel>          - ชื่อ Channel ที่ตรวจพบความผิดปกติ (ถ้ามี)
+#   <source>           - แหล่งที่มาของการตรวจพบ (BRAND หรือ CHANNEL หรือ DELAYED_CHECK)
+#   <action>           - รูปแบบการลงโทษที่ถูกกระทำ
+# =========================================================================
+
+# เปิด/ปิดการทำงานของระบบ Client Guard ทั้งหมด
+enabled: true
+
+# โหมด Debug: แสดงรายละเอียดการตรวจสอบ, Brand ที่ได้รับ, และผลการยิง Probe ลงใน Console
+debug: true
+
+# บังคับตรวจสอบผู้เล่นที่เป็น OP หรือไม่ (หากเป็น true แม้จะมี OP ก็จะถูกตรวจสอบเพื่อการทดสอบเซิร์ฟเวอร์)
+check_operators: true
+
+# โหมดการทำงานของระบบ (Guard Mode):
+# - SMART_HYBRID: (ค่าเริ่มต้นแนะนำ) ตรวจจับและบล็อก Client โกงตาม Blacklist และ Channel
+#                 โดยยังอนุญาตให้ผู้เล่นทั่วไปใช้ Fabric ปกติ (เช่น ลง Sodium, Iris เพื่อเพิ่ม FPS) ได้
+# - STRICT_VANILLA: อนุญาตเฉพาะผู้เล่นที่ใช้ Official Vanilla Client เท่านั้น
+#                   บล็อก Mod Loader ทุกชนิด (Fabric, Forge, NeoForge, Quilt)
+#                   (โหมดนี้การันตีว่า Meteor และ Wurst จะเข้าไม่ได้ 100% แม้จะเปิด Spoof Brand ก็ตาม)
+# - WHITELIST_ONLY: อนุญาตเฉพาะ Client Brand ที่มีชื่อตรงกับ allowed_brands ด้านล่างเท่านั้น
+mode: "SMART_HYBRID"
+
+# ระยะเวลารอตรวจสอบซ้ำหลังผู้เล่นเข้าเกม (หน่วย: Ticks, 20 Ticks = 1 วินาที)
+# แนะนำ 3-5 Ticks เพื่อรอให้ Client ส่ง Packet ลงทะเบียน Channel (REGISTER) มาจนครบ
+delayed_check_ticks: 4
+
+# Permission สำหรับยกเว้นการตรวจสอบ (Bypass) ผู้เล่นหรือแอดมินที่มีสิทธิ์นี้จะไม่ถูกบล็อก
+bypass_permission: "luminaris.security.clientguard.bypass"
+
+# รายชื่อผู้เล่นหรือ UUID ที่ได้รับการยกเว้น (Bypass Whitelist) ให้สามารถใช้ Mod โกงหรือ Client ต้องห้ามเข้าเล่นได้
+# สามารถจัดการผ่านคำสั่ง: /ext guard bypass [add|remove|list] <player>
+bypassed_players: []
+
+# รายการแบรนด์ที่อนุญาต (ใช้เฉพาะเมื่อโหมดเป็น WHITELIST_ONLY หรือนำมาตรวจสอบร่วม)
+# รองรับ Regular Expression (Regex)
+allowed_brands:
+  - "(?i)^vanilla$"
+  - "(?i)^fabric$" # เปิดไว้เมื่ออนุญาต Fabric ทั่วไป
+
+# -------------------------------------------------------------------------
+# การแจ้งเตือนทีมงานและแอดมิน (Staff Alerts)
+# -------------------------------------------------------------------------
+staff_alert:
+  # เปิด/ปิดการส่งข้อความแจ้งเตือนเมื่อตรวจพบผู้เล่นใช้ Client ต้องห้าม
+  enabled: true
+  # สิทธิ์ของผู้ที่จะได้รับข้อความแจ้งเตือน
+  permission: "luminaris.security.clientguard.alert"
+  # รูปแบบข้อความแจ้งเตือนแอดมิน (MiniMessage)
+  format: "<red><bold>[Security Alert]</bold></red> <white><player></white> <gray>พยายามเข้าเซิร์ฟเวอร์ด้วย:</gray> <yellow><detected_client></yellow> <dark_gray>(Brand: <brand> | Source: <source> | Action: <action>)</dark_gray>"
+
+# -------------------------------------------------------------------------
+# การบันทึกประวัติการตรวจจับ (Logging System)
+# -------------------------------------------------------------------------
+logging:
+  # แสดงผลใน Console ของเซิร์ฟเวอร์หรือไม่
+  console: true
+  # บันทึกลงไฟล์บันทึกประวัติหรือไม่
+  file: true
+  # ชื่อไฟล์บันทึก (จะถูกเก็บไว้ในโฟลเดอร์ logs ของปลั๊กอิน)
+  file_name: "client_guard.log"
+
+# -------------------------------------------------------------------------
+# การตรวจจับการปลอมแปลงแบรนด์ (Brand Spoofing Correlation Detection)
+# -------------------------------------------------------------------------
+# ดักจับผู้เล่นที่ตั้งค่าในตัวโกง (เช่น Meteor / Wurst) ให้ Brand ส่งเป็น "vanilla"
+# แต่ตัว Client กลับส่งร่องรอยช่องสัญญาณ Mod Loader (Fabric / Forge / Quilt)
+# เป็นหลักฐานแน่นอน 100% ว่าผู้เล่นกำลังปลอมแปลงตัวตนเพื่อหลบเลี่ยงระบบ
+# -------------------------------------------------------------------------
+brand_spoof_detection:
+  enabled: true
+  actions:
+    - type: "KICK"
+      message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ตรวจพบการปลอมแปลงตัวเกม (<yellow>Brand Spoofing</yellow>)</gray><newline><gray>แอบอ้างว่าเป็น Vanilla แต่ตรวจพบร่องรอย Mod Loader แอบแฝง</gray>"
+    - type: "ALERT"
+    - type: "LOG"
+
+# -------------------------------------------------------------------------
+# การตรวจสอบเชิงลึกผ่าน Sign Translation & Keybind Probe (MC-265322)
+# -------------------------------------------------------------------------
+# ส่ง Virtual Sign ทดสอบคีย์เฉพาะของ Meteor Client, Wurst และ Baritone
+# Client ที่ลง Mod โกงเหล่านี้จะแปลภาษาและส่งข้อมูล Keybind ที่แท้จริงกลับมา
+# สามารถตรวจจับได้ทันที 100% แม้จะเปิด Spoof Brand และปิดแชนแนล
+# -------------------------------------------------------------------------
+sign_probe:
+  # เปิด/ปิดการตรวจจับเชิงลึกด้วย Sign Probe
+  enabled: true
+  # ระยะเวลารอส่ง Probe หลังผู้เล่นเข้าเกม (หน่วย: Ticks, 20 Ticks = 1 วินาที) แนะนำ 40-60 Ticks
+  delay_ticks: 40
+
+# -------------------------------------------------------------------------
+# การตรวจจับ Mod Namespaces จาก minecraft:register (Mod Channel Analysis)
+# -------------------------------------------------------------------------
+# เมื่อ Mod บน Fabric หรือ Forge ทำการลงทะเบียนช่องสื่อสาร ตัวเกมจะส่ง Mod ID มาด้วย
+# ระบบจะสกัด Mod ID ออกมาเทียบกับ Blacklist ด้านล่างนี้ หากพบจะเตะ/แบนทันที
+# -------------------------------------------------------------------------
+mod_namespaces:
+  blacklist:
+    - "forgewurst"
+    - "forgehax"
+    - "wurst"
+    - "baritone"
+    - "meteor"
+    - "meteor-client"
+    - "aristois"
+    - "impact"
+    - "liquidbounce"
+    - "freecam"
+    - "xray"
+    - "seedcracker"
+    - "worlddownloader"
+    - "wdl"
+    - "inertia"
+    - "bleachhack"
+    - "futureclient"
+    - "rusherhack"
+    - "thunderhack"
+    - "kami"
+    - "lambda"
+
+# -------------------------------------------------------------------------
+# ข้อความเตะเริ่มต้น (Default Fallback Kick Message)
+# กรณีที่กฎนั้นๆ ไม่ได้ระบุข้อความเฉพาะไว้
+# -------------------------------------------------------------------------
+default_kick_message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ตรวจพบการใช้งาน Client หรือ Mod ที่ไม่ได้รับอนุญาต: <yellow><detected_client></yellow></gray><newline><gray>กรุณาปิด Mod หรือใช้ Client มาตรฐานในการเข้าเล่น</gray>"
+
+# =========================================================================
+# กฎการตรวจจับราย Client และ Mod (Detection Rules)
+# =========================================================================
+# โครงสร้างของแต่ละกฎ:
+#   enabled:        เปิด/ปิดกฎนี้
+#   name:           ชื่อที่แสดงผลของ Client/Mod
+#   match_brands:   รายการ Regular Expression สำหรับตรวจจับ Client Brand
+#   match_channels: รายการ Regular Expression สำหรับตรวจจับ Plugin Messaging Channels
+#   actions:        รายการการกระทำเมื่อตรวจพบ รองรับได้หลายแบบพร้อมกัน:
+#                   - type: KICK
+#                     message: "ข้อความที่จะแสดงตอนเตะ (MiniMessage)"
+#                   - type: BAN
+#                     duration: "30d" (ระบุระยะเวลา เช่น 1d, 7d, 30d หรือ permanent)
+#                     reason: "เหตุผลการแบน"
+#                   - type: COMMAND
+#                     commands:
+#                       - "คำสั่ง Console 1"
+#                       - "คำสั่ง Console 2"
+#                   - type: ALERT (ส่งข้อความหา Staff ตามที่ตั้งค่าไว้ด้านบน)
+#                   - type: LOG (บันทึกข้อมูล)
+# =========================================================================
+detections:
+
+  # -----------------------------------------------------------------------
+  # 1. Meteor Client (Fabric Cheat Client ยอดนิยม)
+  # https://github.com/MeteorDevelopment/meteor-client
+  # -----------------------------------------------------------------------
+  meteor:
+    enabled: true
+    name: "Meteor Client"
+    match_brands:
+      - "(?i).*meteor.*"
+    match_channels:
+      - "(?i)meteor:.*"
+      - "(?i)meteor-client:.*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ไม่อนุญาตให้ใช้งาน <yellow>Meteor Client</yellow> ในเซิร์ฟเวอร์นี้</gray><newline><dark_gray>กรุณาถอด Mod ออกก่อนเข้าเล่น</dark_gray>"
+      - type: "ALERT"
+      - type: "LOG"
+
+  # -----------------------------------------------------------------------
+  # 2. Wurst Client (Cheat Client ยอดนิยม)
+  # https://github.com/Wurst-Imperium/Wurst7
+  # -----------------------------------------------------------------------
+  wurst:
+    enabled: true
+    name: "Wurst Client"
+    match_brands:
+      - "(?i).*wurst.*"
+    match_channels:
+      - "(?i)wurst:.*"
+      - "(?i)wurstclient:.*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ไม่อนุญาตให้ใช้งาน <yellow>Wurst Client</yellow> ในเซิร์ฟเวอร์นี้</gray><newline><dark_gray>กรุณาถอด Mod ออกก่อนเข้าเล่น</dark_gray>"
+      - type: "ALERT"
+      - type: "LOG"
+
+  # -----------------------------------------------------------------------
+  # 3. Lunar Client (PvP Client ยอดนิยม)
+  # https://www.lunarclient.com/
+  # *แยกตั้งค่าอิสระ สามารถเปลี่ยน enabled เป็น false หากต้องการอนุญาตให้ผู้เล่นใช้ Lunar Client*
+  # -----------------------------------------------------------------------
+  lunar:
+    enabled: true
+    name: "Lunar Client"
+    match_brands:
+      - "(?i).*lunarclient.*"
+      - "(?i)^lunar.*"
+    match_channels:
+      - "(?i)lunarclient:.*"
+      - "(?i)lunar:.*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ไม่อนุญาตให้ใช้งาน <yellow>Lunar Client</yellow> ในเซิร์ฟเวอร์นี้</gray><newline><dark_gray>กรุณาใช้ Minecraft มาตรฐาน (Vanilla) ในการเข้าเล่น</dark_gray>"
+      - type: "ALERT"
+      - type: "LOG"
+
+  # -----------------------------------------------------------------------
+  # 4. LiquidBounce (Open-Source Hacked Client)
+  # -----------------------------------------------------------------------
+  liquidbounce:
+    enabled: true
+    name: "LiquidBounce"
+    match_brands:
+      - "(?i).*liquidbounce.*"
+    match_channels:
+      - "(?i)liquidbounce:.*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ไม่อนุญาตให้ใช้งาน <yellow>LiquidBounce</yellow> ในเซิร์ฟเวอร์นี้</gray>"
+      - type: "ALERT"
+      - type: "LOG"
+
+  # -----------------------------------------------------------------------
+  # 5. Aristois (Hacked Client)
+  # -----------------------------------------------------------------------
+  aristois:
+    enabled: true
+    name: "Aristois Client"
+    match_brands:
+      - "(?i).*aristois.*"
+    match_channels:
+      - "(?i)aristois:.*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ไม่อนุญาตให้ใช้งาน <yellow>Aristois Client</yellow> ในเซิร์ฟเวอร์นี้</gray>"
+      - type: "ALERT"
+      - type: "LOG"
+
+  # -----------------------------------------------------------------------
+  # 6. Baritone (Pathfinding & Auto-Mining Bot Mod)
+  # -----------------------------------------------------------------------
+  baritone:
+    enabled: true
+    name: "Baritone"
+    match_brands:
+      - "(?i).*baritone.*"
+    match_channels:
+      - "(?i)baritone:.*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ไม่อนุญาตให้ใช้งาน <yellow>Baritone Bot Mod</yellow> ในเซิร์ฟเวอร์นี้</gray>"
+      - type: "ALERT"
+      - type: "LOG"
+
+  # -----------------------------------------------------------------------
+  # 7. Hacked Clients & Cheat Mods อื่นๆ ที่ฮิตกัน
+  # (CheatBreaker, Impact, Sigma, Huzuni, BleachHack, Ares, RusherHack, Future, Vape, Inertia ฯลฯ)
+  # -----------------------------------------------------------------------
+  popular_cheats:
+    enabled: true
+    name: "Hacked Client"
+    match_brands:
+      - "(?i).*(cheatbreaker|impact|sigma|jello|huzuni|bleachhack|ares|rusherhack|futureclient|future_client|vape|inertia|elementra|lambda|kamiblue|forgehax).*"
+    match_channels:
+      - "(?i).*(future|rusherhack|bleachhack|impact|sigma|vape|kami).*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>ตรวจพบ Client ต้องห้าม (<yellow><detected_client></yellow>)</gray><newline><gray>ไม่อนุญาตให้เชื่อมต่อเซิร์ฟเวอร์นี้</gray>"
+      - type: "ALERT"
+      - type: "LOG"
+
+  # -----------------------------------------------------------------------
+  # 8. Mod Loaders (Fabric / Forge / NeoForge / Quilt)
+  # สำหรับใช้เมื่อต้องการบังคับ Pure Vanilla หรือเปิดโหมด STRICT_VANILLA
+  # (ค่าเริ่มต้น: ปิดไว้ เพื่อให้ผู้เล่นใช้ Sodium / Fabric เสริม FPS ได้ตามปกติ)
+  # -----------------------------------------------------------------------
+  mod_loaders:
+    enabled: false
+    name: "Mod Loader (Fabric/Forge)"
+    match_brands:
+      - "(?i).*(fabric|forge|neoforge|quilt|rift).*"
+    match_channels:
+      - "(?i)fabric:registry/sync"
+      - "(?i)fml:handshake"
+      - "(?i)forge:.*"
+    actions:
+      - type: "KICK"
+        message: "<red><bold>[Luminaris Security]</bold></red><newline><gray>เซิร์ฟเวอร์นี้อนุญาตเฉพาะ <green>Official Vanilla Client</green> เท่านั้น</gray><newline><gray>ไม่อนุญาตให้ใช้ตัวเกมที่มี Mod Loader ใดๆ</gray>"
+      - type: "ALERT"
+      - type: "LOG"
+

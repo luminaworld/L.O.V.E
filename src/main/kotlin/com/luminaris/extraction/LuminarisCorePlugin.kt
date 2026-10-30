@@ -109,6 +109,12 @@ class LuminarisCorePlugin : JavaPlugin() {
     lateinit var webConfigServer: com.luminaris.extraction.web.WebConfigServer
         private set
 
+    lateinit var clientGuardManager: com.luminaris.extraction.security.clientguard.ClientGuardManager
+        private set
+
+    lateinit var clientGuardListener: com.luminaris.extraction.security.clientguard.ClientGuardListener
+        private set
+
     override fun onLoad() {
         _instance = this
     }
@@ -174,6 +180,9 @@ class LuminarisCorePlugin : JavaPlugin() {
         }
         if (::dropBoxManager.isInitialized) {
             runCatching { dropBoxManager.shutdown() }
+        }
+        if (::clientGuardManager.isInitialized) {
+            runCatching { clientGuardManager.shutdown() }
         }
 
         // 7. Clean up registered commands from CommandMap to prevent PlugManX command conflicts
@@ -273,6 +282,13 @@ class LuminarisCorePlugin : JavaPlugin() {
             scheduler = scheduler
         )
         server.pluginManager.registerEvents(deathListener, this)
+
+        // Client Guard Anti-Mod and Cheat Detection Engine
+        clientGuardManager = com.luminaris.extraction.security.clientguard.ClientGuardManager(this, scheduler)
+        clientGuardManager.initialize()
+        clientGuardListener = com.luminaris.extraction.security.clientguard.ClientGuardListener(clientGuardManager, scheduler)
+        server.pluginManager.registerEvents(clientGuardListener, this)
+        server.pluginManager.registerEvents(clientGuardManager.signTranslationProbe, this)
     }
 
     /**
@@ -284,6 +300,9 @@ class LuminarisCorePlugin : JavaPlugin() {
         itemsConfig.reload()
         categoriesConfig.reload()
         safeCasesConfig.reload()
+        if (::clientGuardManager.isInitialized) {
+            clientGuardManager.reload()
+        }
         templateStorage.loadAll()
         containerRegistry.load()
         itemRegistry.load()
